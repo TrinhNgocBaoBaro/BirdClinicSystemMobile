@@ -7,38 +7,39 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 
 
 export default function HomeScreen({ navigation }) {
-    const [segmented, setSegmented] = React.useState('0')
-    const [selectedIndex, setSelectedIndex] = React.useState(undefined);
+    const [numberOfToday, setNumberOfToday] = React.useState(1)
+    const [numberOfComing, setNumberOfComing] = React.useState(0)
+    const [numberOfReExam, setNumberOfReExam] = React.useState(0)
+
+    const [selectedIndex, setSelectedIndex] = React.useState(0);
 
     return (
         <>
             <MainHeader iconHeader={"ios-home-outline"} navigation={navigation} />
             <View style={styles.container}>
-                {/* <Button onPress={() => navigation.navigate("Detail")} title='Click!' /> */}
                 <StatusBar style="auto" />
                 <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
                     <SegmentedControl
-                        values={['Hôm nay (1)', 'Sắp tới', 'Tái khám']}
+                        values={[`Hôm nay (${numberOfToday})`, 'Sắp tới', 'Tái khám']}
                         selectedIndex={selectedIndex}
-                        onChange={(event) => {
-                            setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
-                            // setSegmented({selectedIndex: segmented})
+                        onChange={(e) => {
+                            setSelectedIndex(e.nativeEvent.selectedSegmentIndex);
                         }}
                     />
                 </View>
                 {selectedIndex === 0 && (
                     <View style={styles.test}>
-                        <Text>Hôm nay</Text>
+                        <Text style={{fontSize: 25}}>Hôm nay</Text>
                     </View>
                 )}
                 {selectedIndex === 1 && (
                     <View style={styles.test}>
-                        <Text>Sắp tới</Text>
+                        <Text style={{fontSize: 25}}>Sắp tới</Text>
                     </View>
                 )}
                 {selectedIndex === 2 && (
                     <View style={styles.test}>
-                        <Text>Tái khám</Text>
+                        <Text style={{fontSize: 25}}>Tái khám</Text>
                     </View>
                 )}
             </View>

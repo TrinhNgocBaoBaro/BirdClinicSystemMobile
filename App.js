@@ -16,6 +16,7 @@ import HistoryScreen from "./screens/HistoryScreen"
 import Detail from "./screens/DetailScreen"
 import ProfileScreen from './screens/ProfileScreen';
 import LoginScreen from './screens/LoginScreen';
+import DetailServiceScreen from './screens/DetailServiceScreen';
 
 const CustomTabBarButton = ({ onPress }) => (
   <View style={{
@@ -125,9 +126,8 @@ export default function App() {
         <Stack.Screen name="Detail" component={Detail} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
-
+        <Stack.Screen name="DetailService" component={DetailServiceScreen} />
       </Stack.Navigator>
-      {/* <TabRoute/> */}
     </NavigationContainer>
   );
 }

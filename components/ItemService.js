@@ -4,7 +4,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import COLORS from "../constants/color";
 import { ButtonFlex } from "./Button";
 
-
 const ItemService = ({ item, navigation }) => {
     return (
         <View style={style.itemCard}>
@@ -15,13 +14,12 @@ const ItemService = ({ item, navigation }) => {
                 paddingVertical: 15,
                 flex: 1,
             }}>
-                <Text style={{ fontWeight: "bold", fontSize: 16, marginBottom: 5 }}>{item.name}</Text>
+                <Text style={{fontSize: 16, marginBottom: 5, fontFamily: 'Inter-Bold' }}>{item.name}</Text>
                 <View style={{flexDirection: "row"}}>
-                <Text style={{ fontSize: 14, color: COLORS.grey, justifyContent: 'center', alignItems: 'center', marginRight:2 }}>
-                    <Icon name="information-circle-outline" size={19} color={COLORS.green} />
-                    
+                <Text style={{ fontSize: 14, color: COLORS.grey, justifyContent: 'center', alignItems: 'center', marginRight:2}}>
+                    <Icon name="information-circle-outline" size={17} color={COLORS.green} />                    
                 </Text>
-                <Text>{item.description}</Text>
+                <Text style={{fontFamily: 'Inter-Medium', fontSize: 12}}>{item.description}</Text>
                 </View>
                 
             </View>

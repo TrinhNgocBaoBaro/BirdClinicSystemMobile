@@ -2,8 +2,7 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, SafeAreaVi
 import React from "react";
 import COLORS from "../constants/color";
 import Icon from "react-native-vector-icons/Ionicons";
-
-
+import AppText from "../components/AppText";
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height
 
@@ -50,9 +49,9 @@ export default function ProfileScreen({ navigation }) {
       <Icon name={icon} size={24} color="grey" />
       <Text style={{
         marginLeft: 15,
-        fontWeight: 600,
         fontSize: 15,
         minWidth: 200,
+        fontFamily: 'Inter-SemiBold'
       }}>
         {text}
       </Text>
@@ -77,11 +76,10 @@ export default function ProfileScreen({ navigation }) {
           <Icon name="chevron-back-outline" size={30} color={"black"} />
         </View>
         </Pressable>
-        <View style={{ justifyContent: 'center' }}>
-          <Text>
-            <Text style={styles.typeText1}>Bird</Text>
+        <View style={{ justifyContent: 'center' }}> 
+            <Text style={styles.typeText1}>Bird
             <Text style={styles.typeText2}>Clinic</Text>
-          </Text>
+            </Text>
         </View>
         <View style={{ marginRight: 20, height: 40, width: 40, justifyContent: 'center' }}>
         </View>
@@ -98,10 +96,10 @@ export default function ProfileScreen({ navigation }) {
             paddingVertical: 32,
             flex: 1,
           }}>
-          <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+          <Text style={{ fontWeight: "bold", fontSize: 16, fontFamily: 'Inter-SemiBold' }}>
             Trịnh Ngọc Bảo
           </Text>
-          <Text style={{ fontSize: 13, color: "grey" }}>
+          <Text style={{ fontSize: 13, color: "grey", fontFamily: 'Inter-SemiBold' }}>
             ngbao1592001@gmail.com
           </Text>
         </View>
@@ -117,7 +115,7 @@ export default function ProfileScreen({ navigation }) {
       <ScrollView style={{ marginHorizontal: 20 }}>
         {/* Account */}
         <View style={{ marginBottom: 12 }}>
-          <Text style={{ marginVertical: 10 }}>Tài khoản </Text>
+          <Text style={{ marginVertical: 10, fontFamily: 'Inter-SemiBold' }}>Tài khoản</Text>
           <View
             style={{
               backgrounColor: "grey",
@@ -136,7 +134,7 @@ export default function ProfileScreen({ navigation }) {
 
         {/* Settings */}
         <View style={{ marginBottom: 12 ,elevation: 2}}>
-          <Text style={{ marginVertical: 10 }}>Cài đặt</Text>
+          <Text style={{ marginVertical: 10, fontFamily: 'Inter-SemiBold' }}>Cài đặt</Text>
           <View
             style={{
               borderRadius: 5,
@@ -159,9 +157,7 @@ export default function ProfileScreen({ navigation }) {
               onPress={()=>{navigation.navigate("Login")}}
           >
             <View style={styles.btnContainer}>
-              <Text style={styles.btnText}>
-                <Text>Đăng xuất</Text>
-              </Text>
+                <Text style={styles.btnText}>Đăng xuất</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -186,9 +182,8 @@ const styles = StyleSheet.create({
   },
   btnText: {
     color: COLORS.white,
-    fontWeight: "500",
-    fontSize: 16,
-    
+    fontSize: 15,
+    fontFamily: 'Inter-SemiBold'
   },
   btnContainer: {
     backgroundColor: "red",
@@ -220,12 +215,12 @@ const styles = StyleSheet.create({
   typeText1: {
     fontSize: 24,
     color: COLORS.black,
-    fontWeight: 'bold'
+    fontFamily: 'Inter-Black'
   },
   typeText2: {
     fontSize: 24,
     color: COLORS.green,
-    fontWeight: 'bold'
+    fontFamily: 'Inter-Black'
   },
 });
 

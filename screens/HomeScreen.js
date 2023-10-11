@@ -1,10 +1,10 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, Image } from 'react-native'
 import MainHeader from '../components/MainHeader';
 import COLORS from '../constants/color';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-
+import AppText from '../components/AppText';
 
 export default function HomeScreen({ navigation }) {
     const [numberOfToday, setNumberOfToday] = React.useState(1)
@@ -29,17 +29,20 @@ export default function HomeScreen({ navigation }) {
                 </View>
                 {selectedIndex === 0 && (
                     <View style={styles.test}>
-                        <Text style={{fontSize: 25}}>Hôm nay</Text>
+                        <Image source={require('../assets/EmptyHomeImage.jpg')} style={{ height: 190, width: 280}} />
+                        <Text style={{ color: COLORS.grey, fontFamily: "Inter-Bold"}} typeWeight={'Bold'}>Chưa có lịch khám hôm nay !</Text>
                     </View>
                 )}
                 {selectedIndex === 1 && (
                     <View style={styles.test}>
-                        <Text style={{fontSize: 25}}>Sắp tới</Text>
+                        <Image source={require('../assets/EmptyHomeImage.jpg')} style={{ height: 190, width: 280}} />
+                        <Text style={{color: COLORS.grey, fontFamily: "Inter-Bold"}}>Chưa có lịch khám sắp tới !</Text>
                     </View>
                 )}
                 {selectedIndex === 2 && (
                     <View style={styles.test}>
-                        <Text style={{fontSize: 25}}>Tái khám</Text>
+                        <Image source={require('../assets/EmptyHomeImage.jpg')} style={{ height: 190, width: 280}} />
+                        <Text style={{color: COLORS.grey, fontFamily: "Inter-Bold"}}>Chưa có lịch tái khám !</Text>
                     </View>
                 )}
             </View>

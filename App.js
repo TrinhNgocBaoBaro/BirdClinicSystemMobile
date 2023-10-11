@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import COLORS from "./constants/color"
+import { useFonts } from "expo-font";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -26,7 +27,8 @@ const CustomTabBarButton = ({ onPress }) => (
     backgroundColor: COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
-    top: -40,
+    top: -50,
+    elevation: 2
   }}>
     <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
       <View style={{
@@ -119,6 +121,19 @@ const TabRoute = () => {
 }
 
 export default function App() {
+
+  const [fontsLoaded, fontError] = useFonts({
+    "Inter-Black": require("./assets/fonts/Inter-Black.ttf"),
+    "Inter-Bold": require("./assets/fonts/Inter-Bold.ttf"),
+    "Inter-Medium": require("./assets/fonts/Inter-Medium.ttf"),
+    "Inter-SemiBold": require("./assets/fonts/Inter-SemiBold.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Home">
@@ -133,13 +148,17 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  // shadow: {
+  //     shadowColor: '#7F5DF0',
+  //     shadowOffset: {
+  //       width: 0,
+  //       height: 10,
+  //     },
+  //     shadowOpacity: 0.25,
+  //     elevation: 5,
+  // },
   shadow: {
-      shadowColor: '#7F5DF0',
-      shadowOffset: {
-        width: 0,
-        height: 10,
-      },
-      shadowOpacity: 0.25,
-      elevation: 5,
-  },
+    shadowColor: '#52006A',  
+    elevation: 5,  
+},
 });

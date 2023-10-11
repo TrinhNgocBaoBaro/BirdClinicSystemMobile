@@ -15,10 +15,8 @@ export default function Header({ title, onPress }) {
                         <Icon name="chevron-back-outline" size={30} color={COLORS.white} />
                     </View>
                 </Pressable>
-                <View style={{ justifyContent: 'center' }}>
-                    <Text>
+                <View style={{ justifyContent: 'center' }}>                   
                         <Text style={styles.textTitle}>{title}</Text>
-                    </Text>
                 </View>
                 <View 
                     style={{ 
@@ -45,7 +43,7 @@ const styles = StyleSheet.create({
     textTitle: {
         fontSize: 22,
         color: COLORS.white,
-        fontWeight: 'bold'
+        fontFamily: 'Inter-SemiBold'
     },
 
 });

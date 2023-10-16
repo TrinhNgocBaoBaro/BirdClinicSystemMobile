@@ -4,7 +4,6 @@ import { StyleSheet, Text, View, Image } from 'react-native'
 import MainHeader from '../components/MainHeader';
 import COLORS from '../constants/color';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import AppText from '../components/AppText';
 
 export default function HomeScreen({ navigation }) {
     const [numberOfToday, setNumberOfToday] = React.useState(1)
@@ -22,6 +21,7 @@ export default function HomeScreen({ navigation }) {
                     <SegmentedControl
                         values={[`Hôm nay (${numberOfToday})`, 'Sắp tới', 'Tái khám']}
                         selectedIndex={selectedIndex}
+                        fontStyle={{fontFamily: 'Inter-Medium'}}
                         onChange={(e) => {
                             setSelectedIndex(e.nativeEvent.selectedSegmentIndex);
                         }}

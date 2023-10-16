@@ -2,13 +2,13 @@ import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import COLORS from "../constants/color";
 
-const ButtonFlex = ({ title, onPress }) => {
+const ButtonFlex = ({ title, onPress, stylesText }) => {
   return (
     <TouchableOpacity 
         activeOpacity={0.5}
         style={styles.button}
         onPress={onPress}>
-            <Text style={styles.buttonText}>{title}</Text>
+            <Text style={[styles.buttonText, stylesText]}>{title}</Text>
     </TouchableOpacity>
   );
 }

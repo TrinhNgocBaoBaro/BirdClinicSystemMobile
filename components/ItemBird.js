@@ -1,9 +1,10 @@
 import React from 'react'
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, Pressable } from 'react-native'
 import COLORS from "../constants/color";
-
-const ItemBird = ({item, navigation}) => {
+import FONTS from '../constants/font';
+const ItemBird = ({item, navigation, onPress}) => {
   return (
+    <Pressable onPress={onPress}>
     <View
               style={{
                 backgroundColor: COLORS.white,
@@ -27,12 +28,13 @@ const ItemBird = ({item, navigation}) => {
                 fontFamily: "Inter-Bold"
               }}>{item.name}</Text>
               <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>   
-              <Text style={{fontSize: 12, fontFamily: "Inter-Medium"}}>Size: {item.size}</Text>
-              <Text style={{fontSize: 12, fontFamily: "Inter-Medium"}}>{item.sex}</Text>
+              <Text style={{fontSize: 12, fontFamily: FONTS.medium}}>Size: {item.size}</Text>
+              <Text style={{fontSize: 12, fontFamily: FONTS.bold, color: COLORS.grey}}>{item.sex}</Text>
               </View>
            
 
             </View>
+      </Pressable>
   )
 }
 

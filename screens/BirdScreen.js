@@ -12,7 +12,7 @@ const data = [
     id: "1",
     image:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Eopsaltria_australis_-_Mogo_Campground.jpg/640px-Eopsaltria_australis_-_Mogo_Campground.jpg",
-    name: "LeHuu",
+    name: "Ngoc Long",
     size: "Vừa",
     sex: "Cái"
   },
@@ -20,7 +20,7 @@ const data = [
     id: "2",
     image:
       "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1200",
-    name: "LeHuu",
+    name: "Tri cong",
     size: "Vừa",
     sex: "Đực"
   },
@@ -37,7 +37,7 @@ const data = [
     id: "4",
     image:
       "https://upload.wikimedia.org/wikipedia/commons/3/32/House_sparrow04.jpg",
-    name: "LeHuu",
+    name: "Ngoc Bao",
     size: "Vừa",
     sex: "Đực"
   },
@@ -45,7 +45,7 @@ const data = [
     id: "5",
     image:
       "https://debspark.audubon.org/sites/default/files/styles/hero_mobile/public/western_tanager_usfws.jpg?itok=30SSiFxC",
-    name: "LeHuu",
+    name: "Ngoc Long",
     size: "Vừa",
     sex: "Đực"
   },
@@ -53,7 +53,7 @@ const data = [
     id: "6",
     image:
       "https://static.scientificamerican.com/sciam/cache/file/7A715AD8-449D-4B5A-ABA2C5D92D9B5A21_source.png?w=590&h=800&756A88D1-C0EA-4C21-92BE0BB43C14B265",
-    name: "LeHuu",
+    name: "Quang Khai",
     size: "Vừa",
     sex: "Cái"
   },
@@ -61,7 +61,7 @@ const data = [
     id: "7",
     image:
       "https://www.thespruce.com/thmb/7i24MewNuomTbv-I9mUxLx8l-yc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/what-is-a-bird-385521-hero-645b1041792147b88f3ccdf712f11a04.jpg",
-    name: "LeHuu",
+    name: "Hai Nam",
     size: "Vừa",
     sex: "Cái"
   },
@@ -70,7 +70,7 @@ const data = [
 export default function BirdScreen({ navigation }) {
   return (
     <>
-      <MainHeader iconHeader={"skull-outline"} navigation={navigation} />
+      <MainHeader iconHeader={"logo-twitter"} navigation={navigation} />
       <View style={styles.container}>
         <StatusBar style="auto" />
         <FlatGrid
@@ -78,10 +78,10 @@ export default function BirdScreen({ navigation }) {
           spacing={30}
           data={data}
           renderItem={({ item }) => (
-            <ItemBird item={item}/>
+            <ItemBird item={item} navigation={navigation} onPress={()=>navigation.navigate('DetailBirdProfile',{BirdDetail: item})}/>
           )}
           keyExtractor={(item) => item.id}
-          style={{ maxHeight: 400 }}
+          style={{ maxHeight: 410 }}
         />
         <View style={{ marginHorizontal: 100, marginVertical: 20 }}>
           <ButtonFlex title="Thêm hồ sơ chim" stylesText={{ fontSize: 13 }} />
@@ -96,5 +96,4 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  gridItem: {},
 });

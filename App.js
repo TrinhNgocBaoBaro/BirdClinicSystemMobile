@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Icon from "react-native-vector-icons/Ionicons";
+import Icon1 from "react-native-vector-icons/SimpleLineIcons";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -18,6 +19,7 @@ import Detail from "./screens/DetailScreen"
 import ProfileScreen from './screens/ProfileScreen';
 import LoginScreen from './screens/LoginScreen';
 import DetailServiceScreen from './screens/DetailServiceScreen';
+import DetailBirdProfile from './screens/DetailBirdProfile';
 
 const CustomTabBarButton = ({ onPress }) => (
   <View style={{
@@ -70,8 +72,8 @@ const TabRoute = () => {
         name="Trang chủ"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color }) => {
-            return <Icon name="ios-home-outline" color={color} size={25} />;
+          tabBarIcon: ({ focused, color }) => {
+            return <Icon name={focused ? `ios-home`:`ios-home-outline` } color={color} size={25} />;
           },
           headerShown: false,
         }} />
@@ -79,8 +81,8 @@ const TabRoute = () => {
         name="Dịch vụ"
         component={ServiceScreen}
         options={{
-          tabBarIcon: ({ color }) => {
-            return <Icon name="layers-outline" color={color} size={28} />;
+          tabBarIcon: ({ focused, color }) => {
+            return <Icon name={focused ? "layers":"layers-outline"} color={color} size={28} />;
           },
           headerShown: false,
 
@@ -102,8 +104,9 @@ const TabRoute = () => {
         name="Chim"
         component={BirdScreen}
         options={{
-          tabBarIcon: ({ color }) => {
-            return <Icon name="skull-outline" color={color} size={28} />;
+          tabBarIcon: ({ focused, color }) => {
+            return focused ? <Icon name="logo-twitter" color={color} size={30} />
+            : <Icon1 name="social-twitter" color={color} size={28} />;
           },
           headerShown: false,
         }} />
@@ -111,8 +114,8 @@ const TabRoute = () => {
         name="Lịch sử"
         component={HistoryScreen}
         options={{
-          tabBarIcon: ({ color }) => {
-            return <Icon name="folder-open-outline" color={color} size={28} />;
+          tabBarIcon: ({ focused, color }) => {
+            return <Icon name={focused ? "folder-open":"folder-open-outline"} color={color} size={28} />;
           },
           headerShown: false,
         }} />
@@ -142,6 +145,7 @@ export default function App() {
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="DetailService" component={DetailServiceScreen} />
+        <Stack.Screen name="DetailBirdProfile" component={DetailBirdProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

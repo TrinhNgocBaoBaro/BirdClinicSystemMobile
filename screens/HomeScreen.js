@@ -28,19 +28,19 @@ export default function HomeScreen({ navigation }) {
                     />
                 </View>
                 {selectedIndex === 0 && (
-                    <View style={styles.test}>
+                    <View style={styles.empty}>
                         <Image source={require('../assets/EmptyHomeImage.jpg')} style={{ height: 190, width: 280}} />
                         <Text style={{ color: COLORS.grey, fontFamily: "Inter-Bold"}} typeWeight={'Bold'}>Chưa có lịch khám hôm nay !</Text>
                     </View>
                 )}
                 {selectedIndex === 1 && (
-                    <View style={styles.test}>
+                    <View style={styles.empty}>
                         <Image source={require('../assets/EmptyHomeImage.jpg')} style={{ height: 190, width: 280}} />
                         <Text style={{color: COLORS.grey, fontFamily: "Inter-Bold"}}>Chưa có lịch khám sắp tới !</Text>
                     </View>
                 )}
                 {selectedIndex === 2 && (
-                    <View style={styles.test}>
+                    <View style={styles.empty}>
                         <Image source={require('../assets/EmptyHomeImage.jpg')} style={{ height: 190, width: 280}} />
                         <Text style={{color: COLORS.grey, fontFamily: "Inter-Bold"}}>Chưa có lịch tái khám !</Text>
                     </View>
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
         // alignItems: 'center',
         // justifyContent: 'center',
     },
-    test: {
+    empty: {
         flex: 1,
         backgroundColor: COLORS.white,
         alignItems: 'center',

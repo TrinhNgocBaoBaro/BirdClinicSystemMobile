@@ -6,7 +6,7 @@ import COLORS from '../constants/color';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height
 
-export default function Header({ title, onPress }) {
+export default function Header({ title, rightIcon, onPress }) {
     return (
         <SafeAreaView>
             <View style={styles.top}>
@@ -24,6 +24,7 @@ export default function Header({ title, onPress }) {
                         width:40, 
                         height: 40,
                         justifyContent: 'center' }}>
+                        <Icon name={rightIcon} size={30} color={COLORS.white} />
                 </View>
             </View>
         </SafeAreaView>

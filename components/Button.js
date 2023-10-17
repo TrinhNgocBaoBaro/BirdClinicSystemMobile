@@ -1,12 +1,12 @@
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import COLORS from "../constants/color";
-
-const ButtonFlex = ({ title, onPress, stylesText }) => {
+import FONTS from '../constants/font';
+const ButtonFlex = ({ title, onPress, stylesText, stylesButton }) => {
   return (
     <TouchableOpacity 
         activeOpacity={0.5}
-        style={styles.button}
+        style={[styles.button, stylesButton]}
         onPress={onPress}>
             <Text style={[styles.buttonText, stylesText]}>{title}</Text>
     </TouchableOpacity>
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: 11,
     textAlign: 'center',
-    fontFamily: 'Inter-Bold'
+    fontFamily: FONTS.bold
   },
 });
 

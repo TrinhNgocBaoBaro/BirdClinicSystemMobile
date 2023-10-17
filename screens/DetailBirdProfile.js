@@ -1,10 +1,48 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, FlatList } from "react-native";
 import React from "react";
 import { StatusBar } from "expo-status-bar";
 import COLORS from "../constants/color";
 import Header from "../components/Header";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import FONTS from "../constants/font";
+import { ButtonFlex } from "../components/Button";
+import Icon from "react-native-vector-icons/Ionicons";
+
+const dataMedicalRecord = [
+  {
+    id: "1",
+    dateMedical: "25/03/2022",
+  },
+  {
+    id: "2",
+    dateMedical: "24/07/2022",
+  },
+  {
+    id: "3",
+    dateMedical: "30/09/2022",
+  },
+  {
+    id: "4",
+    dateMedical: "14/03/2023",
+  },
+  {
+    id: "5",
+    dateMedical: "26/04/2023",
+  },
+  {
+    id: "6",
+    dateMedical: "15/09/2023",
+  },
+  {
+    id: "7",
+    dateMedical: "15/09/2023",
+  },
+  {
+    id: "8",
+    dateMedical: "15/09/2023",
+  },
+];
+
 const DetailBirdProfile = ({ navigation, route }) => {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
@@ -12,7 +50,9 @@ const DetailBirdProfile = ({ navigation, route }) => {
     <>
       <Header
         title="Chi tiết hồ sơ"
-        rightIcon="create-outline"
+        rightIcon={
+          selectedIndex === 0 ? "create-outline" : "document-text-outline"
+        }
         onPress={() => navigation.goBack()}
       />
       <View style={styles.container}>
@@ -29,8 +69,7 @@ const DetailBirdProfile = ({ navigation, route }) => {
         </View>
         {selectedIndex === 0 && (
           <View style={styles.birdProfileContainer}>
-                        <View style={styles.grayBackground}></View>
-
+            <View style={styles.grayBackground}></View>
             <View style={styles.outBorderImage}>
               <Image
                 source={{ uri: route.params.BirdDetail.image }}
@@ -118,21 +157,63 @@ const DetailBirdProfile = ({ navigation, route }) => {
           </View>
         )}
         {selectedIndex === 1 && (
-          <View style={styles.empty}>
-            <Image
-              source={require("../assets/EmptyMedicalRecord.jpg")}
-              style={{
-                height: 250,
-                width: 250,
-                resizeMode: "contain",
-                marginTop: -50,
-              }}
-            />
+          // <View style={styles.empty}>
+          //   <Image
+          //     source={require("../assets/EmptyMedicalRecord.jpg")}
+          //     style={{
+          //       height: 250,
+          //       width: 250,
+          //       resizeMode: "contain",
+          //       marginTop: -50,
+          //     }}
+          //   />
 
-            <Text style={{ color: COLORS.grey, fontFamily: FONTS.bold }}>
-              Chưa có hồ sơ bệnh án.
-            </Text>
-          </View>
+          //   <Text style={{ color: COLORS.grey, fontFamily: FONTS.bold }}>
+          //     Chưa có hồ sơ bệnh án.
+          //   </Text>
+          // </View>
+          <FlatList
+            data={dataMedicalRecord}
+            renderItem={({ item, index }) => (
+              <View
+                style={{
+                  flexDirection: "row",
+                  height: "auto",
+                  backgroundColor: COLORS.white,
+                  marginTop: 5,
+                  marginHorizontal: 20,
+                  marginBottom: 15,
+                  borderRadius: 10,
+                  elevation: 5,
+                  padding: 10,
+                }}
+              >
+                <Icon
+                  name={"document-text-outline"}
+                  size={70}
+                  color={COLORS.green}
+                />
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexDirection: "row",
+                  }}
+                >
+                  <Text style={[styles.textAttribute, { color: COLORS.black }]}>
+                    Ngày khám: {item.dateMedical}
+                  </Text>
+                  <Icon
+                    name={"information-circle-outline"}
+                    size={30}
+                    color={COLORS.green}
+                  />
+                </View>
+              </View>
+            )}
+            keyExtractor={(item) => item.id}
+          />
         )}
       </View>
     </>
@@ -189,14 +270,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   grayBackground: {
-    position: 'absolute',
-    top: 100, 
+    position: "absolute",
+    top: 100,
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: COLORS.greyPastel, 
+    backgroundColor: COLORS.greyPastel,
     borderTopLeftRadius: 50,
-    borderTopRightRadius: 50, 
+    borderTopRightRadius: 50,
   },
 });
 

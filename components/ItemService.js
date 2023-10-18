@@ -25,7 +25,7 @@ const ItemService = ({ item, navigation }) => {
             </View>
             <View style={{ alignItems: "center", marginTop: 60 }}>
                 <View style={{}}>
-                    <ButtonFlex title="Chi tiết" onPress={()=> navigation.navigate('DetailService')} />
+                    <ButtonFlex title="Chi tiết" onPress={()=> navigation.navigate('DetailService', {booking: item} )} />
                 </View>
             </View>
         </View>

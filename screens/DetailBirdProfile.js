@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet, Image, FlatList } from "react-native";
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from "react-native";
 import React from "react";
 import { StatusBar } from "expo-status-bar";
 import COLORS from "../constants/color";
 import Header from "../components/Header";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import FONTS from "../constants/font";
-import { ButtonFlex } from "../components/Button";
-import Icon from "react-native-vector-icons/Ionicons";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import ItemMedicalRecord from "../components/ItemMedicalRecord";
 
 const dataMedicalRecord = [
   {
@@ -21,26 +21,26 @@ const dataMedicalRecord = [
     id: "3",
     dateMedical: "30/09/2022",
   },
-  {
-    id: "4",
-    dateMedical: "14/03/2023",
-  },
-  {
-    id: "5",
-    dateMedical: "26/04/2023",
-  },
-  {
-    id: "6",
-    dateMedical: "15/09/2023",
-  },
-  {
-    id: "7",
-    dateMedical: "15/09/2023",
-  },
-  {
-    id: "8",
-    dateMedical: "15/09/2023",
-  },
+  // {
+  //   id: "4",
+  //   dateMedical: "14/03/2023",
+  // },
+  // {
+  //   id: "5",
+  //   dateMedical: "26/04/2023",
+  // },
+  // {
+  //   id: "6",
+  //   dateMedical: "15/09/2023",
+  // },
+  // {
+  //   id: "7",
+  //   dateMedical: "15/09/2023",
+  // },
+  // {
+  //   id: "8",
+  //   dateMedical: "15/09/2023",
+  // },
 ];
 
 const DetailBirdProfile = ({ navigation, route }) => {
@@ -69,6 +69,11 @@ const DetailBirdProfile = ({ navigation, route }) => {
         </View>
         {selectedIndex === 0 && (
           <View style={styles.birdProfileContainer}>
+            <View style={{position: 'absolute', right: 20, top: 10, padding: 3, backgroundColor: COLORS.darkGrey, borderRadius: 50, elevation: 3}}>                
+              <TouchableOpacity activeOpacity={0.7} onPress={()=>console.log('onClickEdit')} style={{padding: 10, backgroundColor: COLORS.white, borderRadius: 50}}>
+              <Icon name="mode-edit" size={18} color={COLORS.grey}/>
+              </TouchableOpacity>        
+            </View>
             <View style={styles.grayBackground}></View>
             <View style={styles.outBorderImage}>
               <Image
@@ -78,20 +83,32 @@ const DetailBirdProfile = ({ navigation, route }) => {
             </View>
             <View
               style={{
-                paddingHorizontal: 20,
+                paddingHorizontal: 30,
                 paddingVertical: 10,
                 backgroundColor: COLORS.white,
                 borderRadius: 10,
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               <Text
                 style={{
-                  color: COLORS.green,
+                  color: COLORS.black,
                   fontFamily: FONTS.bold,
                   fontSize: 18,
+                  marginBottom: 5
                 }}
               >
                 {route.params.BirdDetail.name}
+              </Text>
+              <Text
+                style={{
+                  color: COLORS.grey,
+                  fontFamily: FONTS.semiBold,
+                  fontSize: 13,
+                }}
+              >
+                15/09/2023
               </Text>
             </View>
             <View style={styles.profileContainer}>
@@ -104,8 +121,8 @@ const DetailBirdProfile = ({ navigation, route }) => {
                   width: 120,
                 }}
               >
-                <Text style={styles.textAttribute}>15/09/2023</Text>
-                <Text style={styles.textNameAttribute}>Ngày nở</Text>
+                <Text style={styles.textAttribute}>Đực</Text>
+                <Text style={styles.textNameAttribute}>Giới tính</Text>
               </View>
               <View
                 style={{
@@ -116,8 +133,8 @@ const DetailBirdProfile = ({ navigation, route }) => {
                   width: 120,
                 }}
               >
-                <Text style={styles.textAttribute}>Đực</Text>
-                <Text style={styles.textNameAttribute}>Giới tính</Text>
+                <Text style={styles.textAttribute}>Xám vàng</Text>
+                <Text style={styles.textNameAttribute}>Màu sắc</Text>
               </View>
               <View style={{ alignItems: "center", padding: 10, width: 120 }}>
                 <Text style={styles.textAttribute}>Lớn</Text>
@@ -131,28 +148,24 @@ const DetailBirdProfile = ({ navigation, route }) => {
                   borderRightWidth: 1,
                   borderColor: COLORS.white,
                   padding: 10,
-                  width: 120,
-                }}
-              >
-                <Text style={styles.textAttribute}>Xám vàng</Text>
-                <Text style={styles.textNameAttribute}>Màu sắc</Text>
-              </View>
-              <View
-                style={{
-                  alignItems: "center",
-                  borderRightWidth: 1,
-                  borderColor: COLORS.white,
-                  padding: 10,
-                  width: 120,
+                  width: 180,
                 }}
               >
                 <Text style={styles.textAttribute}>Không</Text>
                 <Text style={styles.textNameAttribute}>Giống</Text>
               </View>
-              <View style={{ alignItems: "center", padding: 10, width: 120 }}>
+              <View
+                style={{
+                  alignItems: "center",
+                  borderColor: COLORS.white,
+                  padding: 10,
+                  width: 180,
+                }}
+              >
                 <Text style={styles.textAttribute}>Không</Text>
                 <Text style={styles.textNameAttribute}>Microchip</Text>
               </View>
+ 
             </View>
           </View>
         )}
@@ -175,42 +188,7 @@ const DetailBirdProfile = ({ navigation, route }) => {
           <FlatList
             data={dataMedicalRecord}
             renderItem={({ item, index }) => (
-              <View
-                style={{
-                  flexDirection: "row",
-                  height: "auto",
-                  backgroundColor: COLORS.white,
-                  marginTop: 5,
-                  marginHorizontal: 20,
-                  marginBottom: 15,
-                  borderRadius: 10,
-                  elevation: 5,
-                  padding: 10,
-                }}
-              >
-                <Icon
-                  name={"document-text-outline"}
-                  size={70}
-                  color={COLORS.green}
-                />
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    flexDirection: "row",
-                  }}
-                >
-                  <Text style={[styles.textAttribute, { color: COLORS.black }]}>
-                    Ngày khám: {item.dateMedical}
-                  </Text>
-                  <Icon
-                    name={"information-circle-outline"}
-                    size={30}
-                    color={COLORS.green}
-                  />
-                </View>
-              </View>
+              <ItemMedicalRecord item={item} onPress={()=> navigation.navigate("DetailMedicalRecord")}/>
             )}
             keyExtractor={(item) => item.id}
           />
@@ -235,9 +213,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 100,
-    height: 200,
-    width: 200,
-    elevation: 3,
+    height: 205,
+    width: 205,
     backgroundColor: COLORS.white,
     marginBottom: 10,
   },
@@ -247,11 +224,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 100,
     width: 360,
-    elevation: 2,
     backgroundColor: COLORS.green,
     marginTop: 10,
     borderRadius: 10,
     marginHorizontal: 300,
+    borderWidth: 5
+    , borderColor: "white"
   },
   textNameAttribute: {
     fontFamily: FONTS.medium,
@@ -275,9 +253,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: COLORS.greyPastel,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
+    backgroundColor: COLORS.darkGrey,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
   },
 });
 

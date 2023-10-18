@@ -4,5 +4,6 @@ const COLORS = {
     green: "#32B768",
     greyPastel :"#F5F5F5",
     grey: "grey",
+    darkGrey: "#E5E5E5"
 }
 export default COLORS;

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import COLORS from "../constants/color";
+import { SvgBirdIcon } from "../components/Svg"
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -26,8 +27,9 @@ export default function MainHeader({ iconHeader, navigation }) {
             marginLeft: 20,
             justifyContent: "center",
           }}
-        >
-          <Icon name={iconHeader} size={25} color={"black"} />
+        > 
+          {iconHeader ? <Icon name={iconHeader} size={25} color={"black"} />        
+                      : <SvgBirdIcon width={40} height={40} /> }
         </View>
         <View style={{ justifyContent: "center" }}>
           <Text style={styles.typeText1}>

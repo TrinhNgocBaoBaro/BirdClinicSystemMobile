@@ -21,6 +21,7 @@ import LoginScreen from './screens/LoginScreen';
 import DetailServiceScreen from './screens/DetailServiceScreen';
 import DetailBirdProfile from './screens/DetailBirdProfile';
 import DetailMedicalRecord from './screens/DetailMedicalRecord';
+import SelectBirdProfile from './screens/SelectBirdProfile';
 const CustomTabBarButton = ({ onPress }) => (
   <View style={{
     width: 90,
@@ -147,6 +148,7 @@ export default function App() {
         <Stack.Screen name="DetailService" component={DetailServiceScreen} />
         <Stack.Screen name="DetailBirdProfile" component={DetailBirdProfile} />
         <Stack.Screen name="DetailMedicalRecord" component={DetailMedicalRecord} />
+        <Stack.Screen name="SelectBirdProfile" component={SelectBirdProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -6,7 +6,7 @@ import MainHeader from "../components/MainHeader";
 import COLORS from "../constants/color";
 import { ButtonFlex } from "../components/Button";
 import ItemBird from "../components/ItemBird";
-
+import { MotiView } from "moti";
 const data = [
   {
     id: "1",
@@ -68,9 +68,10 @@ const data = [
 ];
 
 export default function BirdScreen({ navigation }) {
+
   return (
     <>
-      <MainHeader iconHeader={"logo-twitter"} navigation={navigation} />
+      <MainHeader navigation={navigation} />
       <View style={styles.container}>
         <StatusBar style="auto" />
         <FlatGrid
@@ -78,7 +79,11 @@ export default function BirdScreen({ navigation }) {
           spacing={30}
           data={data}
           renderItem={({ item }) => (
+            <MotiView from={{opacity: 0, translateY: 50}}
+            animate={{opacity: 1, translateY: 0}}
+            >
             <ItemBird item={item} navigation={navigation} onPress={()=>navigation.navigate('DetailBirdProfile',{BirdDetail: item})}/>
+            </MotiView>
           )}
           keyExtractor={(item) => item.id}
           style={{ maxHeight: 410 }}

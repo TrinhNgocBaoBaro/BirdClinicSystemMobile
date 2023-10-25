@@ -14,11 +14,11 @@ const ButtonFlex = ({ title, onPress, stylesText, stylesButton }) => {
   );
 };
 
-const ButtonFloatBottom = ({ title, onPress }) => {
+const ButtonFloatBottom = ({ title, onPress, buttonColor }) => {
   return (
     <View style={styles.containerButtonFloatBottom}>
       <View style={styles.boxButtonFloatBottom}>
-        <TouchableOpacity activeOpacity={0.7} style={styles.buttonFloatBottom} onPress={onPress}>
+        <TouchableOpacity activeOpacity={0.7} style={[styles.buttonFloatBottom,  {backgroundColor: buttonColor} ]} onPress={onPress}>
           <Text style={styles.buttonFloatBottomText}>{title}</Text>
         </TouchableOpacity>
       </View>

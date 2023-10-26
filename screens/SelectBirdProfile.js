@@ -132,7 +132,7 @@ const SelectBirdProfile = ({ navigation }) => {
         buttonColor={selectedItem ? COLORS.green: COLORS.grey}
         onPress={() => {
           if (selectedItem)
-            navigation.navigate("Profile")
+            navigation.navigate("ConfirmBirdProfile", {Bird: selectedItem })
           else console.log("No item selected")}
         }
       />

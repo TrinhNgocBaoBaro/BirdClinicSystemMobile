@@ -23,7 +23,7 @@ const ItemService = ({ item, navigation }) => {
                 </View>
                 
             </View>
-            <View style={{ alignItems: "center", marginTop: 60 }}>
+            <View style={{ alignItems: "center", marginTop: 50}}>
                 <View style={{}}>
                     <ButtonFlex title="Chi tiết" onPress={()=> navigation.navigate('DetailService', {booking: item} )} />
                 </View>
@@ -38,6 +38,7 @@ const style = StyleSheet.create({
         elevation: 2,
         borderRadius: 10,
         backgroundColor: COLORS.white,
+        padding: 10,
         marginVertical: 5,
         marginLeft: 20,
         marginRight: 20,

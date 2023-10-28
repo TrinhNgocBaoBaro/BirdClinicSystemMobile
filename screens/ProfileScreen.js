@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, SafeAreaVi
 import React from "react";
 import COLORS from "../constants/color";
 import Icon from "react-native-vector-icons/Ionicons";
-import AppText from "../components/AppText";
+import FONTS from "../constants/font";
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height
 
@@ -51,7 +51,7 @@ export default function ProfileScreen({ navigation }) {
         marginLeft: 15,
         fontSize: 15,
         minWidth: 200,
-        fontFamily: 'Inter-SemiBold'
+        fontFamily: FONTS.semiBold
       }}>
         {text}
       </Text>
@@ -96,10 +96,10 @@ export default function ProfileScreen({ navigation }) {
             paddingVertical: 32,
             flex: 1,
           }}>
-          <Text style={{ fontWeight: "bold", fontSize: 16, fontFamily: 'Inter-SemiBold' }}>
+          <Text style={{ fontWeight: "bold", fontSize: 16, fontFamily: FONTS.semiBold }}>
             Trịnh Ngọc Bảo
           </Text>
-          <Text style={{ fontSize: 13, color: "grey", fontFamily: 'Inter-SemiBold' }}>
+          <Text style={{ fontSize: 13, color: "grey", fontFamily: FONTS.semiBold }}>
             ngbao1592001@gmail.com
           </Text>
         </View>
@@ -115,7 +115,7 @@ export default function ProfileScreen({ navigation }) {
       <ScrollView style={{ marginHorizontal: 20 }}>
         {/* Account */}
         <View style={{ marginBottom: 12 }}>
-          <Text style={{ marginVertical: 10, fontFamily: 'Inter-SemiBold' }}>Tài khoản</Text>
+          <Text style={{ marginVertical: 10, fontFamily: FONTS.semiBold }}>Tài khoản</Text>
           <View
             style={{
               backgrounColor: "grey",
@@ -134,7 +134,7 @@ export default function ProfileScreen({ navigation }) {
 
         {/* Settings */}
         <View style={{ marginBottom: 12 ,elevation: 2}}>
-          <Text style={{ marginVertical: 10, fontFamily: 'Inter-SemiBold' }}>Cài đặt</Text>
+          <Text style={{ marginVertical: 10, fontFamily: FONTS.semiBold }}>Cài đặt</Text>
           <View
             style={{
               borderRadius: 5,
@@ -154,7 +154,10 @@ export default function ProfileScreen({ navigation }) {
           <TouchableOpacity
             activeOpacity={0.8}
             style={{ justifyContent: "center", alignItems: "center" }}
-              onPress={()=>{navigation.navigate("Login")}}
+              onPress={()=>{
+                // navigation.navigate("Login")
+                navigation.popToTop() 
+              }}
           >
             <View style={styles.btnContainer}>
                 <Text style={styles.btnText}>Đăng xuất</Text>
@@ -183,7 +186,7 @@ const styles = StyleSheet.create({
   btnText: {
     color: COLORS.white,
     fontSize: 15,
-    fontFamily: 'Inter-SemiBold'
+    fontFamily: FONTS.semiBold
   },
   btnContainer: {
     backgroundColor: "red",
@@ -215,12 +218,12 @@ const styles = StyleSheet.create({
   typeText1: {
     fontSize: 24,
     color: COLORS.black,
-    fontFamily: 'Inter-Black'
+    fontFamily: FONTS.black
   },
   typeText2: {
     fontSize: 24,
     color: COLORS.green,
-    fontFamily: 'Inter-Black'
+    fontFamily: FONTS.black
   },
 });
 

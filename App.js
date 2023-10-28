@@ -24,6 +24,9 @@ import DetailMedicalRecord from './screens/DetailMedicalRecord';
 import SelectBirdProfile from './screens/SelectBirdProfile';
 import ConfirmBirdProfileScreen from './screens/ConfirmBirdProfileScreen';
 import SelectTypeBookingScreen from './screens/SelectTypeBookingScreen';
+import ChooseDoctorScreen from './screens/ChooseDoctorScreen';
+import ChooseDateByDoctorScreen from './screens/ChooseDateByDoctorScreen';
+
 const CustomTabBarButton = ({ onPress }) => (
   <View style={{
     width: 90,
@@ -142,7 +145,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Home">
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
         <Stack.Screen name="Home" component={TabRoute} />
         <Stack.Screen name="Detail" component={Detail} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
@@ -153,6 +156,9 @@ export default function App() {
         <Stack.Screen name="SelectBirdProfile" component={SelectBirdProfile} />
         <Stack.Screen name="ConfirmBirdProfile" component={ConfirmBirdProfileScreen} />
         <Stack.Screen name="SelectTypeBooking" component={SelectTypeBookingScreen} />
+        <Stack.Screen name="ChooseDoctor" component={ChooseDoctorScreen} />
+        <Stack.Screen name="ChooseDateByDoctor" component={ChooseDateByDoctorScreen} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

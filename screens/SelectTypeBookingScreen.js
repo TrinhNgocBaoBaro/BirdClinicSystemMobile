@@ -83,7 +83,7 @@ const SelectTypeBookingScreen = ({ navigation }) => {
         buttonColor={ selectedItem ? COLORS.green : COLORS.grey}
         onPress={() => {
           if (selectedItem === 'chooseDoctor') {
-            navigation.navigate('ScreenChooseDoctor');
+            navigation.navigate('ChooseDoctor');
           } else if (selectedItem === 'chooseDate') {
             navigation.navigate('ScreenChooseDate');
           }

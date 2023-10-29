@@ -157,8 +157,8 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
       </View>
       <ButtonFloatBottom
         title="Tiếp tục"
-        buttonColor={COLORS.grey}
-        onPress={() => navigation.navigate("Profile")}
+        buttonColor={COLORS.green}
+        onPress={() => navigation.navigate("ConfirmBookingAndSymptom")}
       />
     </>
   );

@@ -12,11 +12,28 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import COLORS from "../constants/color";
 import { SvgBirdIcon } from "../components/Svg"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 export default function MainHeader({ iconHeader, navigation }) {
+
+
+  const [userData, setUserData] = React.useState({});
+  const getUserData = async () => {
+      const UserLoggedInData = await AsyncStorage.getItem("UserLoggedInData")    
+      if(UserLoggedInData){
+        let udata = JSON.parse(UserLoggedInData);
+        setUserData(udata.userData);
+      }
+    }
+    React.useEffect(()=>{
+      getUserData();
+    }, []);
+
+
+
   return (
     <SafeAreaView>
       <View style={styles.top}>
@@ -47,7 +64,7 @@ export default function MainHeader({ iconHeader, navigation }) {
           <Pressable onPress={() => navigation.navigate("Profile")}>
             <Image
               source={{
-                uri: "https://banner2.cleanpng.com/20180619/epr/kisspng-avatar-photo-booth-computer-icons-email-stewardess-5b292bfebc29e1.5698032815294248947707.jpg",
+                uri: userData.image || "https://banner2.cleanpng.com/20180619/epr/kisspng-avatar-photo-booth-computer-icons-email-stewardess-5b292bfebc29e1.5698032815294248947707.jpg",
               }}
               style={{ height: 40, width: 40, borderRadius: 50 }}
             />

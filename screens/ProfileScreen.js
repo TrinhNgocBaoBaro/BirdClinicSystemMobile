@@ -3,10 +3,15 @@ import React from "react";
 import COLORS from "../constants/color";
 import Icon from "react-native-vector-icons/Ionicons";
 import FONTS from "../constants/font";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height
 
 export default function ProfileScreen({ navigation }) {
+
+  const [userData, setUserData] = React.useState({});
+
   const cacheAndCellularItems = [
     {
       icon: "person-circle-outline",
@@ -36,6 +41,29 @@ export default function ProfileScreen({ navigation }) {
       sub: "chevron-forward-outline"
     },
   ];
+
+  const getUserData = async () => {
+    const UserLoggedInData = await AsyncStorage.getItem("UserLoggedInData")
+    // console.log(UserLoggedInData)
+
+    if(UserLoggedInData){
+      let udata = JSON.parse(UserLoggedInData);
+      setUserData(udata.userData);
+      // console.log("--------udata---------")
+      // console.log(udata)
+      // console.log("--------udata---------")
+    }
+  }
+
+  // React.useEffect(()=>{
+  //   console.log("--------userData---------")
+  //   console.log(userData)
+  //   console.log("--------userData---------")
+  // }, [userData]);
+
+  React.useEffect(()=>{
+    getUserData();
+  }, []);
 
   const renderSettingsItem = ({ icon, text, sub }) => (
     <TouchableOpacity activeOpacity={0.8}
@@ -86,7 +114,7 @@ export default function ProfileScreen({ navigation }) {
       </View>
       <View style={styles.itemCard}>
         <Image
-          source={{ uri: "https://banner2.cleanpng.com/20180619/epr/kisspng-avatar-photo-booth-computer-icons-email-stewardess-5b292bfebc29e1.5698032815294248947707.jpg" }}
+          source={{ uri: userData.image || "https://banner2.cleanpng.com/20180619/epr/kisspng-avatar-photo-booth-computer-icons-email-stewardess-5b292bfebc29e1.5698032815294248947707.jpg"}}
           style={{ height: 50, width: 50, borderRadius: 50 }}
         />
         <View
@@ -97,10 +125,10 @@ export default function ProfileScreen({ navigation }) {
             flex: 1,
           }}>
           <Text style={{ fontWeight: "bold", fontSize: 16, fontFamily: FONTS.semiBold }}>
-            Trịnh Ngọc Bảo
+            {userData.name}
           </Text>
           <Text style={{ fontSize: 13, color: "grey", fontFamily: FONTS.semiBold }}>
-            ngbao1592001@gmail.com
+          {userData.email} 
           </Text>
         </View>
         <View>
@@ -155,8 +183,9 @@ export default function ProfileScreen({ navigation }) {
             activeOpacity={0.8}
             style={{ justifyContent: "center", alignItems: "center" }}
               onPress={()=>{
-                // navigation.navigate("Login")
-                navigation.popToTop() 
+                AsyncStorage.removeItem('UserLoggedInData')
+                // navigation.popToTop()
+                navigation.navigate('Login') 
               }}
           >
             <View style={styles.btnContainer}>

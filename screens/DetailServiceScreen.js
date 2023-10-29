@@ -5,18 +5,20 @@ import Header from "../components/Header";
 import { ButtonFloatBottom } from "../components/Button";
 import COLORS from "../constants/color";
 import { MotiView } from "moti";
+import createAxios from "../utils/axios";
+const API = createAxios();
 
 export default function DetailServiceScreen({ navigation, route }) {
   const itemId = route.params.booking.id;
   let componentToRender;
   switch (itemId) {
-    case "1":
-      componentToRender = <HealthCheck />;
+    case "ST001":
+      componentToRender = <HealthCheck itemId={itemId} />;
       break;
-    case "2":
+    case "ST003":
       componentToRender = <Boarding />;
       break;
-    case "3":
+    case "ST002":
       componentToRender = <Grooming />;
       break;
     case "4":
@@ -54,7 +56,7 @@ import { FlatGrid } from "react-native-super-grid";
 import FONTS from "../constants/font";
 import Icon from "react-native-vector-icons/Ionicons";
 
-const dataHealthCheck = [
+const dataHealthCheckTest = [
   {
     id: '1',
     name: 'Kiểm tra sức khỏe',
@@ -97,26 +99,26 @@ const dataHealthCheck = [
     type: 'InfectiousDiseaseTest',
     description: 'Khám tổng quát các chẩn đoán sức khỏe'
   },
-  // {
-  //   id: '323',
-  //   name: 'Xét nghiệm phân chim',
-  //   type: 'FaecalTest',
-  //   description: 'Khám tổng quát các chẩn đoán sức khỏe'
-  // },
-  // {
-  //   id: '3232',
-  //   name: 'Nội soi',
-  //   type: 'Endoscopy',
-  //   description: 'Khám tổng quát các chẩn đoán sức khỏe'
-  // },
-  // {
-  //   id: '2122',
-  //   name: 'Xét nghiệm bệnh truyền nhiễm',
-  //   type: 'InfectiousDiseaseTest',
-  //   description: 'Khám tổng quát các chẩn đoán sức khỏe'
-  // },
 ]
-const HealthCheck = () => {
+const HealthCheck = ({itemId}) => {
+  const [dataHealthCheck, setDataHealthCheck1] = React.useState([]);
+
+  const fetchData = async () => {
+    try {
+      const response = await API.get(
+        `/service/all/${itemId}`
+      );
+      if (response.data) {
+        console.log(response.data);
+        setDataHealthCheck1(response.data)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  React.useEffect(()=>{
+    fetchData();
+  },[])
   return (
     <>
     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent:'center', marginVertical: 10}}><Icon name="information-circle-outline"  size={23} color={COLORS.green} />
@@ -129,34 +131,34 @@ const HealthCheck = () => {
           renderItem={({ item,index }) => (
              <MotiView from={{opacity: 0, translateY: 50}}
             animate={{opacity: 1, translateY:0}}
-            transition={{delay: index *200}}
+            transition={{delay: index * 200}}
              style={{alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.white,elevation:5, borderWidth: 2, borderColor: COLORS.green ,borderRadius: 10, padding: 10, height: 150, }} >
                     
-            {item.type === 'HealthCheck' && (
+            {item.image === 'HealthCheck' && (
               <SvgHealthCheck width={100} height={100} />
             )}
-            {item.type === 'Xray' && (
+            {item.image === 'Xray' && (
               <SvgXray width={100} height={100} />
             )}
-            {item.type === 'BloodTest' && (
+            {item.image === 'BloodTest' && (
               <SvgBloodTest width={100} height={100} />
             )} 
-            {item.type === 'DNASexing' && (
+            {item.image === 'DNASexing' && (
               <SvgDNASexing width={100} height={100} />
             )} 
-            {item.type === 'FaecalTest' && (
+            {item.image === 'FaecalTest' && (
               <SvgFaecalTest width={100} height={100} />
             )} 
-            {item.type === 'Endoscopy' && (
+            {item.image === 'Endoscopy' && (
               <SvgEndoscopy width={100} height={100} />
             )} 
-            {item.type === 'InfectiousDiseaseTest' && (
+            {item.image === 'InfectiousDiseaseTest' && (
               <SvgInfectiousDiseaseTest width={100} height={100} />
             )}       
               <Text style={{fontFamily: FONTS.bold, fontSize: 12, marginTop: 5}} >{item.name}</Text>
             </MotiView>
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.service_id}
           style={{marginBottom:80, paddingTop: 10}}
         />
       </>

@@ -6,19 +6,19 @@ import ItemService from '../components/ItemService';
 const item = [
 
     {
-        id: '1',
+        id: 'ST001',
         name: 'Khám sức khỏe',
         image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Eopsaltria_australis_-_Mogo_Campground.jpg/640px-Eopsaltria_australis_-_Mogo_Campground.jpg',
         description: 'Khám sức khỏe phòng khám BirdClinic'
     },
     {
-        id: '2',
+        id: 'ST003',
         name: 'Nội trú',
         image: 'https://www.birds.cornell.edu/home/wp-content/uploads/2023/09/334289821-Baltimore_Oriole-Matthew_Plante.jpg',
         description: 'Nội trú phòng khám BirdClinic'
     },
     {
-        id: '3',
+        id: 'ST002',
         name: 'Spa chăm sóc',
         image: 'https://www.rspca.org.au/sites/default/files/blog-image/shutterstock_685368169.jpg',
         description: 'Spa chăm sóc phòng khám BirdClinic'

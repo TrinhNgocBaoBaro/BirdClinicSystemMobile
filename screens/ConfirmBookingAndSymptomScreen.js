@@ -8,9 +8,14 @@ import FONTS from "../constants/font";
 import { SvgBirdIcon } from "../components/Svg";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Modal from "react-native-modal";
+import createAxios from "../utils/axios";
+const API = createAxios();
 
-const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
-  const [sympton, setSympton] = React.useState("");
+const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
+  const [booking, setBooking] = React.useState(route.params.booking);
+  console.log("Booking: ", booking)
+
+  const [symptom, setSymptom] = React.useState("");
   const [showModal, setShowModal] = React.useState(false);
   const [modalClosedByButton, setModalClosedByButton] = React.useState(false);
 
@@ -20,6 +25,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
         title="Đặt lịch khám"
         onPress={() => navigation.goBack()}
         rightIcon={"close"}
+        onPressRight={()=>navigation.navigate('Home')}
       />
       <ScrollView
         style={{ flex: 1, backgroundColor: COLORS.white, marginBottom: 80 }}
@@ -34,10 +40,13 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
             marginTop: 20,
             marginBottom: 20,
             padding: 10,
+            borderWidth: 1,
+            borderColor: COLORS.green,
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <SvgBirdIcon width={35} height={35} />
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: "row", alignItems: 'center'}}>
+            <SvgBirdIcon width={30} height={30} />
             <Text
               style={{
                 fontFamily: FONTS.semiBold,
@@ -47,17 +56,9 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
             >
               Hồ sơ chim
             </Text>
-          </View>
-          <Text
-            style={{
-              fontFamily: FONTS.bold,
-              color: COLORS.black,
-              fontSize: 16,
-            }}
-          >
-            Con chim xanh
-          </Text>
-          <Image
+            </View>
+           
+            <Image
             source={{
               uri: "https://www.birds.cornell.edu/home/wp-content/uploads/2023/09/334289821-Baltimore_Oriole-Matthew_Plante.jpg",
             }}
@@ -66,10 +67,21 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
               width: 50,
               borderRadius: 50,
               position: "absolute",
-              right: 15,
-              top: 15,
+              right: 0,
+              top: 0,
             }}
           />
+          </View>
+          <Text
+            style={{
+              fontFamily: FONTS.bold,
+              color: COLORS.black,
+              fontSize: 16,
+            }}
+          >
+          {/* {booking.bird_id} */}
+          Con chim xanh
+          </Text>
         </View>
         <View
           style={{
@@ -91,9 +103,9 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
           >
             <Icon
               name="layers-outline"
-              width={30}
-              height={30}
-              size={25}
+              width={25}
+              height={25}
+              size={20}
               color={COLORS.grey}
             />
             <Text
@@ -113,7 +125,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
               fontSize: 16,
             }}
           >
-            Kiểm tra sức khỏe
+          {booking.service_type}
           </Text>
         </View>
         <View
@@ -136,9 +148,9 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
           >
             <Icon
               name="person-outline"
-              width={30}
-              height={30}
-              size={25}
+              width={25}
+              height={25}
+              size={20}
               color={COLORS.grey}
             />
             <Text
@@ -158,7 +170,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
               fontSize: 16,
             }}
           >
-            Bs. Nguyễn Lê Hữu
+            Bs. {booking.veterinarian_id}
           </Text>
         </View>
         <View
@@ -181,9 +193,9 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
           >
             <Icon
               name="calendar-outline"
-              width={30}
-              height={30}
-              size={25}
+              width={25}
+              height={25}
+              size={20}
               color={COLORS.grey}
             />
             <Text
@@ -203,7 +215,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
               fontSize: 16,
             }}
           >
-            30/10/2023
+          {booking.arrival_date}
           </Text>
         </View>
         <View
@@ -226,9 +238,9 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
           >
             <Icon
               name="time-outline"
-              width={30}
-              height={30}
-              size={25}
+              width={25}
+              height={25}
+              size={20}
               color={COLORS.grey}
             />
             <Text
@@ -248,7 +260,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
               fontSize: 16,
             }}
           >
-            10:15
+          {booking.estimate_time}
           </Text>
         </View>
         <View
@@ -273,9 +285,9 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
           >
             <Icon
               name="document-text-outline"
-              width={30}
-              height={30}
-              size={25}
+              width={25}
+              height={25}
+              size={20}
               color={COLORS.grey}
             />
             <Text
@@ -299,7 +311,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
             maxLength={150}
             placeholder="Vui lòng nhập triệu chứng..."
             numberOfLines={3}
-            onChangeText={(newTextSympton) => setSympton(newTextSympton)}
+            onChangeText={(newTextSymptom) => setSymptom(newTextSymptom)}
           />
         </View>
       </ScrollView>
@@ -314,10 +326,10 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
           animationInTiming={1500}
           animationOutTiming={1000}
           animationIn="bounce"
-          animationOut="fadeOutRightBig"
+          animationOut="slideOutDown"
           onModalHide={() => {
             if (modalClosedByButton === true) {
-              navigation.navigate("Profile");
+              navigation.navigate("BookingFinished", {booking: {...booking, symptom: symptom}});
             }
           }}
         >
@@ -391,8 +403,10 @@ const ConfirmBookingAndSymptomScreen = ({ navigation }) => {
       </View>
       <ButtonFloatBottom
         title="Tiếp tục"
-        buttonColor={COLORS.grey}
-        onPress={() => setShowModal(!showModal)}
+        buttonColor={ symptom ? COLORS.green : COLORS.grey}
+        onPress={() =>
+          symptom ?
+          setShowModal(!showModal): ""}
       />
     </>
   );

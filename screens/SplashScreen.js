@@ -3,9 +3,11 @@ import { View, ActivityIndicator } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from '@react-navigation/native';
 import COLORS from '../constants/color';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function SplashScreen() {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     // Kiểm tra đăng nhập
@@ -19,7 +21,7 @@ export default function SplashScreen() {
     }
 
     checkLogin();
-  }, []);
+  }, [isFocused]);
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

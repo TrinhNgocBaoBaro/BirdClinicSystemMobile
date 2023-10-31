@@ -28,6 +28,8 @@ import ChooseDoctorScreen from './screens/ChooseDoctorScreen';
 import ChooseDateByDoctorScreen from './screens/ChooseDateByDoctorScreen';
 import ConfirmBookingAndSymptomScreen from './screens/ConfirmBookingAndSymptomScreen';
 import SplashScreen from './screens/SplashScreen';
+import BookingFinishedScreen from './screens/BookingFinishedScreen';
+
 const CustomTabBarButton = ({ onPress }) => (
   <View style={{
     width: 90,
@@ -161,6 +163,7 @@ export default function App() {
         <Stack.Screen name="ChooseDoctor" component={ChooseDoctorScreen} />
         <Stack.Screen name="ChooseDateByDoctor" component={ChooseDateByDoctorScreen} />
         <Stack.Screen name="ConfirmBookingAndSymptom" component={ConfirmBookingAndSymptomScreen} />
+        <Stack.Screen name="BookingFinished" component={BookingFinishedScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,59 +1,86 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, Button } from "react-native";
 import React from "react";
 import Header from "../components/Header";
-import { ButtonFloatBottom } from "../components/Button";
+import { ButtonFlex, ButtonFloatBottom } from "../components/Button";
 import COLORS from "../constants/color";
 import Icon from "react-native-vector-icons/Ionicons";
 import FONTS from "../constants/font";
 import { FlatGrid } from "react-native-super-grid";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
-const dataTime = [
-  { id: "1", time: "7:00" },
-  { id: "2", time: "8:00" },
-  { id: "3", time: "8:10" },
-  { id: "4", time: "9:15" },
-  { id: "5", time: "10:00" },
-  { id: "6", time: "10:00" },
-  { id: "7", time: "10:00" },
-  { id: "8", time: "10:00" },
-  { id: "9", time: "10:00" },
-  { id: "10", time: "10:00" },
-  { id: "11", time: "10:00" },
-  { id: "123", time: "10:00" },
-  { id: "111223", time: "10:00" },
-  { id: "1321", time: "10:00" },
-  { id: "1231", time: "10:00" },
-  { id: "15671", time: "10:00" },
-  { id: "1831", time: "10:00" },
-  { id: "13231", time: "10:00" },
-  { id: "1321", time: "10:00" },
-  { id: "13781", time: "10:00" },
-  { id: "12871", time: "10:00" },
-  { id: "13571", time: "10:00" },
-  { id: "15731", time: "10:00" },
-  { id: "197891", time: "10:00" },
-];
-
+import Modal from "react-native-modal";
+import DatePicker, {
+  getFormatedDate,
+  getToday,
+} from "react-native-modern-datepicker";
+import moment from "moment";
+import createAxios from "../utils/axios";
+const API = createAxios();
 
 const ChooseDateByDoctorScreen = ({ navigation, route }) => {
-  const [selectedTime, setSelectedTime] = React.useState();
-  const doctor = route.params.Doctor;
-  // console.log("doctor:", doctor)
+  const [booking, setBooking] = React.useState(route.params.booking);
+  const [veterinarian, setVeterinarian] = React.useState(
+    route.params.veterinarian
+  );
+  const veterinarian_id = booking.veterinarian_id;
 
+  const [dataTime, setDataTime] = React.useState([]);
+  const [dataDoctorTime, setDataDoctorTime] = React.useState([]);
+
+  const [selectedTime, setSelectedTime] = React.useState();
+  const [selectedDate, setSelectedDate] = React.useState("");
+  const [showModalPickDate, setShowModalPickDate] = React.useState(false);
   const [hasDataTime, setHasDataTime] = React.useState(false);
+
+  const today = getToday();
+
+  const fetchDataTimeSlotDoctor = async () => {
+    try {
+      const response = await API.get(
+        `/veterinarianSlotDetail/?veterinarian_id=${veterinarian_id}&date=${selectedDate}&status=available`
+      );
+      if (response.data) {
+        console.log(response.data);
+        // const dataTime = response.data.map(
+        //   (item) => item.time_slot_clinic.slot_clinic
+        // );
+        const dataTime = response.data;
+        console.log("-----------------");
+        console.log(dataTime);
+        setDataTime(dataTime);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (selectedDate) fetchDataTimeSlotDoctor();
+  }, [selectedDate]);
+
   React.useEffect(() => {
     setHasDataTime(dataTime.length > 0);
   }, [dataTime]);
+
+  React.useEffect(() => {
+    console.log(selectedDate);
+  }, [selectedDate]);
 
   const handleSelectTime = (item) => {
     setSelectedTime(item);
     console.log(item);
   };
-
+  const handleSelectDate = (date) => {
+    setSelectedDate(moment(date, "YYYY/MM/DD").format("YYYY-MM-DD"));
+    setSelectedTime();
+  };
   return (
     <>
-      <Header title="Chọn thời gian" onPress={() => navigation.goBack()}  rightIcon={"close"}/>
+      <Header
+        title="Chọn thời gian"
+        onPress={() => navigation.goBack()}
+        onPressRight={() => navigation.navigate("Home")}
+        rightIcon={"close"}
+      />
       <View style={{ flex: 1, backgroundColor: COLORS.white }}>
         <View
           style={{
@@ -71,14 +98,16 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
           }}
         >
           <Image
-            source={{ uri: doctor.image }}
+            source={{ uri: veterinarian.image }}
             style={{ height: 50, width: 50, borderRadius: 50 }}
           />
           <Text style={{ fontFamily: FONTS.bold, marginLeft: 15 }}>
-            Bs. {doctor.name}
+            Bs. {veterinarian.name}
           </Text>
         </View>
-        <View
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => setShowModalPickDate(!showModalPickDate)}
           style={{
             height: 120,
             backgroundColor: COLORS.white,
@@ -93,41 +122,72 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
             marginBottom: 15,
           }}
         >
-          <Text style={{ fontFamily: FONTS.bold }}>Chọn ngày khám</Text>
-        </View>
-        {hasDataTime ? (
-          <FlatGrid
-            itemDimension={70}
-            spacing={30}
-            data={dataTime}
-            renderItem={({ item, index }) => (
-              <>
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => {
-                    handleSelectTime(item);
-                  }}
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: COLORS.white,
-                    padding: 10,
-                    borderRadius: 10,
-                    elevation: 3,
-                    borderWidth: 1,
-                    borderColor:
-                      selectedTime === item ? COLORS.green : "transparent",
-                    marginTop:
-                      index === 0 || index === 1 || index === 2 ? 10 : 0,
-                  }}
-                >
-                  <Text style={{ fontFamily: FONTS.bold }}>{item.time}</Text>
-                </TouchableOpacity>
-              </>
-            )}
-            keyExtractor={(item) => item.id}
-            style={{ marginBottom: 80, paddingTop: 10 }}
-          />
+          <Text style={{ fontFamily: FONTS.semiBold, fontSize: 18 }}>
+            {selectedDate ? selectedDate : "Chọn ngày khám"}
+          </Text>
+        </TouchableOpacity>
+        {selectedDate ? (
+          hasDataTime ? (
+            <FlatGrid
+              itemDimension={70}
+              spacing={30}
+              data={dataTime}
+              renderItem={({ item, index }) => (
+                <>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      handleSelectTime(item);
+                    }}
+                    style={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: COLORS.white,
+                      padding: 10,
+                      borderRadius: 10,
+                      elevation: 3,
+                      borderWidth: 2,
+                      borderColor:
+                        selectedTime === item ? COLORS.green : "transparent",
+                      marginTop:
+                        index === 0 || index === 1 || index === 2 ? 10 : 0,
+                    }}
+                  >
+                    <Text style={{ fontFamily: FONTS.bold }}>
+                      {item.time_slot_clinic.slot_clinic.time}
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
+              keyExtractor={(item) => item.veterinarian_slot_detail_id}
+              style={{ marginBottom: 80, paddingTop: 10 }}
+            />
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 80,
+              }}
+            >
+              <Icon
+                name="information-circle-outline"
+                size={23}
+                color={COLORS.green}
+              />
+              <Text
+                style={{
+                  fontFamily: FONTS.medium,
+                  fontSize: 14,
+                  marginLeft: 5,
+                }}
+              >
+                Bác sĩ không có slot trong ngày này.
+              </Text>
+            </View>
+          )
         ) : (
           <View
             style={{
@@ -135,7 +195,7 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              marginBottom: 80
+              marginBottom: 80,
             }}
           >
             <Icon
@@ -146,8 +206,8 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
             <Text
               style={{
                 fontFamily: FONTS.medium,
-                fontSize: 12,
-                marginLeft: 10,
+                fontSize: 14,
+                marginLeft: 5,
               }}
             >
               Vui lòng chọn ngày khám.
@@ -155,10 +215,73 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
           </View>
         )}
       </View>
+      <View>
+        <Modal
+          isVisible={showModalPickDate}
+          hasBackdrop={true}
+          animationInTiming={1500}
+          animationOutTiming={1000}
+          animationIn="slideInUp"
+          animationOut="zoomOutDown"
+          onBackdropPress={() => setShowModalPickDate(!showModalPickDate)}
+          style={{}}
+        >
+          <View
+            style={{
+              height: "auto",
+              backgroundColor: COLORS.white,
+              paddingBottom: 10,
+              borderRadius: 10,
+            }}
+          >
+            <DatePicker
+              format={"YYYY-MM-DD"}
+              options={{
+                mainColor: COLORS.green,
+                defaultFont: FONTS.semiBold,
+                headerFont: FONTS.bold,
+              }}
+              style={{
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+                padding: 10,
+              }}
+              mode="calendar"
+              // minimumDate={today}
+              selected={selectedDate}
+              onSelectedChange={(date) => handleSelectDate(date)}
+            />
+
+            <ButtonFlex
+              title="Hoàn tất"
+              onPress={() => setShowModalPickDate(!showModalPickDate)}
+              stylesButton={{
+                paddingVertical: 20,
+                marginLeft: 10,
+                marginRight: 10,
+              }}
+              stylesText={{ fontSize: 16 }}
+            />
+          </View>
+        </Modal>
+      </View>
       <ButtonFloatBottom
         title="Tiếp tục"
-        buttonColor={COLORS.green}
-        onPress={() => navigation.navigate("ConfirmBookingAndSymptom")}
+        buttonColor={selectedTime ? COLORS.green : COLORS.grey}
+        onPress={() => {
+          selectedTime
+            ? navigation.navigate("ConfirmBookingAndSymptom", {
+                booking: {
+                  ...booking,
+                  estimate_time: selectedTime.time_slot_clinic.slot_clinic.time,
+                  time_id: selectedTime.time_slot_clinic_id,
+                  arrival_date: selectedDate,
+                  status: 'pending',
+                  money_has_paid: '0'
+                },
+              })
+            : "";
+        }}
       />
     </>
   );

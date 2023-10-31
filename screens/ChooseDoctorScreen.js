@@ -6,37 +6,45 @@ import COLORS from "../constants/color";
 import Icon from "react-native-vector-icons/Ionicons";
 import FONTS from "../constants/font";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import createAxios from "../utils/axios";
+const API = createAxios();
 
-const dataDoctor = [
-  {
-    id: "1",
-    name: "Nguyễn Lê Hữu",
-    image:
-      "https://scontent.fsgn15-1.fna.fbcdn.net/v/t39.30808-6/285467574_549380576781071_1851860994034042931_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=24iSSJWlQysAX_a2Mk4&_nc_ht=scontent.fsgn15-1.fna&oh=00_AfBFqwvXEwMP-KkeaiK-EkdcdhW7QlEncFvunDlIGvY-Sg&oe=653E704E",
-  },
-  {
-    id: "2",
-    name: "Phạm Ngọc Long",
-    image:
-      "https://scontent.fsgn15-1.fna.fbcdn.net/v/t39.30808-1/340074831_559902926125091_2246078200818242108_n.jpg?stp=cp6_dst-jpg_p200x200&_nc_cat=110&ccb=1-7&_nc_sid=5f2048&_nc_ohc=OixUHMR2_rgAX_m7Ar5&_nc_ht=scontent.fsgn15-1.fna&oh=00_AfCCsydKcfqCQB99Ey_lCVKx4fN7RpawLeEi37NkKcTtug&oe=653FF7A2",
-  },
-  {
-    id: "3",
-    name: "Nguyễn Trí Công",
-    image:
-      "https://scontent.fsgn15-1.fna.fbcdn.net/v/t1.6435-1/66648998_2324909901159592_8571786740266696704_n.jpg?stp=dst-jpg_p200x200&_nc_cat=104&ccb=1-7&_nc_sid=2b6aad&_nc_ohc=1dRw9EPuq2AAX-_a4EW&_nc_ht=scontent.fsgn15-1.fna&oh=00_AfAxFj3rhclHziZZSZFW7htQYgzGKEaoAyVVgUHkhclybA&oe=656198EB",
-  },
-];
-
-const ChooseDoctorScreen = ({ navigation }) => {
+const ChooseDoctorScreen = ({ navigation, route }) => {
+  const [booking, setBooking] = React.useState(route.params.booking);
+  const service_type_id = booking.service_type_id;
   const [selectedItem, setSelectedItem] = React.useState(false);
+  const [dataDoctor, setDataDoctor] = React.useState([]);
+
+  const fetchData = async () => {
+    try {
+      const response = await API.get(
+        `/vet/?service_id=S001&service_type_id=${service_type_id}`
+      );
+      if (response.data) {
+        console.log(response.data);
+        setDataDoctor(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (service_type_id) fetchData();
+  }, [service_type_id]);
+
   const handleSelectItem = (item) => {
     setSelectedItem(item);
-    console.log(item);
+    console.log(item.veterinarian_id);
   };
   return (
     <>
-      <Header title="Chọn bác sĩ" onPress={() => navigation.goBack()} />
+      <Header
+        title="Chọn bác sĩ"
+        onPress={() => navigation.goBack()}
+        rightIcon={"close"}
+        onPressRight={() => navigation.navigate("Home")}
+      />
       <View style={{ flex: 1, backgroundColor: COLORS.white }}>
         <View
           style={{
@@ -53,7 +61,7 @@ const ChooseDoctorScreen = ({ navigation }) => {
             color={COLORS.green}
           />
           <Text
-            style={{ fontFamily: FONTS.medium, fontSize: 12, marginLeft: 10 }}
+            style={{ fontFamily: FONTS.medium, fontSize: 12, marginLeft: 5 }}
           >
             Vui lòng chọn 1 trong các bác sĩ sau.
           </Text>
@@ -87,14 +95,25 @@ const ChooseDoctorScreen = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.veterinarian_id}
         />
       </View>
       <ButtonFloatBottom
         title="Tiếp tục"
         buttonColor={selectedItem ? COLORS.green : COLORS.grey}
         onPress={() =>
-          selectedItem ? navigation.navigate("ChooseDateByDoctor", {Doctor: selectedItem}) : ""
+          selectedItem
+            ? navigation.navigate("ChooseDateByDoctor", {
+                booking: {
+                  ...booking,
+                  veterinarian_id: selectedItem.veterinarian_id,
+                },
+                veterinarian: {
+                  name: selectedItem.name,
+                  image: selectedItem.image,
+                },
+              })
+            : console.log("No item selected!")
         }
       />
     </>

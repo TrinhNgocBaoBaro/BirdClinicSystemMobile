@@ -46,7 +46,11 @@ export default function LoginScreen({ navigation }) {
           JSON.stringify({ userData, loggedIn: true })
         )
           .then(() => {
-            navigation.navigate("Home");
+            // navigation.navigate("Home");
+            navigation.reset({
+              index: 1,
+              routes: [{ name: 'Splash' }, { name: 'Home' }],
+            });
           })
           .catch((error) => {
             console.log(error);

@@ -6,7 +6,8 @@ import COLORS from "../constants/color";
 import Icon from "react-native-vector-icons/Ionicons";
 import FONTS from "../constants/font";
 import { SvgDoctor, SvgCalendar } from "../components/Svg";
-const SelectTypeBookingScreen = ({ navigation }) => {
+const SelectTypeBookingScreen = ({ navigation, route }) => {
+  const [booking, setBooking] = React.useState(route.params.booking);
   const [selectedItem, setSelectedItem] = React.useState(false);
   const handleSelectItem = (item) => {
     setSelectedItem(item);
@@ -34,7 +35,7 @@ const SelectTypeBookingScreen = ({ navigation }) => {
             color={COLORS.green}
           />
           <Text
-            style={{ fontFamily: FONTS.medium, fontSize: 12, marginLeft: 10 }}
+            style={{ fontFamily: FONTS.medium, fontSize: 12, marginLeft: 5 }}
           >
             Vui lòng chọn 1 trong các hình thức sau.
           </Text>
@@ -83,7 +84,7 @@ const SelectTypeBookingScreen = ({ navigation }) => {
         buttonColor={ selectedItem ? COLORS.green : COLORS.grey}
         onPress={() => {
           if (selectedItem === 'chooseDoctor') {
-            navigation.navigate('ChooseDoctor');
+            navigation.navigate('ChooseDoctor', {booking: booking});
           } else if (selectedItem === 'chooseDate') {
             navigation.navigate('ScreenChooseDate');
           }

@@ -54,6 +54,11 @@ export default function ProfileScreen({ navigation }) {
       // console.log("--------udata---------")
     }
   }
+  const handleLogOut = () => {
+    AsyncStorage.removeItem('UserLoggedInData')
+    navigation.popToTop()
+    // navigation.navigate('Login')
+  }
 
   // React.useEffect(()=>{
   //   console.log("--------userData---------")
@@ -182,11 +187,7 @@ export default function ProfileScreen({ navigation }) {
           <TouchableOpacity
             activeOpacity={0.8}
             style={{ justifyContent: "center", alignItems: "center" }}
-              onPress={()=>{
-                AsyncStorage.removeItem('UserLoggedInData')
-                // navigation.popToTop()
-                navigation.navigate('Login') 
-              }}
+              onPress={handleLogOut}
           >
             <View style={styles.btnContainer}>
                 <Text style={styles.btnText}>Đăng xuất</Text>

@@ -9,11 +9,13 @@ import createAxios from "../utils/axios";
 const API = createAxios();
 
 export default function DetailServiceScreen({ navigation, route }) {
-  const itemId = route.params.booking.id;
+  const [booking, setBooking] = React.useState(route.params.booking)
+  const service_type_id = route.params.booking.service_type_id;
+  const service_type = route.params.booking.service_type;
   let componentToRender;
-  switch (itemId) {
+  switch (service_type_id) {
     case "ST001":
-      componentToRender = <HealthCheck itemId={itemId} />;
+      componentToRender = <HealthCheck service_type_id={service_type_id} />;
       break;
     case "ST003":
       componentToRender = <Boarding />;
@@ -31,14 +33,14 @@ export default function DetailServiceScreen({ navigation, route }) {
   return (
     <>
       <Header
-        title={route.params.booking.name}
+        title={service_type}
         onPress={() => navigation.goBack()}
       />
       <View style={styles.container}>
       <StatusBar style="auto" />
         {componentToRender}
       </View>
-      <ButtonFloatBottom buttonColor={COLORS.green} title="Đặt lịch" onPress={()=>{navigation.navigate('SelectBirdProfile')}}/>
+      <ButtonFloatBottom buttonColor={COLORS.green} title="Đặt lịch" onPress={()=>{navigation.navigate('SelectBirdProfile', {booking: booking})}}/>
     </>
   );
 }
@@ -51,7 +53,7 @@ const styles = StyleSheet.create({
   },
 });
 
-import {SvgHealthCheck, SvgBloodTest,  SvgInfectiousDiseaseTest, SvgDNASexing, SvgXray,SvgFaecalTest,SvgEndoscopy} from "../components/Svg";
+import {SvgHealthCheck, SvgBloodTest, SvgSurgery,  SvgInfectiousDiseaseTest, SvgDNASexing, SvgXray,SvgFaecalTest,SvgEndoscopy} from "../components/Svg";
 import { FlatGrid } from "react-native-super-grid";
 import FONTS from "../constants/font";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -100,17 +102,17 @@ const dataHealthCheckTest = [
     description: 'Khám tổng quát các chẩn đoán sức khỏe'
   },
 ]
-const HealthCheck = ({itemId}) => {
-  const [dataHealthCheck, setDataHealthCheck1] = React.useState([]);
+const HealthCheck = ({service_type_id}) => {
+  const [dataHealthCheck, setDataHealthCheck] = React.useState([]);
 
   const fetchData = async () => {
     try {
       const response = await API.get(
-        `/service/all/${itemId}`
+        `/serviceType/${service_type_id}`
       );
       if (response.data) {
-        console.log(response.data);
-        setDataHealthCheck1(response.data)
+         console.log(response.data[0]);
+         setDataHealthCheck(response.data[0].services)
       }
     } catch (error) {
       console.log(error);
@@ -122,7 +124,7 @@ const HealthCheck = ({itemId}) => {
   return (
     <>
     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent:'center', marginVertical: 10}}><Icon name="information-circle-outline"  size={23} color={COLORS.green} />
-    <Text style={{fontFamily: FONTS.medium, fontSize: 12}}>Các dịch vụ dưới đây có thể được bác sĩ chỉ định khi khám!</Text>
+    <Text style={{fontFamily: FONTS.medium, fontSize: 12, marginLeft: 5}}>Các dịch vụ dưới đây có thể được bác sĩ chỉ định khi khám!</Text>
     </View>
     <FlatGrid
           itemDimension={130}
@@ -142,6 +144,9 @@ const HealthCheck = ({itemId}) => {
             )}
             {item.image === 'BloodTest' && (
               <SvgBloodTest width={100} height={100} />
+            )}
+            {item.image === 'Surgery' && (
+              <SvgSurgery width={100} height={100} />
             )} 
             {item.image === 'DNASexing' && (
               <SvgDNASexing width={100} height={100} />
@@ -155,7 +160,7 @@ const HealthCheck = ({itemId}) => {
             {item.image === 'InfectiousDiseaseTest' && (
               <SvgInfectiousDiseaseTest width={100} height={100} />
             )}       
-              <Text style={{fontFamily: FONTS.bold, fontSize: 12, marginTop: 5}} >{item.name}</Text>
+              <Text style={{fontFamily: FONTS.bold, fontSize: 12, marginTop: 5, textAlign: 'center'}} >{item.name}</Text>
             </MotiView>
           )}
           keyExtractor={(item) => item.service_id}

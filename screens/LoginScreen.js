@@ -40,7 +40,8 @@ export default function LoginScreen({ navigation }) {
         }
       );
       if (response.data) {
-        const userData = response.data.account;
+        console.log(response.data.data)
+        const userData = response.data.data;
         AsyncStorage.setItem(
           "UserLoggedInData",
           JSON.stringify({ userData, loggedIn: true })

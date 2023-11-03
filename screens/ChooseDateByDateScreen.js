@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View, Image, Button } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import Header from "../components/Header";
-import { ButtonFlex, ButtonFloatBottom } from "../components/Button";
 import COLORS from "../constants/color";
 import Icon from "react-native-vector-icons/Ionicons";
 import FONTS from "../constants/font";
+import { ButtonFlex, ButtonFloatBottom } from "../components/Button";
 import { FlatGrid } from "react-native-super-grid";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Modal from "react-native-modal";
@@ -16,63 +16,58 @@ import moment from "moment";
 import createAxios from "../utils/axios";
 const API = createAxios();
 
-const ChooseDateByDoctorScreen = ({ navigation, route }) => {
-  const [booking, setBooking] = React.useState(route.params.booking);
-  const [veterinarian, setVeterinarian] = React.useState(
-    route.params.veterinarian
-  );
-  const veterinarian_id = booking.veterinarian_id;
+const ChooseDateByDateScreen = ({navigation, route}) => {
+    const [booking, setBooking] = React.useState(route.params.booking);
+    console.log(booking.service_type_id)
+    const [dataTime, setDataTime] = React.useState([]);
+    const [showModalPickDate, setShowModalPickDate] = React.useState(false);
+    const [selectedDate, setSelectedDate] = React.useState("");
+    const [selectedTime, setSelectedTime] = React.useState();
+    const [hasDataTime, setHasDataTime] = React.useState(false);
 
-  const [dataTime, setDataTime] = React.useState([]);
-  const [dataDoctorTime, setDataDoctorTime] = React.useState([]);
+    const fetchDataTimeSlotClinic = async () => {
+        try {
+          const response = await API.get(
+            `/time_slot_clinic/?date=${selectedDate}&service_type_id=${booking.service_type_id}`
+          );
+          if (response.data) {
+            console.log(response.data);
+            const dataTime = response.data;
+            console.log("-----------------");
+            console.log(dataTime);
+            setDataTime(dataTime);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
 
-  const [selectedTime, setSelectedTime] = React.useState();
-  const [selectedDate, setSelectedDate] = React.useState("");
-  const [showModalPickDate, setShowModalPickDate] = React.useState(false);
-  const [hasDataTime, setHasDataTime] = React.useState(false);
+    React.useEffect(()=>{
+        if(booking) console.log(booking)
+    },[booking])
 
-  const today = getToday();
+    React.useEffect(() => {
+        if (selectedDate) fetchDataTimeSlotClinic();
+      }, [selectedDate]);
+    
+    React.useEffect(() => {
+        setHasDataTime(dataTime.length > 0);
+    }, [dataTime]);    
 
-  const fetchDataTimeSlotDoctor = async () => {
-    try {
-      const response = await API.get(
-        `/veterinarianSlotDetail/?veterinarian_id=${veterinarian_id}&date=${selectedDate}&status=available`
-      );
-      if (response.data) {
-        console.log(response.data);
-        // const dataTime = response.data.map(
-        //   (item) => item.time_slot_clinic.slot_clinic
-        // );
-        const dataTime = response.data;
-        console.log("-----------------");
-        console.log(dataTime);
-        setDataTime(dataTime);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    React.useEffect(() => {
+        console.log(selectedDate);
+      }, [selectedDate]);
 
-  React.useEffect(() => {
-    if (selectedDate) fetchDataTimeSlotDoctor();
-  }, [selectedDate]);
+    const handleSelectDate = (date) => {
+        setSelectedDate(moment(date, "YYYY/MM/DD").format("YYYY-MM-DD"));
+        setSelectedTime();
+    };
 
-  React.useEffect(() => {
-    setHasDataTime(dataTime.length > 0);
-  }, [dataTime]);
+    const handleSelectTime = (item) => {
+        setSelectedTime(item);
+        console.log(item);
+      };
 
-  React.useEffect(() => {
-    console.log(selectedDate);
-  }, [selectedDate]);
-
-  const handleSelectTime = (item) => {
-    setSelectedTime(item);
-    console.log(item);
-  };
-  const handleSelectDate = (date) => {
-    setSelectedDate(moment(date, "YYYY/MM/DD").format("YYYY-MM-DD"));
-    setSelectedTime();
-  };
   return (
     <>
       <Header
@@ -81,38 +76,17 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
         onPressRight={() => navigation.navigate("Home")}
         rightIcon={"close"}
       />
-      <View style={{ flex: 1, backgroundColor: COLORS.white }}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: COLORS.white,
-            padding: 15,
-            marginHorizontal: 30,
-            marginVertical: 10,
-            borderRadius: 10,
-            elevation: 3,
-            borderWidth: 1,
-            borderColor: "transparent",
-            marginTop: 30,
-          }}
-        >
-          <Image
-            source={{ uri: veterinarian.image }}
-            style={{ height: 50, width: 50, borderRadius: 50 }}
-          />
-          <Text style={{ fontFamily: FONTS.bold, marginLeft: 15 }}>
-            Bs. {veterinarian.name}
-          </Text>
-        </View>
-        <TouchableOpacity
+      <View style={{flex: 1, backgroundColor: COLORS.white}}>
+
+      <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => setShowModalPickDate(!showModalPickDate)}
           style={{
             height: 120,
             backgroundColor: COLORS.white,
             marginHorizontal: 30,
-            marginVertical: 10,
+            marginBottom: 10,
+            marginTop: 20,
             borderRadius: 10,
             elevation: 3,
             borderWidth: 2,
@@ -154,12 +128,12 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
                     }}
                   >
                     <Text style={{ fontFamily: FONTS.bold }}>
-                      {item.time_slot_clinic.slot_clinic.time}
+                      {item.time}
                     </Text>
                   </TouchableOpacity>
                 </>
               )}
-              keyExtractor={(item) => item.veterinarian_slot_detail_id}
+              keyExtractor={(item) => item.time_slot_clinic_id}
               style={{ marginBottom: 80, paddingTop: 10 }}
             />
           ) : (
@@ -184,7 +158,7 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
                   marginLeft: 5,
                 }}
               >
-                Bác sĩ không có slot trong ngày này.
+                Phòng khám không có slot trong ngày này.
               </Text>
             </View>
           )
@@ -213,9 +187,7 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
               Vui lòng chọn ngày khám.
             </Text>
           </View>
-        )}
-      </View>
-      <View>
+        )}  
         <Modal
           isVisible={showModalPickDate}
           hasBackdrop={true}
@@ -223,7 +195,7 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
           animationOutTiming={1000}
           animationIn="slideInUp"
           animationOut="zoomOutDown"
-          // onBackdropPress={() => setShowModalPickDate(!showModalPickDate)}
+        //   onBackdropPress={() => setShowModalPickDate(!showModalPickDate)}
           style={{}}
         >
           <View
@@ -273,15 +245,11 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
             ? navigation.navigate("ConfirmBookingAndSymptom", {
                 booking: {
                   ...booking,
-                  estimate_time: selectedTime.time_slot_clinic.slot_clinic.time,
+                  estimate_time: selectedTime.time,
                   time_id: selectedTime.time_slot_clinic_id,
                   arrival_date: selectedDate,
                   status: 'pending',
                   money_has_paid: '0'
-                },
-                veterinarian: {
-                  name: veterinarian.name,
-                  image: veterinarian.image,
                 },
               })
             : "";
@@ -291,6 +259,6 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
   );
 };
 
-export default ChooseDateByDoctorScreen;
+export default ChooseDateByDateScreen;
 
 const styles = StyleSheet.create({});

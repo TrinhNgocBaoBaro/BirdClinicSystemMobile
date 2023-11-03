@@ -141,6 +141,7 @@ const SelectBirdProfile = ({ navigation, route }) => {
                     style={{
                       flex: 1,
                       padding: 10,
+                      paddingLeft: 20
                     }}
                   >
                     <Text style={{ fontFamily: FONTS.semiBold, fontSize: 16 }}>

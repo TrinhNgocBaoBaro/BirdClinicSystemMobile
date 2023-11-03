@@ -13,11 +13,32 @@ const API = createAxios();
 
 const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
   const [booking, setBooking] = React.useState(route.params.booking);
-  console.log("Booking: ", booking)
+  const [veterinarian, setVeterinarian] = React.useState(
+    route.params.veterinarian
+  );
+  const [dataBirdInfo, setDataBirdInfo] = React.useState();
+
+  console.log("Booking: ", booking);
 
   const [symptom, setSymptom] = React.useState("");
   const [showModal, setShowModal] = React.useState(false);
   const [modalClosedByButton, setModalClosedByButton] = React.useState(false);
+
+  const fetchDataInfoBird = async () => {
+    try {
+      const response = await API.get(`/bird/${booking.bird_id}`);
+      if (response.data) {
+        console.log(response.data);
+        setDataBirdInfo(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (booking.bird_id) fetchDataInfoBird();
+  }, [booking.bird_id]);
 
   return (
     <>
@@ -25,7 +46,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
         title="Đặt lịch khám"
         onPress={() => navigation.goBack()}
         rightIcon={"close"}
-        onPressRight={()=>navigation.navigate('Home')}
+        onPressRight={() => navigation.navigate("Home")}
       />
       <ScrollView
         style={{ flex: 1, backgroundColor: COLORS.white, marginBottom: 80 }}
@@ -44,33 +65,42 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
             borderColor: COLORS.green,
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: 'space-between' }}>
-            <View style={{ flexDirection: "row", alignItems: 'center'}}>
-            <SvgBirdIcon width={30} height={30} />
-            <Text
-              style={{
-                fontFamily: FONTS.semiBold,
-                color: COLORS.grey,
-                fontSize: 13,
-              }}
-            >
-              Hồ sơ chim
-            </Text>
-            </View>
-           
-            <Image
-            source={{
-              uri: "https://www.birds.cornell.edu/home/wp-content/uploads/2023/09/334289821-Baltimore_Oriole-Matthew_Plante.jpg",
-            }}
+          <View
             style={{
-              height: 50,
-              width: 50,
-              borderRadius: 50,
-              position: "absolute",
-              right: 0,
-              top: 0,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
-          />
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <SvgBirdIcon width={30} height={30} />
+              <Text
+                style={{
+                  fontFamily: FONTS.semiBold,
+                  color: COLORS.grey,
+                  fontSize: 13,
+                }}
+              >
+                Hồ sơ chim
+              </Text>
+            </View>
+            {dataBirdInfo ? (
+              <Image
+                source={{
+                  uri: dataBirdInfo.image,
+                }}
+                style={{
+                  height: 55,
+                  width: 55,
+                  borderRadius: 50,
+                  position: "absolute",
+                  right: 0,
+                  top: 0,
+                }}
+              />
+            ) : (
+              ""
+            )}
           </View>
           <Text
             style={{
@@ -79,8 +109,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
               fontSize: 16,
             }}
           >
-          {/* {booking.bird_id} */}
-          Con chim xanh
+            {dataBirdInfo && dataBirdInfo.name}
           </Text>
         </View>
         <View
@@ -125,7 +154,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
               fontSize: 16,
             }}
           >
-          {booking.service_type}
+            {booking.service_type}
           </Text>
         </View>
         <View
@@ -170,7 +199,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
               fontSize: 16,
             }}
           >
-            Bs. {booking.veterinarian_id}
+            Bs. {booking.veterinarian_id ? veterinarian.name : "Chưa xác định"}
           </Text>
         </View>
         <View
@@ -215,7 +244,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
               fontSize: 16,
             }}
           >
-          {booking.arrival_date}
+            {booking.arrival_date}
           </Text>
         </View>
         <View
@@ -260,7 +289,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
               fontSize: 16,
             }}
           >
-          {booking.estimate_time}
+            {booking.estimate_time}
           </Text>
         </View>
         <View
@@ -329,7 +358,9 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
           animationOut="slideOutDown"
           onModalHide={() => {
             if (modalClosedByButton === true) {
-              navigation.navigate("BookingFinished", {booking: {...booking, symptom: symptom}});
+              navigation.navigate("BookingFinished", {
+                booking: { ...booking, symptom: symptom },
+              });
             }
           }}
         >
@@ -403,10 +434,8 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
       </View>
       <ButtonFloatBottom
         title="Tiếp tục"
-        buttonColor={ symptom ? COLORS.green : COLORS.grey}
-        onPress={() =>
-          symptom ?
-          setShowModal(!showModal): ""}
+        buttonColor={symptom ? COLORS.green : COLORS.grey}
+        onPress={() => (symptom ? setShowModal(!showModal) : "")}
       />
     </>
   );

@@ -86,7 +86,7 @@ const SelectTypeBookingScreen = ({ navigation, route }) => {
           if (selectedItem === 'chooseDoctor') {
             navigation.navigate('ChooseDoctor', {booking: booking});
           } else if (selectedItem === 'chooseDate') {
-            navigation.navigate('ScreenChooseDate');
+            navigation.navigate('ChooseDateByDate', {booking: booking});
           }
         }}
       />

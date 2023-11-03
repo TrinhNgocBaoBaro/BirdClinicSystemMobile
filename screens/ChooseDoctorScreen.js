@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, FlatList, Image } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import React from "react";
 import Header from "../components/Header";
 import { ButtonFloatBottom } from "../components/Button";
@@ -66,37 +73,51 @@ const ChooseDoctorScreen = ({ navigation, route }) => {
             Vui lòng chọn 1 trong các bác sĩ sau.
           </Text>
         </View>
-        <FlatList
-          data={dataDoctor}
-          renderItem={({ item, index }) => (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => handleSelectItem(item)}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                backgroundColor: COLORS.white,
-                padding: 15,
-                marginHorizontal: 30,
-                marginVertical: 10,
-                borderRadius: 10,
-                elevation: 3,
-                borderWidth: 1,
-                borderColor:
-                  selectedItem === item ? COLORS.green : "transparent",
-              }}
-            >
-              <Image
-                source={{ uri: item.image }}
-                style={{ height: 50, width: 50, borderRadius: 50 }}
-              />
-              <Text style={{ fontFamily: FONTS.bold, marginLeft: 15 }}>
-                Bs. {item.name}
-              </Text>
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item) => item.veterinarian_id}
-        />
+
+        {dataDoctor ? (
+          <FlatList
+            data={dataDoctor}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => handleSelectItem(item)}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: COLORS.white,
+                  padding: 15,
+                  marginHorizontal: 30,
+                  marginVertical: 10,
+                  borderRadius: 10,
+                  elevation: 3,
+                  borderWidth: 1,
+                  borderColor:
+                    selectedItem === item ? COLORS.green : "transparent",
+                }}
+              >
+                <Image
+                  source={{ uri: item.image }}
+                  style={{ height: 50, width: 50, borderRadius: 50 }}
+                />
+                <Text style={{ fontFamily: FONTS.bold, marginLeft: 15 }}>
+                  Bs. {item.name}
+                </Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item.veterinarian_id}
+          />
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: COLORS.white,
+            }}
+          >
+            <ActivityIndicator size="large" color={COLORS.green} />
+          </View>
+        )}
       </View>
       <ButtonFloatBottom
         title="Tiếp tục"

@@ -36,7 +36,7 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
   const fetchDataTimeSlotDoctor = async () => {
     try {
       const response = await API.get(
-        `/veterinarianSlotDetail/?veterinarian_id=${veterinarian_id}&date=${selectedDate}&status=available`
+        `/veterinarianSlotDetail/?veterinarian_id=${veterinarian_id}&date=${selectedDate}&status=un_available`
       );
       if (response.data) {
         console.log(response.data);
@@ -219,10 +219,10 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
         <Modal
           isVisible={showModalPickDate}
           hasBackdrop={true}
-          animationInTiming={1500}
-          animationOutTiming={1000}
-          animationIn="slideInUp"
-          animationOut="zoomOutDown"
+          animationInTiming={1000}
+          animationOutTiming={300}
+          animationIn="fadeIn"
+          animationOut="slideOutDown"
           // onBackdropPress={() => setShowModalPickDate(!showModalPickDate)}
           style={{}}
         >

@@ -18,7 +18,7 @@ const API = createAxios();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getToday } from "react-native-modern-datepicker";
 import moment from "moment";
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from "@react-navigation/native";
 
 const dataToday = [
   {
@@ -71,41 +71,6 @@ const dataReExam = [
     service_type: "Khám tổng quát",
     vet_name: "Phạm Ngọc Long",
   },
-  //   {
-  //     id: "12dsa",
-  //     name: "Lê Hữu",
-  //     arrival_date: "12/11/2023",
-  //     service_type: "Khám tổng quát",
-  //     vet_name: "Phạm Ngọc Long",
-  //   },
-  //   {
-  //     id: "1xzcz",
-  //     name: "Lê Hữu",
-  //     arrival_date: "12/11/2023",
-  //     service_type: "Khám tổng quát",
-  //     vet_name: "Phạm Ngọc Long",
-  //   },
-  //   {
-  //     id: "1213xcx",
-  //     name: "Lê Hữu",
-  //     arrival_date: "12/11/2023",
-  //     service_type: "Khám tổng quát",
-  //     vet_name: "Phạm Ngọc Long",
-  //   },
-  //   {
-  //     id: "1xczx",
-  //     name: "Lê Hữu",
-  //     arrival_date: "12/11/2023",
-  //     service_type: "Khám tổng quát",
-  //     vet_name: "Phạm Ngọc Long",
-  //   },
-  //   {
-  //     id: "1232",
-  //     name: "Lê Hữu",
-  //     arrival_date: "12/11/2023",
-  //     service_type: "Khám tổng quát",
-  //     vet_name: "Phạm Ngọc Long",
-  //   },
 ];
 
 export default function HomeScreen({ navigation }) {
@@ -121,9 +86,9 @@ export default function HomeScreen({ navigation }) {
   const isFocused = useIsFocused();
 
   // const today = moment(getToday(), "YYYY/MM/DD").format("YYYY-MM-DD");
-  const [today, setToday] = React.useState(moment(getToday(), "YYYY/MM/DD").format("YYYY-MM-DD"));
-
-  
+  const [today, setToday] = React.useState(
+    moment(getToday(), "YYYY/MM/DD").format("YYYY-MM-DD")
+  );
 
   const getUserData = async () => {
     const UserLoggedInData = await AsyncStorage.getItem("UserLoggedInData");
@@ -146,7 +111,7 @@ export default function HomeScreen({ navigation }) {
             const filterData = response.data.filter((e) => {
               return e.status !== "cancelled" && e.status !== "finish";
             });
-            console.log(filterData)
+            console.log(filterData);
             setDataToday(filterData);
           }
         } catch (error) {
@@ -184,7 +149,7 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   React.useEffect(() => {
-    if (userData && today) fetchData();
+    if (userData && today && isFocused) fetchData();
   }, [userData, selectedIndex, isFocused]);
 
   //   React.useEffect(()=>{
@@ -199,6 +164,9 @@ export default function HomeScreen({ navigation }) {
     setNumberOfComing(dataComing.length);
   }, [dataComing]);
 
+  React.useEffect(() => {
+    setNumberOfReExam(dataReExam.length);
+  }, [dataReExam]);
 
   return (
     <>
@@ -211,7 +179,7 @@ export default function HomeScreen({ navigation }) {
               `Hôm nay ` + `${numberOfToday !== 0 ? `(${numberOfToday})` : ""}`,
               `Sắp tới ` +
                 `${numberOfComing !== 0 ? `(${numberOfComing})` : ""}`,
-              `Tái khám `,
+              `Tái khám ` + `${numberOfReExam !== 0 ? `(${numberOfReExam})` : ""}`,
             ]}
             selectedIndex={selectedIndex}
             fontStyle={{ fontFamily: FONTS.medium }}
@@ -307,10 +275,25 @@ export default function HomeScreen({ navigation }) {
                         />{" "}
                         Bs. {item.veterinarian.name}
                       </Text>
+                      <Text
+                        style={{
+                          fontFamily: FONTS.medium,
+                          fontSize: 12,
+                          color: COLORS.green,
+                        }}
+                      >
+                        <Icon
+                          name="ellipse"
+                          size={12}
+                          color={COLORS.green}
+                          style={{ marginLeft: 10 }}
+                        />{" "}
+                        Đã xác nhận
+                      </Text>
                     </View>
                   </TouchableOpacity>
                 )}
-                keyExtractor={(item) => item.bird_id}
+                keyExtractor={(item) => item.booking_id}
               />
             </View>
           ))}
@@ -361,7 +344,7 @@ export default function HomeScreen({ navigation }) {
                           fontSize: 12,
                         }}
                       >
-                        {item.arrival_date}
+                        {moment(item.arrival_date, "YYYY-MM-DD").format("DD/MM")}
                       </Text>
                       <Text
                         style={{
@@ -408,7 +391,7 @@ export default function HomeScreen({ navigation }) {
                           color={COLORS.green}
                           style={{ marginLeft: 10 }}
                         />{" "}
-                        Bs. {item.veterinarian_id}
+                        Bs. {item.veterinarian.name}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -417,105 +400,111 @@ export default function HomeScreen({ navigation }) {
               />
             </View>
           ))}
-        {selectedIndex === 2 && (
-          //   <View style={styles.empty}>
-          //     <Image
-          //       source={require("../assets/EmptyHomeImage.jpg")}
-          //       style={{ height: 190, width: 280 }}
-          //     />
-          //     <Text style={styles.textEmpty}>Chưa có lịch tái khám !</Text>
-          //   </View>
-          <View style={{ flex: 1, backgroundColor: COLORS.white }}>
-            <FlatList
-              data={dataReExam}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  onPress={() => {}}
-                  activeOpacity={0.8}
-                  style={{
-                    backgroundColor: COLORS.white,
-                    padding: 10,
-                    marginHorizontal: 20,
-                    marginTop: 10,
-                    marginBottom: 5,
-                    borderRadius: 10,
-                    elevation: 2,
-                    flexDirection: "row",
-                    borderWidth: 1,
-                    borderColor: "transparent",
-                  }}
-                >
-                  <View
+        {selectedIndex === 2 &&
+          (dataReExam.length === 0 ? (
+            <View style={styles.empty}>
+              <Image
+                source={require("../assets/EmptyHomeImage.jpg")}
+                style={{ height: 190, width: 280 }}
+              />
+              <Text style={styles.textEmpty}>Chưa có lịch tái khám !</Text>
+            </View>
+          ) : (
+            <View style={{ flex: 1, backgroundColor: COLORS.white }}>
+              <FlatList
+                data={dataReExam}
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity
+                    onPress={() => {}}
+                    activeOpacity={0.8}
                     style={{
-                      flex: 1,
+                      backgroundColor: COLORS.white,
                       padding: 10,
-                      paddingLeft: 15,
+                      marginHorizontal: 20,
+                      marginTop: 10,
+                      marginBottom: 5,
+                      borderRadius: 10,
+                      elevation: 2,
+                      flexDirection: "row",
+                      borderWidth: 1,
+                      borderColor: "transparent",
                     }}
                   >
-                    <Text style={{ fontFamily: FONTS.semiBold, fontSize: 16 }}>
-                      {item.name}
-                    </Text>
-                    <Text
+                    <View
                       style={{
-                        fontFamily: FONTS.medium,
-                        fontSize: 12,
-                        color: COLORS.grey,
+                        flex: 1,
+                        padding: 10,
+                        paddingLeft: 15,
                       }}
                     >
-                      {item.service_type}
-                    </Text>
-                    <Text
-                      style={{
-                        fontFamily: FONTS.medium,
-                        fontSize: 12,
-                        color: COLORS.grey,
-                      }}
+                      <Text
+                        style={{ fontFamily: FONTS.semiBold, fontSize: 16 }}
+                      >
+                        {item.name}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: FONTS.medium,
+                          fontSize: 12,
+                          color: COLORS.grey,
+                        }}
+                      >
+                        {item.service_type}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: FONTS.medium,
+                          fontSize: 12,
+                          color: COLORS.grey,
+                        }}
+                      >
+                        <Icon
+                          name="people-outline"
+                          size={18}
+                          color={COLORS.green}
+                          style={{ marginLeft: 10 }}
+                        />{" "}
+                        Bs. {item.vet_name}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: FONTS.medium,
+                          fontSize: 12,
+                          color: COLORS.grey,
+                        }}
+                      >
+                        <Icon
+                          name="calendar-outline"
+                          size={18}
+                          color={COLORS.green}
+                          style={{ marginLeft: 10 }}
+                        />{" "}
+                        {item.arrival_date}
+                      </Text>
+                    </View>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
                     >
+                      <Text
+                        style={{
+                          fontFamily: FONTS.semiBold,
+                          color: COLORS.green,
+                        }}
+                      >
+                        Đặt lịch{" "}
+                      </Text>
                       <Icon
-                        name="people-outline"
-                        size={18}
+                        name="arrow-forward-outline"
+                        size={15}
                         color={COLORS.green}
-                        style={{ marginLeft: 10 }}
-                      />{" "}
-                      Bs. {item.vet_name}
-                    </Text>
-                    <Text
-                      style={{
-                        fontFamily: FONTS.medium,
-                        fontSize: 12,
-                        color: COLORS.grey,
-                      }}
-                    >
-                      <Icon
-                        name="calendar-outline"
-                        size={18}
-                        color={COLORS.green}
-                        style={{ marginLeft: 10 }}
-                      />{" "}
-                      {item.arrival_date}
-                    </Text>
-                  </View>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text
-                      style={{
-                        fontFamily: FONTS.semiBold,
-                        color: COLORS.green,
-                      }}
-                    >
-                      Đặt lịch{" "}
-                    </Text>
-                    <Icon
-                      name="arrow-forward-outline"
-                      size={15}
-                      color={COLORS.green}
-                    />
-                  </View>
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item) => item.bird_id}
-            />
-          </View>
-        )}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.id}
+              />
+            </View>
+          ))}
       </View>
     </>
   );

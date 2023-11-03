@@ -352,9 +352,9 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
           // backdropOpacity={0.9}
           // // backdropTransitionInTiming={15000}
           // backdropTransitionOutTiming={5000}
-          animationInTiming={1500}
+          animationInTiming={300}
           animationOutTiming={1000}
-          animationIn="bounce"
+          animationIn="zoomIn"
           animationOut="slideOutDown"
           onModalHide={() => {
             if (modalClosedByButton === true) {

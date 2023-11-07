@@ -30,6 +30,8 @@ import ConfirmBookingAndSymptomScreen from './screens/ConfirmBookingAndSymptomSc
 import SplashScreen from './screens/SplashScreen';
 import BookingFinishedScreen from './screens/BookingFinishedScreen';
 import ChooseDateByDateScreen from './screens/ChooseDateByDateScreen';
+import DetailBookingScreen from './screens/DetailBookingScreen';
+
 const CustomTabBarButton = ({ onPress }) => (
   <View style={{
     width: 90,
@@ -39,7 +41,7 @@ const CustomTabBarButton = ({ onPress }) => (
     justifyContent: 'center',
     alignItems: 'center',
     top: -50,
-    elevation: 2
+    elevation: 1
   }}>
     <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
       <View style={{
@@ -165,6 +167,7 @@ export default function App() {
         <Stack.Screen name="ChooseDateByDate" component={ChooseDateByDateScreen} />
         <Stack.Screen name="ConfirmBookingAndSymptom" component={ConfirmBookingAndSymptomScreen} />
         <Stack.Screen name="BookingFinished" component={BookingFinishedScreen} />
+        <Stack.Screen name="DetailBooking" component={DetailBookingScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

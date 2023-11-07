@@ -19,7 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getToday } from "react-native-modern-datepicker";
 import moment from "moment";
 import { useIsFocused } from "@react-navigation/native";
-
+import { UIActivityIndicator } from 'react-native-indicators';
 const dataToday = [
   {
     id: "1",
@@ -79,8 +79,10 @@ export default function HomeScreen({ navigation }) {
   const [numberOfReExam, setNumberOfReExam] = React.useState(0);
   const [userData, setUserData] = React.useState();
 
-  const [dataToday, setDataToday] = React.useState([]);
-  const [dataComing, setDataComing] = React.useState([]);
+  const [loading, setLoading] = React.useState(0);
+
+  const [dataToday, setDataToday] = React.useState();
+  const [dataComing, setDataComing] = React.useState();
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const isFocused = useIsFocused();
@@ -89,6 +91,15 @@ export default function HomeScreen({ navigation }) {
   const [today, setToday] = React.useState(
     moment(getToday(), "YYYY/MM/DD").format("YYYY-MM-DD")
   );
+
+  const statusColors = {
+    pending: { color: COLORS.orange, text: "Chờ xác nhận" },
+    booked: { color: COLORS.pink, text: "Đã xác nhận" },
+    checked_in: { color: COLORS.blue, text: "Đã check-in" },
+    on_going: { color: COLORS.green, text: "Đang trong quá trình khám" },
+    finish: { color: COLORS.green, text: "Hoàn thành khám bệnh" },
+    cancelled: { color: COLORS.red, text: "Đã hủy lịch khám" },
+  };
 
   const getUserData = async () => {
     const UserLoggedInData = await AsyncStorage.getItem("UserLoggedInData");
@@ -108,10 +119,11 @@ export default function HomeScreen({ navigation }) {
             `/booking/?arrival_date=${today}&account_id=${userData.account_id}`
           );
           if (response.data) {
-            const filterData = response.data.filter((e) => {
-              return e.status !== "cancelled" && e.status !== "finish";
-            });
-            console.log(filterData);
+            // const filterData = response.data.filter((e) => {
+            //   return e.status !== "cancelled" && e.status !== "finish";
+            // });
+            const filterData = response.data;
+            // console.log(filterData);
             setDataToday(filterData);
           }
         } catch (error) {
@@ -128,8 +140,8 @@ export default function HomeScreen({ navigation }) {
             const data = response.data;
             const filterData = data.filter((e) => {
               return (
-                e.status !== "cancelled" &&
-                e.status !== "finish" &&
+                // e.status !== "cancelled" &&
+                // e.status !== "finish" &&
                 e.arrival_date > today
               );
             });
@@ -149,6 +161,8 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   React.useEffect(() => {
+    setDataToday()
+    setDataComing()
     if (userData && today && isFocused) fetchData();
   }, [userData, selectedIndex, isFocused]);
 
@@ -157,11 +171,11 @@ export default function HomeScreen({ navigation }) {
   //   },[today])
 
   React.useEffect(() => {
-    setNumberOfToday(dataToday.length);
+    if (dataToday) setNumberOfToday(dataToday.length);
   }, [dataToday]);
 
   React.useEffect(() => {
-    setNumberOfComing(dataComing.length);
+    if (dataComing) setNumberOfComing(dataComing.length);
   }, [dataComing]);
 
   React.useEffect(() => {
@@ -179,7 +193,8 @@ export default function HomeScreen({ navigation }) {
               `Hôm nay ` + `${numberOfToday !== 0 ? `(${numberOfToday})` : ""}`,
               `Sắp tới ` +
                 `${numberOfComing !== 0 ? `(${numberOfComing})` : ""}`,
-              `Tái khám ` + `${numberOfReExam !== 0 ? `(${numberOfReExam})` : ""}`,
+              `Tái khám ` +
+                `${numberOfReExam !== 0 ? `(${numberOfReExam})` : ""}`,
             ]}
             selectedIndex={selectedIndex}
             fontStyle={{ fontFamily: FONTS.medium }}
@@ -189,215 +204,286 @@ export default function HomeScreen({ navigation }) {
           />
         </View>
         {selectedIndex === 0 &&
-          (dataToday.length === 0 ? (
-            <View style={styles.empty}>
-              <Image
-                source={require("../assets/EmptyHomeImage.jpg")}
-                style={{ height: 190, width: 280 }}
-              />
-              <Text style={styles.textEmpty}>Chưa có lịch khám hôm nay !</Text>
-            </View>
-          ) : (
-            <View style={{ flex: 1, backgroundColor: COLORS.white }}>
-              <FlatList
-                data={dataToday}
-                renderItem={({ item, index }) => (
-                  <TouchableOpacity
-                    onPress={() => {}}
-                    activeOpacity={0.8}
-                    style={{
-                      backgroundColor: COLORS.white,
-                      padding: 10,
-                      marginHorizontal: 20,
-                      marginTop: 10,
-                      marginBottom: 5,
-                      borderRadius: 10,
-                      elevation: 2,
-                      flexDirection: "row",
-                      borderWidth: 1,
-                      borderColor: "transparent",
-                    }}
-                  >
-                    <View
+          (dataToday ? (
+            dataToday.length === 0 ? (
+              <View style={styles.empty}>
+                <Image
+                  source={require("../assets/EmptyHomeImage.jpg")}
+                  style={{ height: 190, width: 280 }}
+                />
+                <Text style={styles.textEmpty}>
+                  Chưa có lịch khám hôm nay !
+                </Text>
+              </View>
+            ) : (
+              <View style={{ flex: 1, backgroundColor: COLORS.white }}>
+                <FlatList
+                  data={dataToday}
+                  renderItem={({ item, index }) => (
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("DetailBooking", {
+                          booking_id: item.booking_id,
+                        })
+                      }
+                      activeOpacity={0.8}
                       style={{
-                        height: 80,
-                        width: 80,
-                        borderRadius: 8,
-                        backgroundColor: COLORS.green,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontFamily: FONTS.bold,
-                          color: COLORS.white,
-                          fontSize: 16,
-                        }}
-                      >
-                        {item.estimate_time}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flex: 1,
+                        backgroundColor: COLORS.white,
                         padding: 10,
-                        paddingLeft: 15,
+                        marginHorizontal: 20,
+                        marginTop: 10,
+                        marginBottom: 5,
+                        borderRadius: 10,
+                        elevation: 2,
+                        flexDirection: "row",
+                        borderWidth: 1,
+                        borderColor: "transparent",
                       }}
                     >
-                      <Text
-                        style={{ fontFamily: FONTS.semiBold, fontSize: 16 }}
-                      >
-                        {item.bird.name}
-                      </Text>
-                      <Text
+                      <View
                         style={{
-                          fontFamily: FONTS.medium,
-                          fontSize: 12,
-                          color: COLORS.grey,
+                          height: 80,
+                          width: 80,
+                          borderRadius: 8,
+                          backgroundColor: COLORS.green,
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
                       >
-                        {item.service_type}
-                      </Text>
+                        <Text
+                          style={{
+                            fontFamily: FONTS.bold,
+                            color: COLORS.white,
+                            fontSize: 16,
+                          }}
+                        >
+                          {item.estimate_time}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flex: 1,
+                          paddingTop: 10,
+                          paddingLeft: 15,
+                        }}
+                      >
+                        <Text
+                          style={{ fontFamily: FONTS.semiBold, fontSize: 16 }}
+                        >
+                          {item.bird.name}
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: FONTS.medium,
+                            fontSize: 12,
+                            color: COLORS.grey,
+                          }}
+                        >
+                          {item.service_type}
+                        </Text>
 
-                      <Text
-                        style={{
-                          fontFamily: FONTS.medium,
-                          fontSize: 12,
-                          color: COLORS.grey,
-                        }}
-                      >
-                        <Icon
-                          name="people-outline"
-                          size={18}
-                          color={COLORS.green}
-                          style={{ marginLeft: 10 }}
-                        />{" "}
-                        Bs. {item.veterinarian.name}
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: FONTS.medium,
-                          fontSize: 12,
-                          color: COLORS.green,
-                        }}
-                      >
-                        <Icon
-                          name="ellipse"
-                          size={12}
-                          color={COLORS.green}
-                          style={{ marginLeft: 10 }}
-                        />{" "}
-                        Đã xác nhận
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                )}
-                keyExtractor={(item) => item.booking_id}
-              />
+                        <Text
+                          style={{
+                            fontFamily: FONTS.medium,
+                            fontSize: 12,
+                            color: COLORS.grey,
+                          }}
+                        >
+                          <Icon
+                            name="people-outline"
+                            size={18}
+                            color={COLORS.green}
+                            style={{ marginLeft: 10 }}
+                          />{" "}
+                          Bs. {item.veterinarian.name}
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: FONTS.medium,
+                            fontSize: 12,
+                            color: statusColors[item.status]
+                              ? statusColors[item.status].color
+                              : statusColors["on_going"].color,
+                          }}
+                        >
+                          <Icon
+                            name="ellipse"
+                            size={12}
+                            color={
+                              statusColors[item.status]
+                                ? statusColors[item.status].color
+                                : statusColors["on_going"].color
+                            }
+                            style={{ marginLeft: 10 }}
+                          />{" "}
+                          {statusColors[item.status]
+                            ? statusColors[item.status].text
+                            : statusColors["on_going"].text}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                  keyExtractor={(item) => item.booking_id}
+                />
+              </View>
+            )
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: COLORS.white,
+              }}
+            >
+              <UIActivityIndicator size={40} color={COLORS.green} />
             </View>
           ))}
         {selectedIndex === 1 &&
-          (dataComing.length === 0 ? (
-            <View style={styles.empty}>
-              <Image
-                source={require("../assets/EmptyHomeImage.jpg")}
-                style={{ height: 190, width: 280 }}
-              />
-              <Text style={styles.textEmpty}>Chưa có lịch khám sắp tới !</Text>
-            </View>
-          ) : (
-            <View style={{ flex: 1, backgroundColor: COLORS.white }}>
-              <FlatList
-                data={dataComing}
-                renderItem={({ item, index }) => (
-                  <TouchableOpacity
-                    onPress={() => {}}
-                    activeOpacity={0.8}
-                    style={{
-                      backgroundColor: COLORS.white,
-                      padding: 10,
-                      marginHorizontal: 20,
-                      marginTop: 10,
-                      marginBottom: 5,
-                      borderRadius: 10,
-                      elevation: 2,
-                      flexDirection: "row",
-                      borderWidth: 1,
-                      borderColor: "transparent",
-                    }}
-                  >
-                    <View
+          (dataComing ? (
+            dataComing.length === 0 ? (
+              <View style={styles.empty}>
+                <Image
+                  source={require("../assets/EmptyHomeImage.jpg")}
+                  style={{ height: 190, width: 280 }}
+                />
+                <Text style={styles.textEmpty}>
+                  Chưa có lịch khám sắp tới !
+                </Text>
+              </View>
+            ) : (
+              <View style={{ flex: 1, backgroundColor: COLORS.white }}>
+                <FlatList
+                  data={dataComing}
+                  renderItem={({ item, index }) => (
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("DetailBooking", {
+                          booking_id: item.booking_id,
+                        })
+                      }
+                      activeOpacity={0.8}
                       style={{
-                        height: 80,
-                        width: 80,
-                        borderRadius: 8,
-                        backgroundColor: COLORS.green,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontFamily: FONTS.bold,
-                          color: COLORS.white,
-                          fontSize: 12,
-                        }}
-                      >
-                        {moment(item.arrival_date, "YYYY-MM-DD").format("DD/MM")}
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: FONTS.bold,
-                          color: COLORS.white,
-                          fontSize: 16,
-                        }}
-                      >
-                        {item.estimate_time}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flex: 1,
+                        backgroundColor: COLORS.white,
                         padding: 10,
-                        paddingLeft: 15,
+                        marginHorizontal: 20,
+                        marginTop: 10,
+                        marginBottom: 5,
+                        borderRadius: 10,
+                        elevation: 2,
+                        flexDirection: "row",
+                        borderWidth: 1,
+                        borderColor: "transparent",
                       }}
                     >
-                      <Text
-                        style={{ fontFamily: FONTS.semiBold, fontSize: 16 }}
-                      >
-                        {item.bird.name}
-                      </Text>
-                      <Text
+                      <View
                         style={{
-                          fontFamily: FONTS.medium,
-                          fontSize: 12,
-                          color: COLORS.grey,
+                          height: 80,
+                          width: 80,
+                          borderRadius: 8,
+                          backgroundColor: COLORS.green,
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
                       >
-                        {item.service_type}
-                      </Text>
+                        <Text
+                          style={{
+                            fontFamily: FONTS.bold,
+                            color: COLORS.white,
+                            fontSize: 12,
+                          }}
+                        >
+                          {moment(item.arrival_date, "YYYY-MM-DD").format(
+                            "DD/MM"
+                          )}
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: FONTS.bold,
+                            color: COLORS.white,
+                            fontSize: 16,
+                          }}
+                        >
+                          {item.estimate_time}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flex: 1,
+                          paddingTop: 10,
+                          paddingLeft: 15,
+                        }}
+                      >
+                        <Text
+                          style={{ fontFamily: FONTS.semiBold, fontSize: 16 }}
+                        >
+                          {item.bird.name}
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: FONTS.medium,
+                            fontSize: 12,
+                            color: COLORS.grey,
+                          }}
+                        >
+                          {item.service_type}
+                        </Text>
 
-                      <Text
-                        style={{
-                          fontFamily: FONTS.medium,
-                          fontSize: 12,
-                          color: COLORS.grey,
-                        }}
-                      >
-                        <Icon
-                          name="people-outline"
-                          size={18}
-                          color={COLORS.green}
-                          style={{ marginLeft: 10 }}
-                        />{" "}
-                        Bs. {item.veterinarian.name}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                )}
-                keyExtractor={(item) => item.booking_id}
-              />
+                        <Text
+                          style={{
+                            fontFamily: FONTS.medium,
+                            fontSize: 12,
+                            color: COLORS.grey,
+                          }}
+                        >
+                          <Icon
+                            name="people-outline"
+                            size={18}
+                            color={COLORS.green}
+                            style={{ marginLeft: 10 }}
+                          />{" "}
+                          Bs. {item.veterinarian.name}
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: FONTS.medium,
+                            fontSize: 12,
+                            color: statusColors[item.status]
+                              ? statusColors[item.status].color
+                              : statusColors["on_going"].color,
+                          }}
+                        >
+                          <Icon
+                            name="ellipse"
+                            size={12}
+                            color={
+                              statusColors[item.status]
+                                ? statusColors[item.status].color
+                                : statusColors["on_going"].color
+                            }
+                            style={{ marginLeft: 10 }}
+                          />{" "}
+                          {statusColors[item.status]
+                            ? statusColors[item.status].text
+                            : statusColors["on_going"].text}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                  keyExtractor={(item) => item.booking_id}
+                />
+              </View>
+            )
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: COLORS.white,
+              }}
+            >
+              <UIActivityIndicator size={40} color={COLORS.green} />
             </View>
           ))}
         {selectedIndex === 2 &&

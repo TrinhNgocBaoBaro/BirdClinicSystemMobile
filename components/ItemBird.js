@@ -10,7 +10,7 @@ const ItemBird = ({ item, navigation, onPress }) => {
       style={{
         backgroundColor: COLORS.white,
         elevation: 2,
-        borderRadius: 8,
+        borderRadius: 10,
         padding: 10,
         height: "auto",
         marginTop: 5,

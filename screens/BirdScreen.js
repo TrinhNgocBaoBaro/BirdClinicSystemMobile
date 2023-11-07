@@ -75,16 +75,16 @@ export default function BirdScreen({ navigation }) {
         <StatusBar style="auto" />
         <FlatGrid
           itemDimension={130}
-          spacing={30}
+          spacing={20}
           data={data}
           renderItem={({ item }) => (
             <ItemBird item={item} navigation={navigation} onPress={()=>navigation.navigate('DetailBirdProfile',{BirdDetail: item})}/>
           )}
           keyExtractor={(item) => item.id}
-          style={{ maxHeight: 410 }}
+          style={{ maxHeight: '81%' }}
         />
         <View style={{ marginHorizontal: 100, marginVertical: 20 }}>
-          <ButtonFlex title="Thêm hồ sơ chim" stylesText={{ fontSize: 13 }} />
+          <ButtonFlex title="Thêm hồ sơ chim" stylesText={{ fontSize: 14 }} stylesButton={{paddingVertical:15, borderRadius: 10}} />
         </View>
       </View>
     </>

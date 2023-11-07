@@ -36,7 +36,7 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
   const fetchDataTimeSlotDoctor = async () => {
     try {
       const response = await API.get(
-        `/veterinarianSlotDetail/?veterinarian_id=${veterinarian_id}&date=${selectedDate}&status=un_available`
+        `/veterinarianSlotDetail/?veterinarian_id=${veterinarian_id}&date=${selectedDate}&status=available`
       );
       if (response.data) {
         console.log(response.data);

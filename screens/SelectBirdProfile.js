@@ -5,7 +5,6 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  ActivityIndicator,
 } from "react-native";
 import React from "react";
 import Header from "../components/Header";
@@ -15,6 +14,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { ButtonFloatBottom } from "../components/Button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import createAxios from "../utils/axios";
+import { UIActivityIndicator } from 'react-native-indicators';
 const API = createAxios();
 const dataBird1 = [
   {
@@ -179,7 +179,7 @@ const SelectBirdProfile = ({ navigation, route }) => {
         ) : (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: COLORS.white }}>
-            <ActivityIndicator size="large" color={COLORS.green} />
+            <UIActivityIndicator size={40} color={COLORS.green} />
           </View>
         )}
       </View>

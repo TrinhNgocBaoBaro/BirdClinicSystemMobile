@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, Image, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
 import Header from "../components/Header";
 import COLORS from "../constants/color";
 import FONTS from "../constants/font";
 import { SvgBirdIcon } from "../components/Svg";
 import { ButtonFloatBottom } from "../components/Button";
+import { UIActivityIndicator } from 'react-native-indicators';
 import createAxios from "../utils/axios";
 const API = createAxios();
 const ConfirmBirdProfileScreen = ({ navigation, route }) => {
@@ -112,7 +113,7 @@ const ConfirmBirdProfileScreen = ({ navigation, route }) => {
             backgroundColor: COLORS.white,
           }}
         >
-          <ActivityIndicator size="large" color={COLORS.green} />
+          <UIActivityIndicator size={40} color={COLORS.green} />
         </View>
       )}
 

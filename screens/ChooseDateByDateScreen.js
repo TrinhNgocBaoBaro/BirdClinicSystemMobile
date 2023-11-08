@@ -24,6 +24,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
     const [selectedDate, setSelectedDate] = React.useState("");
     const [selectedTime, setSelectedTime] = React.useState();
     const [hasDataTime, setHasDataTime] = React.useState(false);
+    const today = getToday();
 
     const fetchDataTimeSlotClinic = async () => {
         try {
@@ -219,7 +220,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
                 padding: 10,
               }}
               mode="calendar"
-              // minimumDate={today}
+              minimumDate={today}
               selected={selectedDate}
               onSelectedChange={(date) => handleSelectDate(date)}
             />

@@ -31,6 +31,7 @@ import SplashScreen from './screens/SplashScreen';
 import BookingFinishedScreen from './screens/BookingFinishedScreen';
 import ChooseDateByDateScreen from './screens/ChooseDateByDateScreen';
 import DetailBookingScreen from './screens/DetailBookingScreen';
+import DetailServiceFormScreen from './screens/DetailServiceFormScreen';
 
 const CustomTabBarButton = ({ onPress }) => (
   <View style={{
@@ -168,6 +169,7 @@ export default function App() {
         <Stack.Screen name="ConfirmBookingAndSymptom" component={ConfirmBookingAndSymptomScreen} />
         <Stack.Screen name="BookingFinished" component={BookingFinishedScreen} />
         <Stack.Screen name="DetailBooking" component={DetailBookingScreen} />
+        <Stack.Screen name="DetailServiceForm" component={DetailServiceFormScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

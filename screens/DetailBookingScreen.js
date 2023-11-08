@@ -4,7 +4,6 @@ import Header from "../components/Header";
 import COLORS from "../constants/color";
 import FONTS from "../constants/font";
 import Icon from "react-native-vector-icons/Ionicons";
-import { ButtonFloatBottom } from "../components/Button";
 import createAxios from "../utils/axios";
 const API = createAxios();
 import StepIndicator from "react-native-step-indicator";
@@ -41,6 +40,9 @@ const DetailBookingScreen = ({ navigation, route }) => {
   const [bookingId, setBookingId] = React.useState(route.params.booking_id);
   const [currentStatus, setCurrentStatus] = React.useState();
   const [dataBooking, setDataBooking] = React.useState();
+  const [dataServiceForm, setDataServiceForm] = React.useState([]);
+  const [dataServiceFormDetail, setDataServiceFormDetail] = React.useState([]);
+  const [load, setLoad] = React.useState(false);
 
   const progressBooking = {
     pending: {
@@ -69,9 +71,9 @@ const DetailBookingScreen = ({ navigation, route }) => {
       color: COLORS.green,
     },
     checked_in_after_test: {
-      status: "Khám bệnh",
+      status: "Đã checkin sau khi có kết quả",
       position: 3,
-      color: COLORS.green,
+      color: COLORS.blue,
     },
     finish: {
       status: "Hoàn tất",
@@ -85,10 +87,10 @@ const DetailBookingScreen = ({ navigation, route }) => {
     },
   };
 
-  const dataServiceForm = [
-    { id: 1, name: "Xét nghiệm máu", price: "150,000" },
-    { id: 2, name: "Chụp X-quang", price: "100,000" },
-  ];
+  // const dataServiceFormDetail = [
+  //   { id: 1, name: "Xét nghiệm máu", price: "150,000" },
+  //   { id: 2, name: "Chụp X-quang", price: "100,000" },
+  // ];
 
   const fetchData = async () => {
     try {
@@ -102,9 +104,29 @@ const DetailBookingScreen = ({ navigation, route }) => {
     }
   };
 
+  const fetchDataServiceForm = async () => {
+    try {
+      const response = await API.get(`/service_Form/?booking_id=${bookingId}`);
+      if (response.data) {
+        // console.log("Data Service Form: ",response.data);
+        setDataServiceForm(response.data);
+        console.log(
+          "Data Service Form Detail: ",
+          response.data[0].service_form_details
+        );
+        setDataServiceFormDetail(response.data[0].service_form_details);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   React.useEffect(() => {
-    if (bookingId) fetchData();
-  }, [bookingId]);
+    if (bookingId) {
+      fetchData();
+      fetchDataServiceForm();
+    }
+  }, [bookingId, load]);
 
   React.useEffect(() => {
     if (dataBooking) {
@@ -257,7 +279,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 marginTop: 20,
-                marginHorizontal: 20
+                marginHorizontal: 20,
               }}
             >
               <Icon
@@ -275,143 +297,203 @@ const DetailBookingScreen = ({ navigation, route }) => {
                 Vui lòng tới quầy thanh toán các dịch vụ sau để tiếp tục.
               </Text>
             </View>
-            <View
-              style={{
-                padding: 10,
-                elevation: 2,
-                backgroundColor: COLORS.white,
-                margin: 20,
-                marginBottom: 10,
-                borderRadius: 10,
-              }}
-            >
+            {dataServiceForm.map((item, index) => (
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingBottom: 10,
+                  padding: 10,
+                  elevation: 2,
+                  backgroundColor: COLORS.white,
+                  margin: 20,
                   marginBottom: 10,
-                  borderBottomWidth: 2,
-                  borderBottomColor: COLORS.darkGrey,
+                  borderRadius: 10,
                 }}
+                key={item.service_form_id}
               >
-                <Icon
-                  name="document-text-outline"
-                  size={24}
-                  color={COLORS.green}
-                />
-                <Text
+                <View
                   style={{
-                    fontFamily: FONTS.semiBold,
-                    fontSize: 16,
-                    marginLeft: 5,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    paddingBottom: 10,
+                    marginBottom: 10,
+                    borderBottomWidth: 2,
+                    borderBottomColor: COLORS.darkGrey,
                   }}
                 >
-                  Thông tin dịch vụ chỉ định
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={{
-                    fontFamily: FONTS.semiBold,
-                    fontSize: 13,
-                    margin: 10,
-                    color: COLORS.grey,
-                  }}
-                >
-                  Tên dịch vụ
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: FONTS.semiBold,
-                    fontSize: 13,
-                    margin: 10,
-                    color: COLORS.grey,
-                  }}
-                >
-                  Giá
-                </Text>
-              </View>
-              {dataServiceForm.map((item, index) => (
+                  <Icon
+                    name="document-text-outline"
+                    size={24}
+                    color={COLORS.green}
+                  />
+                  <Text
+                    style={{
+                      fontFamily: FONTS.semiBold,
+                      fontSize: 16,
+                      marginLeft: 5,
+                    }}
+                  >
+                    Thông tin dịch vụ chỉ định
+                  </Text>
+                </View>
                 <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
                   }}
-                  key={item.id}
                 >
                   <Text
                     style={{
                       fontFamily: FONTS.semiBold,
-                      fontSize: 14,
+                      fontSize: 13,
                       margin: 10,
+                      color: COLORS.grey,
                     }}
                   >
-                    {index + 1}. {item.name}
+                    Tên dịch vụ
                   </Text>
                   <Text
                     style={{
                       fontFamily: FONTS.semiBold,
                       fontSize: 13,
                       margin: 10,
-                      color: COLORS.orange,
+                      color: COLORS.grey,
                     }}
                   >
-                    {item.price}đ
+                    Giá
                   </Text>
                 </View>
-              ))}
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
+                {dataServiceFormDetail.map((item, index) => (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                    key={item.service_form_detail_id}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 14,
+                        margin: 10,
+                      }}
+                    >
+                      {index + 1}. {item.note}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 13,
+                        margin: 10,
+                        color: COLORS.orange,
+                      }}
+                    >
+                      300.000đ
+                    </Text>
+                  </View>
+                ))}
+                <View
                   style={{
-                    fontFamily: FONTS.semiBold,
-                    fontSize: 15,
-                    margin: 10,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
                   }}
                 >
-                  Tổng cộng:
-                </Text>
-                <Text
+                  <Text
+                    style={{
+                      fontFamily: FONTS.semiBold,
+                      fontSize: 15,
+                      margin: 10,
+                    }}
+                  >
+                    Tổng cộng:
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: FONTS.semiBold,
+                      fontSize: 15,
+                      margin: 10,
+                    }}
+                  >
+                    {item.total_price}đ
+                  </Text>
+                </View>
+                <View
                   style={{
-                    fontFamily: FONTS.semiBold,
-                    fontSize: 15,
-                    margin: 10,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
                   }}
                 >
-                  250,000đ
-                </Text>
-              </View>
-              <View
+                  <Text
+                    style={{
+                      fontFamily: FONTS.semiBold,
+                      fontSize: 13,
+                      margin: 10,
+                    }}
+                  >
+                    Tình trạng: {item.status}
+                  </Text>
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() =>
+                      navigation.navigate("DetailServiceForm", {
+                        service_form_id: item.service_form_id,
+                      })
+                    }
+                  >
+                    <Text
+                      style={{
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 13,
+                        margin: 10,
+                        color: COLORS.green,
+                        textDecorationLine: "underline",
+                      }}
+                    >
+                      Xem chi tiết
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                {item.status === 'done' && <Text
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  fontFamily: FONTS.medium,
+                  fontSize: 13,
+                  marginLeft: 5,
+                  color: COLORS.orange
                 }}
               >
-              <Text
-                style={{ fontFamily: FONTS.semiBold, fontSize: 13, margin: 10 }}
-              >
-                Tình trạng: Chưa thanh toán
-              </Text>
-              <TouchableOpacity activeOpacity={0.5} onPress={()=>{}}>
-              <Text
-                style={{ fontFamily: FONTS.semiBold, fontSize: 13, margin: 10, color: COLORS.green, textDecorationLine: 'underline'}} 
-              >
-                Xem chi tiết
-              </Text>
-              </TouchableOpacity>
+                Vui lòng tới quầy để checkin sau khi đã có các kết quả chỉ định.
+              </Text>}
+                
               </View>
-            </View>
+            ))}
           </>
+        );
+        break;
+      case "checked_in_after_test":
+        componentStatus = (
+          <View
+            style={{
+              padding: 10,
+              elevation: 3,
+              backgroundColor: COLORS.white,
+              justifyContent: "center",
+              alignItems: "center",
+              margin: 20,
+              marginBottom: 10,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: COLORS.green,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: FONTS.semiBold,
+                fontSize: 15,
+                margin: 10,
+                textAlign: "center",
+              }}
+            >
+              Đã checkin sau khi có kết quả.
+            </Text>
+          </View>
         );
         break;
       case "finish":
@@ -505,6 +587,8 @@ const DetailBookingScreen = ({ navigation, route }) => {
     }
   }
 
+  
+
   return (
     <>
       <Header
@@ -515,8 +599,9 @@ const DetailBookingScreen = ({ navigation, route }) => {
         }
         onPress={() => navigation.goBack()}
         rightIcon="ellipsis-vertical"
+        onPressRight={()=> setLoad(!load)}
       />
-
+      
       {dataBooking ? (
         <ScrollView style={{ flex: 1, backgroundColor: COLORS.white }}>
           <View style={{ marginVertical: 20, marginLeft: 20 }}>
@@ -574,6 +659,51 @@ const DetailBookingScreen = ({ navigation, route }) => {
           />
 
           {componentStatus}
+          {dataServiceFormDetail.length !==0 && dataServiceFormDetail.map((item, index) => (
+            <View
+            style={{
+              padding: 10,
+              elevation: 2,
+              backgroundColor: COLORS.white,
+              margin: 20,
+              marginBottom: 10,
+              borderRadius: 10,
+            }}
+            key={item.service_form_detail_id}
+          >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                    key={item.service_form_detail_id}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 14,
+                        margin: 10,
+                      }}
+                    >
+                      {index + 1}. {item.note}
+                    </Text>
+                    <TouchableOpacity>
+                    <Text
+                      style={{
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 13,
+                        margin: 10,
+                        color: COLORS.grey,
+                      }}
+                    >
+                      Xem kết quả
+                    </Text>
+                    </TouchableOpacity>
+                  </View>
+                  </View>
+                ))}
+
+
 
           <View
             style={{

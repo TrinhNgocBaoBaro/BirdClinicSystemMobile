@@ -8,6 +8,7 @@ import FONTS from "../constants/font";
 import { SvgDoctor, SvgCalendar } from "../components/Svg";
 const SelectTypeBookingScreen = ({ navigation, route }) => {
   const [booking, setBooking] = React.useState(route.params.booking);
+  console.log(booking.service_type_id)
   const [selectedItem, setSelectedItem] = React.useState(false);
   const handleSelectItem = (item) => {
     setSelectedItem(item);
@@ -40,7 +41,8 @@ const SelectTypeBookingScreen = ({ navigation, route }) => {
             Vui lòng chọn 1 trong các hình thức sau.
           </Text>
         </View>
-        <TouchableOpacity
+        {booking.service_type_id === "ST001" &&
+          <TouchableOpacity
           activeOpacity={0.7}
           onPress={()=>handleSelectItem("chooseDoctor")}
           style={{
@@ -58,7 +60,9 @@ const SelectTypeBookingScreen = ({ navigation, route }) => {
         >
             <SvgDoctor width={100} height={100}/>
             <Text style={{marginTop: 10, fontFamily: FONTS.bold}}>THEO BÁC SĨ</Text>
-        </TouchableOpacity>
+        </TouchableOpacity>        
+        }
+
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={()=>handleSelectItem("chooseDate")}

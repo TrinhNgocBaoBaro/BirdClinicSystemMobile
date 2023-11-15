@@ -19,6 +19,10 @@ const API = createAxios();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
+// import { socket } from "../App";
+// import io from "socket.io-client";
+// const socket = io("https://clinicsystem.io.vn");
+// export {socket} 
 export default function LoginScreen({ navigation }) {
   const [phone, setPhone] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -42,16 +46,24 @@ export default function LoginScreen({ navigation }) {
       if (response.data) {
         console.log(response.data.data)
         const userData = response.data.data;
+        // socket.emit("login", {account_id: userData.account_id});
         AsyncStorage.setItem(
           "UserLoggedInData",
-          JSON.stringify({ userData, loggedIn: true })
+          JSON.stringify({ userData, role: response.data.role ,loggedIn: true })
         )
           .then(() => {
             // navigation.navigate("Home");
-            navigation.reset({
-              index: 1,
-              routes: [{ name: 'Splash' }, { name: 'Home' }],
-            });
+            if(response.data.role === 'customer'){
+              navigation.reset({
+                index: 1,
+                routes: [{ name: 'Splash' }, { name: 'Home' }],
+              });
+            }else if (response.data.role === 'staff'){
+              navigation.reset({
+                index: 1,
+                routes: [{ name: 'Splash' }, { name: 'QRCode' }],
+              });
+            }
           })
           .catch((error) => {
             console.log(error);

@@ -14,8 +14,13 @@ export default function SplashScreen() {
     // Kiểm tra đăng nhập
     const checkLogin = async () => {
       const UserLoggedInData = await AsyncStorage.getItem("UserLoggedInData");
+      const parseUserData = JSON.parse(UserLoggedInData)
       if (UserLoggedInData) {
+        if(parseUserData.role === 'customer'){
         navigation.navigate('Home'); // Đăng nhập thành công, chuyển đến trang "Home"
+      }else if(parseUserData.role === 'staff'){
+        navigation.navigate('QRCode');
+      }
       } else {
         navigation.navigate('Login'); // Người dùng chưa đăng nhập, chuyển đến màn hình đăng nhập
       }

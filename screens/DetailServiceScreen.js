@@ -18,7 +18,7 @@ export default function DetailServiceScreen({ navigation, route }) {
       componentToRender = <HealthCheck service_type_id={service_type_id} />;
       break;
     case "ST003":
-      componentToRender = <Boarding />;
+      componentToRender = <Boarding service_type_id={service_type_id} />;
       break;
     case "ST002":
       componentToRender = <Grooming />;
@@ -58,50 +58,7 @@ import { FlatGrid } from "react-native-super-grid";
 import FONTS from "../constants/font";
 import Icon from "react-native-vector-icons/Ionicons";
 
-const dataHealthCheckTest = [
-  {
-    id: '1',
-    name: 'Kiểm tra sức khỏe',
-    type: 'HealthCheck',
-    description: 'Khám tổng quát các chẩn đoán sức khỏe'
-  },
-  {
-    id: '2',
-    name: 'Chụp X-quang',
-    type: 'Xray',
-    description: 'Khám tổng quát các chẩn đoán sức khỏe'
-  },
-  {
-    id: '3',
-    name: 'Xét nghiệm máu',
-    type: 'BloodTest',
-    description: 'Khám tổng quát các chẩn đoán sức khỏe'
-  },
-  {
-    id: '4',
-    name: 'Xét nghiệm DNA giới tính',
-    type: 'DNASexing',
-    description: 'Khám tổng quát các chẩn đoán sức khỏe'
-  },
-  {
-    id: '5',
-    name: 'Xét nghiệm phân chim',
-    type: 'FaecalTest',
-    description: 'Khám tổng quát các chẩn đoán sức khỏe'
-  },
-  {
-    id: '6',
-    name: 'Nội soi',
-    type: 'Endoscopy',
-    description: 'Khám tổng quát các chẩn đoán sức khỏe'
-  },
-  {
-    id: '7',
-    name: 'Xét nghiệm bệnh truyền nhiễm',
-    type: 'InfectiousDiseaseTest',
-    description: 'Khám tổng quát các chẩn đoán sức khỏe'
-  },
-]
+
 const HealthCheck = ({service_type_id}) => {
   const [dataHealthCheck, setDataHealthCheck] = React.useState([]);
 
@@ -170,7 +127,7 @@ const HealthCheck = ({service_type_id}) => {
   );
 }
 
-const Boarding = () => {
+const Boarding = ({service_type_id}) => {
   return (
     <View>
       <Text>Nội trú</Text>

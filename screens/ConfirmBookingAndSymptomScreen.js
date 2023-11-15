@@ -10,6 +10,7 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Modal from "react-native-modal";
 import createAxios from "../utils/axios";
 const API = createAxios();
+import moment from "moment";
 
 const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
   const [booking, setBooking] = React.useState(route.params.booking);
@@ -244,7 +245,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
               fontSize: 16,
             }}
           >
-            {booking.arrival_date}
+            {moment(booking.arrival_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
           </Text>
         </View>
         <View
@@ -292,7 +293,60 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
             {booking.estimate_time}
           </Text>
         </View>
-        <View
+        {booking.service_type_id === "ST001" ? (
+    <View
+    style={{
+      height: "auto",
+      backgroundColor: COLORS.white,
+      marginHorizontal: 30,
+      borderRadius: 10,
+      elevation: 3,
+      marginBottom: 10,
+      padding: 10,
+      borderWidth: 1,
+      borderColor: COLORS.green,
+    }}
+  >
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 5,
+      }}
+    >
+      <Icon
+        name="document-text-outline"
+        width={25}
+        height={25}
+        size={20}
+        color={COLORS.grey}
+      />
+      <Text
+        style={{
+          fontFamily: FONTS.semiBold,
+          color: COLORS.grey,
+          fontSize: 13,
+        }}
+      >
+        Triệu chứng
+      </Text>
+    </View>
+    <TextInput
+      style={{
+        fontFamily: FONTS.bold,
+        color: COLORS.black,
+        fontSize: 14,
+        padding: 10,
+      }}
+      multiline
+      maxLength={150}
+      placeholder="Vui lòng nhập triệu chứng..."
+      numberOfLines={3}
+      onChangeText={(newTextSymptom) => setSymptom(newTextSymptom)}
+    />
+  </View>
+        ):(
+          <View
           style={{
             height: "auto",
             backgroundColor: COLORS.white,
@@ -326,7 +380,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
                 fontSize: 13,
               }}
             >
-              Triệu chứng
+              Ghi chú
             </Text>
           </View>
           <TextInput
@@ -338,11 +392,15 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
             }}
             multiline
             maxLength={150}
-            placeholder="Vui lòng nhập triệu chứng..."
+            placeholder="Ghi chú cho phòng khám (nếu có)..."
             numberOfLines={3}
             onChangeText={(newTextSymptom) => setSymptom(newTextSymptom)}
           />
         </View>
+        )}
+    
+
+      
       </ScrollView>
       <View>
         <Modal

@@ -1,18 +1,23 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import Header from "../components/Header";
 import COLORS from "../constants/color";
 import FONTS from "../constants/font";
 import Icon from "react-native-vector-icons/Ionicons";
-import Icon1 from "react-native-vector-icons/MaterialCommunityIcons";
 
 import createAxios from "../utils/axios";
 const API = createAxios();
 import StepIndicator from "react-native-step-indicator";
 import { ScrollView } from "react-native-gesture-handler";
-import { SkypeIndicator, UIActivityIndicator } from "react-native-indicators";
+import { BarIndicator, UIActivityIndicator } from "react-native-indicators";
 
-const labels = ["Đặt lịch", "Xác nhận", "Check-in", "Khám bệnh", "Hoàn tất"];
+const labels = [
+  "Đặt lịch",
+  "Xác nhận",
+  "Check-in",
+  "Tiếp nhận",
+  "Hoàn tất",
+];
 const customStyles = {
   stepIndicatorSize: 35,
   currentStepIndicatorSize: 45,
@@ -38,22 +43,11 @@ const customStyles = {
   labelFontFamily: FONTS.semiBold,
 };
 
-import io from "socket.io-client";
-const socket = io("https://clinicsystem.io.vn");
-
-const DetailBookingScreen = ({ navigation, route }) => {
+const DetailBookingBoardingScreen = ({ navigation, route }) => {
   const [bookingId, setBookingId] = React.useState(route.params.booking_id);
-  const [currentStatus, setCurrentStatus] = React.useState();
-  const [dataBooking, setDataBooking] = React.useState();
-  const [dataServiceForm, setDataServiceForm] = React.useState([]);
-  const [dataServiceFormDetail, setDataServiceFormDetail] = React.useState([]);
+  const [currentStatus, setCurrentStatus] = React.useState(1);
   const [load, setLoad] = React.useState(false);
-
-  React.useEffect(()=>{
-    console.log("socket id khi mới vào bên booking: ", socket.id)
-    socket.emit("login", {account_id: 'customer1'});
-    console.log("Login sucess")
-  },[])
+  const [dataBooking, setDataBooking] = React.useState();
 
   const progressBooking = {
     pending: {
@@ -72,19 +66,9 @@ const DetailBookingScreen = ({ navigation, route }) => {
       color: COLORS.blue,
     },
     on_going: {
-      status: "Đang khám bệnh",
+      status: "Đang thực hiện",
       position: 3,
       color: COLORS.green,
-    },
-    test_requested: {
-      status: "Chỉ định dịch vụ",
-      position: 3,
-      color: COLORS.green,
-    },
-    checked_in_after_test: {
-      status: "Đã checkin sau khi có kết quả",
-      position: 3,
-      color: COLORS.blue,
     },
     finish: {
       status: "Hoàn tất",
@@ -98,34 +82,6 @@ const DetailBookingScreen = ({ navigation, route }) => {
     },
   };
 
-  const progressServiceForm = {
-    pending: {
-      status: "Chưa thanh toán",
-      position: 1,
-      color: COLORS.orange,
-    },
-    paid: {
-      status: "Đã thanh toán",
-      position: 2,
-      color: COLORS.blue,
-    },
-    done: {
-      status: "Đã có kết quả",
-      position: 4,
-      color: COLORS.green,
-    },
-    cancelled: {
-      status: "Đã hủy",
-      position: "",
-      color: COLORS.red,
-    },
-  };
-
-  // const dataServiceFormDetail = [
-  //   { id: 1, name: "Xét nghiệm máu", price: "150,000" },
-  //   { id: 2, name: "Chụp X-quang", price: "100,000" },
-  // ];
-
   const fetchData = async () => {
     try {
       const response = await API.get(`/booking/${bookingId}`);
@@ -138,30 +94,9 @@ const DetailBookingScreen = ({ navigation, route }) => {
     }
   };
 
-  const fetchDataServiceForm = async () => {
-    try {
-      const response = await API.get(`/service_Form/?booking_id=${bookingId}`);
-      if (response.data) {
-        // console.log("Data Service Form: ",response.data);
-        const arrayDataServiceForm = response.data
-        const arrayAfterSort = arrayDataServiceForm.sort((a,b)=> a.time_create.localeCompare(b.time_create))
-        console.log("aray: ",arrayAfterSort);
-        setDataServiceForm(arrayAfterSort);
-        // console.log(
-        //   "Data Service Form Detail: ",
-        //   response.data[0].service_form_details
-        // );
-        setDataServiceFormDetail(response.data[0].service_form_details);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   React.useEffect(() => {
     if (bookingId) {
       fetchData();
-      fetchDataServiceForm();
     }
   }, [bookingId, load]);
 
@@ -172,6 +107,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
       console.log("progressBooking: ", progressBooking[dataBooking.status]);
     }
   }, [dataBooking]);
+
 
   let componentStatus;
   if (dataBooking) {
@@ -200,7 +136,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
                 textAlign: "center",
               }}
             >
-              Phòng khám sẽ sớm gọi cho bạn để xác nhận lịch khám!
+              Phòng khám sẽ sớm gọi cho bạn để xác nhận lịch hẹn!
             </Text>
           </View>
         );
@@ -257,7 +193,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
                 marginBottom: 5,
               }}
             >
-              Check-in thành công!
+              Check-in thành công
             </Text>
             <Text
               style={{
@@ -298,70 +234,11 @@ const DetailBookingScreen = ({ navigation, route }) => {
               borderRadius: 10,
             }}
           >
-            <SkypeIndicator color={COLORS.green} style={{ margin: 10 }} />
+            <BarIndicator color={COLORS.green} style={{ margin: 10 }} />
             <Text
               style={{ fontFamily: FONTS.semiBold, fontSize: 15, margin: 10 }}
             >
-              Đang trong quá trình khám...
-            </Text>
-          </View>
-        );
-        break;
-      case "test_requested":
-        componentStatus = (
-          <>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: 20,
-                marginHorizontal: 20,
-              }}
-            >
-              <Icon
-                name="information-circle-outline"
-                size={23}
-                color={COLORS.green}
-              />
-              <Text
-                style={{
-                  fontFamily: FONTS.medium,
-                  fontSize: 13,
-                  marginLeft: 5,
-                }}
-              >
-                Vui lòng đến quầy thanh toán các dịch vụ sau để tiếp tục.
-              </Text>
-            </View>
-          </>
-        );
-        break;
-      case "checked_in_after_test":
-        componentStatus = (
-          <View
-            style={{
-              padding: 10,
-              elevation: 3,
-              backgroundColor: COLORS.white,
-              justifyContent: "center",
-              alignItems: "center",
-              margin: 20,
-              marginBottom: 10,
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: COLORS.green,
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: FONTS.semiBold,
-                fontSize: 15,
-                margin: 10,
-                textAlign: "center",
-              }}
-            >
-              Đã checkin sau khi có kết quả.
+              Đang trong quá trình thực hiện...
             </Text>
           </View>
         );
@@ -394,7 +271,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
                 textAlign: "center",
               }}
             >
-              Hoàn thành khám bệnh!
+              Hoàn thành nội trú!
             </Text>
           </View>
         );
@@ -457,26 +334,14 @@ const DetailBookingScreen = ({ navigation, route }) => {
     }
   }
 
-  function formatCurrency(amount) {
-    return parseFloat(amount).toLocaleString('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    });
-  }
-
   return (
     <>
       <Header
-        title={
-          dataBooking
-            ? progressBooking[dataBooking.status].status
-            : "Đang tải..."
-        }
+        title={"Chi tiết nội trú"}
         onPress={() => navigation.goBack()}
         rightIcon="ellipsis-vertical"
-        onPressRight={()=> setLoad(!load)}
+        onPressRight={() => setLoad(!load)}
       />
-      
       {dataBooking ? (
         <ScrollView style={{ flex: 1, backgroundColor: COLORS.white }}>
           <View style={{ marginVertical: 20, marginLeft: 20 }}>
@@ -485,8 +350,8 @@ const DetailBookingScreen = ({ navigation, route }) => {
                 fontFamily: FONTS.bold,
                 fontSize: 14,
                 color: progressBooking[dataBooking.status]
-                  ? progressBooking[dataBooking.status].color
-                  : COLORS.grey,
+                ? progressBooking[dataBooking.status].color
+                : COLORS.grey,
                 marginLeft: 5,
               }}
             >
@@ -500,6 +365,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
               }}
             >
               {dataBooking.service_type}
+
             </Text>
           </View>
           <StepIndicator
@@ -532,187 +398,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
               )
             }
           />
-
           {componentStatus}
-
-          {dataServiceForm.length !== 0 &&  dataServiceForm.map((item, index) => (
-              <View
-                style={{
-                  padding: 10,
-                  elevation: 2,
-                  backgroundColor: COLORS.white,
-                  margin: 20,
-                  marginBottom: 10,
-                  borderRadius: 10,
-                }}
-                key={item.service_form_id}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    paddingBottom: 10,
-                    marginBottom: 10,
-                    borderBottomWidth: 2,
-                    borderBottomColor: COLORS.darkGrey,
-                    justifyContent: 'space-between'
-                  }}
-                >
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Icon
-                    name="document-text-outline"
-                    size={24}
-                    color={COLORS.green}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: FONTS.semiBold,
-                      fontSize: 16,
-                      marginLeft: 5,
-                    }}
-                  >
-                    Thông tin dịch vụ chỉ định {" "} 
-                   
-                  </Text>
-                  </View>
-                   {dataServiceForm.length === 1 ? "" : <Icon1 name={`numeric-${index+1}-circle-outline`} size={25}/>  }  
-                  
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontFamily: FONTS.semiBold,
-                      fontSize: 13,
-                      margin: 10,
-                      color: COLORS.grey,
-                    }}
-                  >
-                    Tên dịch vụ
-                  </Text>
-                  <Text
-                    style={{
-                      fontFamily: FONTS.semiBold,
-                      fontSize: 13,
-                      margin: 10,
-                      color: COLORS.grey,
-                    }}
-                  >
-                    Giá
-                  </Text>
-                </View>
-                {dataServiceFormDetail.map((item, index) => (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                    key={item.service_form_detail_id}
-                  >
-                    <Text
-                      style={{
-                        fontFamily: FONTS.semiBold,
-                        fontSize: 14,
-                        margin: 10,
-                      }}
-                    >
-                      {index + 1}. {item.note}
-                    </Text>
-                    <Text
-                      style={{
-                        fontFamily: FONTS.semiBold,
-                        fontSize: 13,
-                        margin: 10,
-                        color: COLORS.orange,
-                      }}
-                    >
-                      {formatCurrency(item.service_package.price)}
-                    </Text>
-                  </View>
-                ))}
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontFamily: FONTS.semiBold,
-                      fontSize: 15,
-                      margin: 10,
-                    }}
-                  >
-                    Tổng cộng:
-                  </Text>
-                  <Text
-                    style={{
-                      fontFamily: FONTS.semiBold,
-                      fontSize: 15,
-                      margin: 10,
-                    }}
-                  >
-                  {formatCurrency(item.total_price)}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontFamily: FONTS.semiBold,
-                      fontSize: 13,
-                      margin: 10,                  
-                    }}
-                  >
-                    Tình trạng: {" "}
-                    <Text style={{color: progressServiceForm[item.status].color}}>
-                    {progressServiceForm[item.status].status}
-                    </Text>
-                  </Text>
-                  <TouchableOpacity
-                    activeOpacity={0.5}
-                    onPress={() =>
-                      navigation.navigate("DetailServiceForm", {
-                        service_form_id: item.service_form_id,
-                      })
-                    }
-                  >
-                    <Text
-                      style={{
-                        fontFamily: FONTS.semiBold,
-                        fontSize: 13,
-                        margin: 10,
-                        color: COLORS.green,
-                        textDecorationLine: "underline",
-                      }}
-                    >
-                      Xem chi tiết
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                {item.status === 'done' && <Text
-                style={{
-                  fontFamily: FONTS.medium,
-                  fontSize: 13,
-                  marginLeft: 5,
-                  color: COLORS.orange
-                }}
-              >
-                Vui lòng tới quầy để checkin sau khi đã có các kết quả chỉ định.
-              </Text>}
-                
-              </View>
-            ))}
-        
-
           <View
             style={{
               height: "auto",
@@ -747,7 +433,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
                   marginLeft: 5,
                 }}
               >
-                Thông tin khám
+                Thông tin tiếp nhận
               </Text>
             </View>
 
@@ -766,7 +452,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
             </View>
 
             <View style={styles.viewAttribute}>
-              <Text style={styles.textAttribute}>Triệu chứng</Text>
+              <Text style={styles.textAttribute}>Ghi chú</Text>
               <Text style={styles.textInfo}>{dataBooking.symptom}</Text>
             </View>
 
@@ -776,7 +462,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
             </View>
 
             <View style={styles.viewAttribute}>
-              <Text style={styles.textAttribute}>Ngày khám</Text>
+              <Text style={styles.textAttribute}>Ngày đến</Text>
               <Text style={styles.textInfo}>{dataBooking.arrival_date}</Text>
             </View>
 
@@ -812,11 +498,13 @@ const DetailBookingScreen = ({ navigation, route }) => {
           <UIActivityIndicator size={40} color={COLORS.green} />
         </View>
       )}
+
+      <Text>DetailBookingBoardingScreen</Text>
     </>
   );
 };
 
-export default DetailBookingScreen;
+export default DetailBookingBoardingScreen;
 
 const styles = StyleSheet.create({
   viewAttribute: {

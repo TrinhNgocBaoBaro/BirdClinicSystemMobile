@@ -20,41 +20,7 @@ import { getToday } from "react-native-modern-datepicker";
 import moment from "moment";
 import { useIsFocused } from "@react-navigation/native";
 import { UIActivityIndicator } from 'react-native-indicators';
-const dataToday = [
-  {
-    id: "1",
-    name: "Con vẹt xanh lá",
-    estimate_time: "13:00",
-    service_type: "Khám tổng quát",
-    vet_name: "Phạm Ngọc Long",
-  },
-  {
-    id: "2",
-    name: "Con vẹt lam",
-    estimate_time: "15:15",
-    service_type: "Spa chăm sóc",
-    vet_name: "Chưa xác định",
-  },
-];
 
-const dataComing = [
-  {
-    id: "1",
-    name: "Lê Hữu",
-    estimate_time: "13:00",
-    arrival_date: "03/11",
-    service_type: "Khám tổng quát",
-    vet_name: "Phạm Ngọc Long",
-  },
-  {
-    id: "2",
-    name: "Vẹt",
-    estimate_time: "15:15",
-    arrival_date: "05/11",
-    service_type: "Spa chăm sóc",
-    vet_name: "Chưa xác định",
-  },
-];
 
 const dataReExam = [
   {
@@ -96,7 +62,7 @@ export default function HomeScreen({ navigation }) {
     pending: { color: COLORS.orange, text: "Chờ xác nhận" },
     booked: { color: COLORS.pink, text: "Đã xác nhận" },
     checked_in: { color: COLORS.blue, text: "Đã check-in" },
-    on_going: { color: COLORS.green, text: "Đang trong quá trình khám" },
+    on_going: { color: COLORS.green, text: "Đang trong quá trình thực hiện" },
     finish: { color: COLORS.green, text: "Hoàn thành khám bệnh" },
     cancelled: { color: COLORS.red, text: "Đã hủy lịch khám" },
   };
@@ -222,9 +188,17 @@ export default function HomeScreen({ navigation }) {
                   renderItem={({ item, index }) => (
                     <TouchableOpacity
                       onPress={() =>
+                        {
+                        if(item.service_type_id === 'ST001'){
                         navigation.navigate("DetailBooking", {
                           booking_id: item.booking_id,
                         })
+                        }else if(item.service_type_id === 'ST003'){
+                        navigation.navigate("DetailBookingBoarding", {
+                          booking_id: item.booking_id,
+                        })    
+                        }
+                      }
                       }
                       activeOpacity={0.8}
                       style={{
@@ -358,9 +332,17 @@ export default function HomeScreen({ navigation }) {
                   renderItem={({ item, index }) => (
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate("DetailBooking", {
-                          booking_id: item.booking_id,
-                        })
+                        {
+                          if(item.service_type_id === 'ST001'){
+                          navigation.navigate("DetailBooking", {
+                            booking_id: item.booking_id,
+                          })
+                          }else if(item.service_type_id === 'ST003'){
+                          navigation.navigate("DetailBookingBoarding", {
+                            booking_id: item.booking_id,
+                          })    
+                          }
+                        }
                       }
                       activeOpacity={0.8}
                       style={{

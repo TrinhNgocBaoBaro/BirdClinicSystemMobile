@@ -11,6 +11,12 @@ import { useFonts } from "expo-font";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+// import io from "socket.io-client";
+// const socket = io("https://clinicsystem.io.vn");
+// export {socket}; 
+
+// Customer Screen
+
 import HomeScreen from "./screens/HomeScreen"
 import ServiceScreen from "./screens/ServiceScreen"
 import BirdScreen from "./screens/BirdScreen"
@@ -32,6 +38,10 @@ import BookingFinishedScreen from './screens/BookingFinishedScreen';
 import ChooseDateByDateScreen from './screens/ChooseDateByDateScreen';
 import DetailBookingScreen from './screens/DetailBookingScreen';
 import DetailServiceFormScreen from './screens/DetailServiceFormScreen';
+import DetailBookingBoardingScreen from './screens/DetailBookingBoardingScreen';
+import DetailHistoryBoardingScreen from './screens/DetailHistoryBoardingScreen';
+// Staff Screen
+import QRCodeScreen from './staff_screens/QRCodeScreen';
 
 const CustomTabBarButton = ({ onPress }) => (
   <View style={{
@@ -135,6 +145,8 @@ const TabRoute = () => {
   )
 }
 
+
+
 export default function App() {
 
   const [fontsLoaded, fontError] = useFonts({
@@ -153,6 +165,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Splash">
         <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="QRCode" component={QRCodeScreen} />
         <Stack.Screen name="Home" component={TabRoute} />
         <Stack.Screen name="Detail" component={Detail} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
@@ -169,7 +182,9 @@ export default function App() {
         <Stack.Screen name="ConfirmBookingAndSymptom" component={ConfirmBookingAndSymptomScreen} />
         <Stack.Screen name="BookingFinished" component={BookingFinishedScreen} />
         <Stack.Screen name="DetailBooking" component={DetailBookingScreen} />
+        <Stack.Screen name="DetailBookingBoarding" component={DetailBookingBoardingScreen} />
         <Stack.Screen name="DetailServiceForm" component={DetailServiceFormScreen} />
+        <Stack.Screen name="DetailHistoryBoarding" component={DetailHistoryBoardingScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

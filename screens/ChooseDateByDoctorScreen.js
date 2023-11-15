@@ -247,7 +247,7 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
                 padding: 10,
               }}
               mode="calendar"
-              minimumDate={today}
+              // minimumDate={today}
               selected={selectedDate}
               onSelectedChange={(date) => handleSelectDate(date)}
             />

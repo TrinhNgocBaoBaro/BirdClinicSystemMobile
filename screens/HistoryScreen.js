@@ -12,43 +12,44 @@ const API = createAxios();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
 
-const dataHistory = [
-  {
-    id: "1",
-    name: "Lê Hữu",
-    arrival_date: "12/11/2023",
-    service_type: "Khám tổng quát",
-    vet_name: "Phạm Ngọc Long",
-  },
-  {
-    id: "1sdas",
-    name: "Lê Hữu",
-    arrival_date: "12/11/2023",
-    service_type: "Khám tổng quát",
-    vet_name: "Phạm Ngọc Long",
-  },
-];
+// const dataHistory = [
+//   {
+//     id: "1",
+//     name: "Lê Hữu",
+//     arrival_date: "12/11/2023",
+//     service_type: "Khám tổng quát",
+//     vet_name: "Phạm Ngọc Long",
+//   },
+//   {
+//     id: "1sdas",
+//     name: "Lê Hữu",
+//     arrival_date: "12/11/2023",
+//     service_type: "Khám tổng quát",
+//     vet_name: "Phạm Ngọc Long",
+//   },
+// ];
 
-const dataBoarding = [
-  {
-    id: "1",
-    name: "Trịnh Ngọc Bảo",
-    arrival_date: "12/11/2023",
-    service_type: "Nội trú",
-    vet_name: "Nguyễn Trí Công",
-  },
-  {
-    id: "1sdas",
-    name: "Lê Hữu",
-    arrival_date: "12/11/2023",
-    service_type: "Nội trú",
-    vet_name: "Phạm Ngọc Long",
-  },
-];
+// const dataBoarding = [
+//   {
+//     id: "1",
+//     name: "Trịnh Ngọc Bảo",
+//     arrival_date: "12/11/2023",
+//     service_type: "Nội trú",
+//     vet_name: "Nguyễn Trí Công",
+//   },
+//   {
+//     id: "1sdas",
+//     name: "Lê Hữu",
+//     arrival_date: "12/11/2023",
+//     service_type: "Nội trú",
+//     vet_name: "Phạm Ngọc Long",
+//   },
+// ];
 
 export default function HistoryScreen({navigation}) {
 
   const [userData, setUserData] = React.useState();
+  const [dataHistory, setDataHistory] = React.useState();
   const [dataBoarding, setDataBoarding] = React.useState();
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
@@ -64,22 +65,21 @@ export default function HistoryScreen({navigation}) {
   const fetchData = async () => {
     switch (selectedIndex) {
       case 0:
-        // try {
-        //   console.log("Ngày hôm nay để bỏ vào API: ", today);
-        //   const response = await API.get(
-        //     `/booking/?arrival_date=${today}&account_id=${userData.account_id}`
-        //   );
-        //   if (response.data) {
-        //     // const filterData = response.data.filter((e) => {
-        //     //   return e.status !== "cancelled" && e.status !== "finish";
-        //     // });
-        //     const filterData = response.data;
-        //     // console.log(filterData);
-        //     setDataToday(filterData);
-        //   }
-        // } catch (error) {
-        //   console.log(error);
-        // }
+        try {
+          const response = await API.get(
+            `/booking/?status=finish&account_id=${userData.account_id}`
+          );
+          if (response.data) {
+            // const filterData = response.data.filter((e) => {
+            //   return e.status === "finish";
+            // });
+            const filterData = response.data;
+            console.log("Data history: ",filterData);
+            setDataHistory(filterData);
+          }
+        } catch (error) {
+          console.log(error);
+        }
         break;
       case 1:
         try {
@@ -88,7 +88,7 @@ export default function HistoryScreen({navigation}) {
           );
           if (response.data) {
             const data = response.data;
-            console.log(response.data)
+            // console.log(response.data)
             const filterData = data.filter((e) => {
               return (
                 e.service_type_id === "ST003"
@@ -113,11 +113,6 @@ export default function HistoryScreen({navigation}) {
 
 const isFocused = useIsFocused();
 
-// React.useEffect(()=>{
-//  if(isFocused) console.log("forcus History")
-// },[isFocused])
-
-
   return (
     <>
       <MainHeader iconHeader={"folder-open-outline"} navigation={navigation}/>
@@ -136,12 +131,13 @@ const isFocused = useIsFocused();
           />
       </View>
       {selectedIndex === 0 &&
+            dataHistory &&
            <View style={{ flex: 1, backgroundColor: COLORS.white }}>
            <FlatList
              data={dataHistory}
              renderItem={({ item, index }) => (
                <TouchableOpacity
-                 onPress={() => {}}
+                 onPress={() => {navigation.navigate("DetailHistoryBooking", {booking_id: item.booking_id})}}
                  activeOpacity={0.8}
                  style={{
                    backgroundColor: COLORS.white,
@@ -166,7 +162,7 @@ const isFocused = useIsFocused();
                    <Text
                      style={{ fontFamily: FONTS.semiBold, fontSize: 16 }}
                    >
-                     {item.name}
+                     {item.bird.name}
                    </Text>
                    <Text
                      style={{
@@ -190,7 +186,7 @@ const isFocused = useIsFocused();
                        color={COLORS.green}
                        style={{ marginLeft: 10 }}
                      />{" "}
-                     Bs. {item.vet_name}
+                     Bs. {item.veterinarian.name}
                    </Text>
                    <Text
                      style={{
@@ -205,7 +201,7 @@ const isFocused = useIsFocused();
                        color={COLORS.green}
                        style={{ marginLeft: 10 }}
                      />{" "}
-                     {item.arrival_date}
+                     {moment(item.arrival_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
                    </Text>
                  </View>
                  <View
@@ -227,7 +223,7 @@ const isFocused = useIsFocused();
                  </View>
                </TouchableOpacity>
              )}
-             keyExtractor={(item) => item.id}
+             keyExtractor={(item) => item.booking_id}
            />
          </View>
         }

@@ -192,10 +192,12 @@ export default function HomeScreen({ navigation }) {
                         if(item.service_type_id === 'ST001'){
                         navigation.navigate("DetailBooking", {
                           booking_id: item.booking_id,
+                          account_id: userData.account_id
                         })
                         }else if(item.service_type_id === 'ST003'){
                         navigation.navigate("DetailBookingBoarding", {
                           booking_id: item.booking_id,
+                          account_id: userData.account_id
                         })    
                         }
                       }

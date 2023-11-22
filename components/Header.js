@@ -1,5 +1,5 @@
 import React from 'react'
-import { SafeAreaView, StyleSheet, View, Image, Text, Dimensions, Pressable } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Image, Text, Dimensions, Pressable, StatusBar } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons';
 import COLORS from '../constants/color';
 
@@ -35,7 +35,9 @@ export default function Header({ title, rightIcon, onPress, onPressRight }) {
 
 const styles = StyleSheet.create({
     top: {
-        marginTop: windowHeight * 0.03,
+        // marginTop: windowHeight * 0.03,
+        marginTop: StatusBar.currentHeight,
+        // marginTop: windowHeight * 0.06,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',

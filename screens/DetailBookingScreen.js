@@ -43,17 +43,63 @@ const socket = io("https://clinicsystem.io.vn");
 
 const DetailBookingScreen = ({ navigation, route }) => {
   const [bookingId, setBookingId] = React.useState(route.params.booking_id);
+  const [accountId, setAccountId] = React.useState(route.params.account_id);
+ 
   const [currentStatus, setCurrentStatus] = React.useState();
   const [dataBooking, setDataBooking] = React.useState();
   const [dataServiceForm, setDataServiceForm] = React.useState([]);
-  const [dataServiceFormDetail, setDataServiceFormDetail] = React.useState([]);
   const [load, setLoad] = React.useState(false);
 
   React.useEffect(()=>{
+
     console.log("socket id khi mới vào bên booking: ", socket.id)
-    socket.emit("login", {account_id: 'customer1'});
+    socket.emit("login", {account_id: accountId});
     console.log("Login sucess")
+
+    socket.on("server-confirm-check-in",(data)=>{
+      console.log("Data check-in trả về: ", data)
+      fetchData();
+      fetchDataServiceForm();
+    })
+
+    socket.on("server-start-exam",(data)=>{
+      console.log("Data on-going trả về: ", data)
+      fetchData();
+      fetchDataServiceForm();
+    })
+
+    socket.on("server-create-service-form",(data)=>{
+      console.log("Data create service form trả về: ", data)
+      fetchData();
+      fetchDataServiceForm();
+      if(data){
+        navigation.navigate("DetailServiceForm", {
+          service_form_id: data.service_form_id,
+          account_id: accountId
+        })
+      }
+    })
+
+    socket.on("server-complete-payment",(data)=>{
+      console.log("Data confirm payment trả về: ", data)
+      fetchData();
+      fetchDataServiceForm();
+    })
+
+    return () => {
+      if (socket) {
+        // socket.disconnect();
+        console.log("Disconnect thành công ♥ !");
+      }
+    };
+    
   },[])
+
+  React.useEffect(() => {
+    return () => {
+      console.log("socket id khi thoát bên booking: ", socket.id);
+    };
+  }, [socket]);
 
   const progressBooking = {
     pending: {
@@ -121,11 +167,6 @@ const DetailBookingScreen = ({ navigation, route }) => {
     },
   };
 
-  // const dataServiceFormDetail = [
-  //   { id: 1, name: "Xét nghiệm máu", price: "150,000" },
-  //   { id: 2, name: "Chụp X-quang", price: "100,000" },
-  // ];
-
   const fetchData = async () => {
     try {
       const response = await API.get(`/booking/${bookingId}`);
@@ -147,11 +188,6 @@ const DetailBookingScreen = ({ navigation, route }) => {
         const arrayAfterSort = arrayDataServiceForm.sort((a,b)=> a.time_create.localeCompare(b.time_create))
         console.log("aray: ",arrayAfterSort);
         setDataServiceForm(arrayAfterSort);
-        // console.log(
-        //   "Data Service Form Detail: ",
-        //   response.data[0].service_form_details
-        // );
-        setDataServiceFormDetail(response.data[0].service_form_details);
       }
     } catch (error) {
       console.log(error);
@@ -162,6 +198,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
     if (bookingId) {
       fetchData();
       fetchDataServiceForm();
+      console.log("socket id sau khi load: ", socket.id)
     }
   }, [bookingId, load]);
 
@@ -252,12 +289,13 @@ const DetailBookingScreen = ({ navigation, route }) => {
             <Text
               style={{
                 fontFamily: FONTS.semiBold,
-                fontSize: 14,
+                fontSize: 15,
                 margin: 10,
                 marginBottom: 5,
+                color: COLORS.blue
               }}
             >
-              Check-in thành công!
+              Check-in thành công !
             </Text>
             <Text
               style={{
@@ -266,7 +304,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
                 marginBottom: 15,
               }}
             >
-              Thời gian check-in: 12:33
+              Giờ check-in: {dataBooking.checkin_time}
             </Text>
             <Image
               source={{
@@ -359,9 +397,23 @@ const DetailBookingScreen = ({ navigation, route }) => {
                 fontSize: 15,
                 margin: 10,
                 textAlign: "center",
+                color: COLORS.blue
               }}
             >
-              Đã checkin sau khi có kết quả.
+              Đã checkin sau khi có kết quả !
+            </Text>
+            <Image
+              source={{
+                uri:
+                  dataBooking.veterinarian.image ||
+                  "https://firebasestorage.googleapis.com/v0/b/bsc-symtem.appspot.com/o/151da814-b87a-44f1-926c-e26040b8893e.png?alt=media",
+              }}
+              style={{ width: 100, height: 100, borderRadius: 50 }}
+            />
+            <Text
+              style={{ fontFamily: FONTS.semiBold, fontSize: 15, margin: 10 }}
+            >
+              Bs. {dataBooking.veterinarian.name}
             </Text>
           </View>
         );
@@ -605,7 +657,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
                     Giá
                   </Text>
                 </View>
-                {dataServiceFormDetail.map((item, index) => (
+                {item.service_form_details.map((item, index) => (
                   <View
                     style={{
                       flexDirection: "row",
@@ -682,6 +734,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
                     onPress={() =>
                       navigation.navigate("DetailServiceForm", {
                         service_form_id: item.service_form_id,
+                        account_id: accountId
                       })
                     }
                   >
@@ -707,11 +760,33 @@ const DetailBookingScreen = ({ navigation, route }) => {
                 }}
               >
                 Vui lòng tới quầy để checkin sau khi đã có các kết quả chỉ định.
-              </Text>}
-                
-              </View>
-            ))}
-        
+              </Text>
+                 
+              }
+            {item.status === 'done' && 
+            (dataBooking.status === 'test_requested' &&   
+            <View
+            style={{
+              padding: 10,
+              elevation: 2,
+              backgroundColor: COLORS.white,
+              justifyContent: "center",
+              alignItems: "center",
+              margin: 20,
+              marginBottom: 10,
+              borderRadius: 10,
+            }}
+          >
+            <Text
+              style={{ fontFamily: FONTS.semiBold, fontSize: 15, margin: 10 }}
+            >
+              Sử dụng mã QR bên dưới để checkin nè cha nội ơi
+            </Text>  
+          </View>
+          )      
+          }
+        </View>
+        ))}
 
           <View
             style={{
@@ -788,15 +863,15 @@ const DetailBookingScreen = ({ navigation, route }) => {
             <View style={styles.viewAttribute}>
               <Text style={styles.textAttribute}>Giờ check-in</Text>
               <Text style={styles.textInfo}>
-                {dataBooking.check_in === null
-                  ? dataBooking.check_in
+                {dataBooking.checkin_time
+                  ? dataBooking.checkin_time
                   : "Chưa check-in"}
               </Text>
             </View>
 
             <View style={styles.viewAttribute}>
               <Text style={styles.textAttribute}>Bác sĩ phụ trách</Text>
-              <Text style={styles.textInfo}>Phạm Ngọc Long</Text>
+              <Text style={styles.textInfo}>{dataBooking.veterinarian.name}</Text>
             </View>
           </View>
         </ScrollView>

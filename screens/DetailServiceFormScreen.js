@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, Image, Dimensions } from "react-native";
 import React from "react";
 import Header from "../components/Header";
 import COLORS from "../constants/color";
@@ -8,6 +8,12 @@ import createAxios from "../utils/axios";
 const API = createAxios();
 import StepIndicator from "react-native-step-indicator";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import Modal from "react-native-modal";
+
+import io from "socket.io-client";
+const socket = io("https://clinicsystem.io.vn");
+
+const deviceHeight = Dimensions.get('window').height
 
 const labels = ["Chỉ định", "Thanh toán", "Hoàn tất"];
 const customStyles = {
@@ -37,15 +43,28 @@ const customStyles = {
 
 const DetailServiceFormScreen = ({ navigation, route }) => {
   const service_form_id = route.params.service_form_id;
+  const accountId = route.params.account_id;
 
   const [currentStatus, setCurrentStatus] = React.useState();
   const [dataServiceForm, setDataServiceForm] = React.useState();
   const [dataServiceFormDetail, setDataServiceFormDetail] = React.useState([]);
+  const [dataResultExam, setDataResultExam] = React.useState([]);
+  const [dataMedical, setDataMedical] = React.useState();
   const [showProgress, setShowProgress] = React.useState([]);
-  const dataServiceForm1 = [
-    { id: 1, name: "Xét nghiệm máu", price: "150,000" },
-    { id: 2, name: "Chụp X-quang", price: "100,000" },
-  ];
+  const [showModal, setShowModal] = React.useState(false);
+  const [load, setLoad] = React.useState(false);
+
+  React.useEffect(()=>{
+    console.log("socket id khi mới vào bên service form detail: ", socket.id)
+    socket.emit("login", {account_id: accountId});
+    console.log("Login sucess!")
+
+    socket.on("server-complete-payment",(data)=>{
+      console.log("Data confirm payment trả về: ", data)
+      fetchDataServiceForm();
+    })
+
+  },[])
 
   const progressServiceForm = {
     pending: {
@@ -156,13 +175,28 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
     try {
       const response = await API.get(`/service_Form/${service_form_id}`);
       if (response.data) {
-        console.log("Data Service Form: ", response.data);
+        // console.log("Data Service Form: ", response.data);
         setDataServiceForm(response.data[0]);
-        console.log(
-          "Data Service Form Detail: ",
-          response.data[0].service_form_details
-        );
+        // console.log(
+        //   "Data Service Form Detail: ",
+        //   response.data[0].service_form_details
+        // );
         setDataServiceFormDetail(response.data[0].service_form_details);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleShowResultExam = async (stdid) => {
+
+    try {
+      const responseMedical = await API.get(`/medicalRecord/?service_form_detail_id=${stdid}`);
+      const responseMedia = await API.get(`/media/?type=service_form_details&type_id=${stdid}`);
+      if (responseMedical.data && responseMedia.data) {
+        setDataMedical(responseMedical.data[0])
+        setDataResultExam(responseMedia.data);
+        setShowModal(true)
       }
     } catch (error) {
       console.log(error);
@@ -173,7 +207,7 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
     if (service_form_id) {
       fetchDataServiceForm();
     }
-  }, [service_form_id]);
+  }, [service_form_id, load]);
 
   React.useEffect(() => {
     if (dataServiceForm) {
@@ -191,6 +225,7 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
         title="Chi tiết dịch vụ chỉ định"
         onPress={() => navigation.goBack()}
         rightIcon="ellipsis-vertical"
+        onPressRight={()=> setLoad(!load)}
       />
       <ScrollView style={{ flex: 1, backgroundColor: COLORS.white }}>
         <View style={{ marginVertical: 20, marginLeft: 20 }}>
@@ -312,6 +347,7 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
                   <TouchableOpacity
                     activeOpacity={0.6}
                     style={{ flexDirection: "row" }}
+                    onPress={()=>{handleShowResultExam(item.service_form_detail_id)}}
                   >
                     <Icon name="copy-outline" size={15} color={COLORS.green} />
                     <Text
@@ -417,6 +453,84 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
             </View>
           ))}
         </View>
+        <Modal
+          isVisible={showModal}
+          hasBackdrop={true}
+          // onBackdropPress={()=>{setShowModal(false)}}
+          // backdropColor={COLORS.green}
+          // backdropOpacity={0.9}
+          // // backdropTransitionInTiming={15000}
+          // backdropTransitionOutTiming={5000}
+          animationInTiming={1000}
+          animationOutTiming={300}
+          animationIn="zoomIn"
+          // animationOut="flash"
+        >
+          <View
+            style={{
+              height: deviceHeight * 0.8 ,
+              backgroundColor: COLORS.white,
+              borderRadius: 10,
+              marginBottom: 10,
+              overflow: 'hidden'
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: COLORS.green,
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+                paddingHorizontal: 10,
+                paddingVertical: 20,
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexDirection: 'row',
+                
+              }}
+            >
+                <Icon name='document-outline' size={30} color={COLORS.white}/>
+              <Text
+                style={{
+                  fontSize: 17,
+                  fontFamily: FONTS.bold,
+                  color: COLORS.white,
+                }}
+              >
+                Kết quả xét nghiệm
+              </Text>
+              <Pressable onPress={()=>{setShowModal(false)}} >
+                <Icon name='close-outline' size={30} color={COLORS.white}/>
+              </Pressable>
+            </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {dataMedical && 
+                <>
+                <View style={{padding: 10}}>
+                <View style={styles.viewAttribute}>
+                  <Text style={styles.textAttribute}>Triệu chứng</Text>
+                  <Text style={styles.textInfo}>{dataMedical.symptom}</Text>
+                </View>
+                <View style={styles.viewAttribute}>
+                  <Text style={styles.textAttribute}>Chẩn đoán</Text>
+                  <Text style={styles.textInfo}>{dataMedical.diagnose}</Text>
+                </View>
+                <View style={styles.viewAttribute}>
+                  <Text style={styles.textAttribute}>Khuyến nghị</Text>
+                  <Text style={styles.textInfo}>{dataMedical.recommendations}</Text>
+                </View>
+              </View>
+                </>
+              }
+              
+              {dataResultExam.length !== 0 && dataResultExam.map((item, index)=>(
+              <Image source={{uri: item.link}} 
+              style={{width: "auto", height: deviceHeight * 0.8 * 0.35}} key={index}/> 
+              )
+              )}
+           
+            </ScrollView>
+          </View>
+        </Modal>
       </ScrollView>
     </>
   );
@@ -424,4 +538,24 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
 
 export default DetailServiceFormScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  viewAttribute: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  textAttribute: {
+    fontFamily: FONTS.semiBold,
+    fontSize: 15,
+    marginLeft: 5,
+    color: COLORS.grey,
+  },
+  textInfo: {
+    width: "60%",
+    fontFamily: FONTS.semiBold,
+    fontSize: 15,
+    marginLeft: 5,
+    color: COLORS.black,
+    textAlign: "right",
+  },
+});

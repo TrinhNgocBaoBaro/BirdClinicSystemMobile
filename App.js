@@ -40,6 +40,7 @@ import DetailBookingScreen from './screens/DetailBookingScreen';
 import DetailServiceFormScreen from './screens/DetailServiceFormScreen';
 import DetailBookingBoardingScreen from './screens/DetailBookingBoardingScreen';
 import DetailHistoryBoardingScreen from './screens/DetailHistoryBoardingScreen';
+import DetailHistoryBookingScreen from './screens/DetailHistoryBookingScreen';
 // Staff Screen
 import QRCodeScreen from './staff_screens/QRCodeScreen';
 
@@ -100,11 +101,12 @@ const TabRoute = () => {
           headerShown: false,
         }} />
       <Tab.Screen
-        name="Dịch vụ"
-        component={ServiceScreen}
+        name="Chim"
+        component={BirdScreen}
         options={{
           tabBarIcon: ({ focused, color }) => {
-            return <Icon name={focused ? "layers":"layers-outline"} color={color} size={28} />;
+            return focused ? <Icon name="logo-twitter" color={color} size={30} />
+            : <Icon1 name="social-twitter" color={color} size={28} />;
           },
           headerShown: false,
 
@@ -123,21 +125,20 @@ const TabRoute = () => {
 
         }} />
       <Tab.Screen
-        name="Chim"
-        component={BirdScreen}
-        options={{
-          tabBarIcon: ({ focused, color }) => {
-            return focused ? <Icon name="logo-twitter" color={color} size={30} />
-            : <Icon1 name="social-twitter" color={color} size={28} />;
-          },
-          headerShown: false,
-        }} />
-      <Tab.Screen
         name="Lịch sử"
         component={HistoryScreen}
         options={{
           tabBarIcon: ({ focused, color }) => {
-            return <Icon name={focused ? "folder-open":"folder-open-outline"} color={color} size={28} />;
+            return <Icon name={focused ? "timer":"timer-outline"} color={color} size={28} />;
+          },
+          headerShown: false,
+        }} />
+      <Tab.Screen
+        name="Khác"
+        component={BirdScreen}
+        options={{
+          tabBarIcon: ({ focused, color }) => {
+            return <Icon name={focused ? `albums`:`albums-outline` } color={color} size={25} />;
           },
           headerShown: false,
         }} />
@@ -185,6 +186,7 @@ export default function App() {
         <Stack.Screen name="DetailBookingBoarding" component={DetailBookingBoardingScreen} />
         <Stack.Screen name="DetailServiceForm" component={DetailServiceFormScreen} />
         <Stack.Screen name="DetailHistoryBoarding" component={DetailHistoryBoardingScreen} />
+        <Stack.Screen name="DetailHistoryBooking" component={DetailHistoryBookingScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

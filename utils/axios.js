@@ -1,4 +1,5 @@
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
  const baseURL = "https://clinicsystem.io.vn";
 
@@ -10,6 +11,20 @@ const createAxios = () => {
       "Content-Type": "application/json; charset=utf-8", // Định dạng dữ liệu gửi đi
     },
   });
+
+  api.interceptors.request.use(
+    async (config) => {
+      const UserLoggedInData = await AsyncStorage.getItem("UserLoggedInData")
+      const parseUserData = JSON.parse(UserLoggedInData)
+      if (UserLoggedInData) {
+        config.headers['Authorization'] = `Bearer ${parseUserData.accessToken}` || `Bearer `;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
 
   const get = async (endpoint) => {
     try {

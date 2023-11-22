@@ -46,10 +46,9 @@ export default function LoginScreen({ navigation }) {
       if (response.data) {
         console.log(response.data.data)
         const userData = response.data.data;
-        // socket.emit("login", {account_id: userData.account_id});
         AsyncStorage.setItem(
           "UserLoggedInData",
-          JSON.stringify({ userData, role: response.data.role ,loggedIn: true })
+          JSON.stringify({ userData, role: response.data.role, accessToken: response.data.accessToken ,loggedIn: true })
         )
           .then(() => {
             // navigation.navigate("Home");

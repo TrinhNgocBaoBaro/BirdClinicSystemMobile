@@ -34,12 +34,12 @@ const ItemBird = ({ item, navigation, onPress }) => {
       </Text>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Text style={{ fontSize: 12, fontFamily: FONTS.medium }}>
-          Size: {item.size}
+          {item.bird_breed.breed}
         </Text>
         <Text
           style={{ fontSize: 12, fontFamily: FONTS.bold, color: COLORS.grey }}
         >
-          {item.sex}
+          {item.gender}
         </Text>
       </View>
     </TouchableOpacity>

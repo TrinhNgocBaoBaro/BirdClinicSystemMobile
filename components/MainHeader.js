@@ -1,5 +1,5 @@
 import React from "react";
-import { StatusBar } from "expo-status-bar";
+// import { StatusBar } from "expo-status-bar";
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,6 +8,7 @@ import {
   Text,
   Dimensions,
   Pressable,
+  StatusBar
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import COLORS from "../constants/color";
@@ -77,7 +78,8 @@ export default function MainHeader({ iconHeader, navigation }) {
 
 const styles = StyleSheet.create({
   top: {
-    marginTop: windowHeight * 0.03,
+    // marginTop: windowHeight * 0.03,
+    marginTop: StatusBar.currentHeight,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

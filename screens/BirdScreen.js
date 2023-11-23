@@ -128,7 +128,7 @@ export default function BirdScreen({ navigation }) {
           spacing={20}
           data={dataBird}
           renderItem={({ item }) => (
-            <ItemBird item={item} navigation={navigation} onPress={()=>navigation.navigate('DetailBirdProfile',{BirdDetail: item})}/>
+            <ItemBird item={item} navigation={navigation} onPress={()=>navigation.navigate('DetailBirdProfile',{bird_id: item.bird_id})}/>
           )}
           keyExtractor={(item) => item.bird_id}
           style={{ maxHeight: deviceHeight* 0.65 }}
@@ -150,7 +150,7 @@ export default function BirdScreen({ navigation }) {
         }
         
         <View style={{ marginHorizontal: 100, marginVertical: 20 }}>
-          <ButtonFlex title="Thêm hồ sơ chim" stylesText={{ fontSize: 14 }} stylesButton={{paddingVertical:15, borderRadius: 10}} />
+          <ButtonFlex onPress={()=>navigation.navigate("CreateBirdProfile")} title="Thêm hồ sơ chim" stylesText={{ fontSize: 15 }} stylesButton={{paddingVertical:15, borderRadius: 10, elevation: 2}} />
         </View>
       </View>
     </>

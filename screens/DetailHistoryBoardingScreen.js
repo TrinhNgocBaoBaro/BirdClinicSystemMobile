@@ -403,6 +403,7 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
                   borderColor: COLORS.green,
                   flex: 1,
                   marginRight: 5,
+                  elevation: 3
                 }}
                 placeholder="Nhập để chat"
                 cursorColor={COLORS.green}
@@ -411,27 +412,29 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
                 value={textChat}
                 onChangeText={(newTextChat) => setTextChat(newTextChat)}
               />
+              <TouchableOpacity onPress={()=>setTextChat("")} style={styles.removeIcon}>
               <Icon
-                style={styles.searchIcon}
                 name="close-circle"
                 size={25}
                 color={COLORS.lightGrey}
               />
+              </TouchableOpacity>
             </View>
 
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={pickImage}
               style={{
-                backgroundColor: COLORS.green,
+                backgroundColor: COLORS.white,
                 paddingHorizontal: 15,
                 borderRadius: 10,
                 alignItems: "center",
                 justifyContent: "center",
                 marginRight: 5,
+                elevation: 3
               }}
             >
-              <Icon name="image" size={30} color={COLORS.white} />
+              <Icon name="image" size={30} color={COLORS.black} />
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={0.7}
@@ -450,6 +453,7 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
                 borderRadius: 10,
                 alignItems: "center",
                 justifyContent: "center",
+                elevation: 3
               }}
             >
               <Text
@@ -490,7 +494,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  searchIcon: {
+  removeIcon: {
     padding: 0,
     position: "absolute",
     right: 10,

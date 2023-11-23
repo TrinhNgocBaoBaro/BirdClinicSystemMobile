@@ -7,6 +7,8 @@ import SegmentedControl from "@react-native-segmented-control/segmented-control"
 import FONTS from "../constants/font";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import ItemMedicalRecord from "../components/ItemMedicalRecord";
+import createAxios from "../utils/axios";
+const API = createAxios();
 
 const dataMedicalRecord = [
   {
@@ -44,7 +46,25 @@ const dataMedicalRecord = [
 ];
 
 const DetailBirdProfile = ({ navigation, route }) => {
+  const birdId = route.params.bird_id
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [dataBird, setDataBird] = React.useState();
+
+  const fetchDataBird = async () => {
+    try {
+      const response = await API.get(`/bird/${birdId}`);
+      if (response.data) {
+        console.log("Đã fetch data bird")
+        setDataBird(response.data);
+        }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(()=>{
+    if(birdId) fetchDataBird();
+  },[birdId])
 
   return (
     <>
@@ -68,6 +88,7 @@ const DetailBirdProfile = ({ navigation, route }) => {
           />
         </View>
         {selectedIndex === 0 && (
+          dataBird &&
           <View style={styles.birdProfileContainer}>
             <View style={{position: 'absolute', right: 20, top: 10, padding: 3, backgroundColor: COLORS.darkGrey, borderRadius: 50, elevation: 3}}>                
               <TouchableOpacity activeOpacity={0.7} onPress={()=>console.log('onClickEdit')} style={{padding: 10, backgroundColor: COLORS.white, borderRadius: 50}}>
@@ -77,7 +98,7 @@ const DetailBirdProfile = ({ navigation, route }) => {
             <View style={styles.grayBackground}></View>
             <View style={styles.outBorderImage}>
               <Image
-                source={{ uri: route.params.BirdDetail.image }}
+                source={{ uri: dataBird.image || "https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg" }}
                 style={{ height: 190, width: 190, borderRadius: 100 }}
               />
             </View>
@@ -99,7 +120,7 @@ const DetailBirdProfile = ({ navigation, route }) => {
                   marginBottom: 5
                 }}
               >
-                {route.params.BirdDetail.name}
+                {dataBird.name}
               </Text>
               <Text
                 style={{
@@ -108,7 +129,7 @@ const DetailBirdProfile = ({ navigation, route }) => {
                   fontSize: 13,
                 }}
               >
-                15/09/2023
+                {dataBird.hatching_date}
               </Text>
             </View>
             <View style={styles.profileContainer}>
@@ -121,7 +142,7 @@ const DetailBirdProfile = ({ navigation, route }) => {
                   width: 120,
                 }}
               >
-                <Text style={styles.textAttribute}>Đực</Text>
+                <Text style={styles.textAttribute}>{dataBird.gender}</Text>
                 <Text style={styles.textNameAttribute}>Giới tính</Text>
               </View>
               <View
@@ -133,11 +154,11 @@ const DetailBirdProfile = ({ navigation, route }) => {
                   width: 120,
                 }}
               >
-                <Text style={styles.textAttribute}>Xám vàng</Text>
+                <Text style={styles.textAttribute}>{dataBird.color}</Text>
                 <Text style={styles.textNameAttribute}>Màu sắc</Text>
               </View>
               <View style={{ alignItems: "center", padding: 10, width: 120 }}>
-                <Text style={styles.textAttribute}>Lớn</Text>
+                <Text style={styles.textAttribute}>{dataBird.bird_breed.bird_size.size}</Text>
                 <Text style={styles.textNameAttribute}>Kích thước</Text>
               </View>
             </View>
@@ -151,7 +172,7 @@ const DetailBirdProfile = ({ navigation, route }) => {
                   width: 180,
                 }}
               >
-                <Text style={styles.textAttribute}>Không</Text>
+                <Text style={styles.textAttribute}>{dataBird.bird_breed.breed}</Text>
                 <Text style={styles.textNameAttribute}>Giống</Text>
               </View>
               <View
@@ -162,7 +183,7 @@ const DetailBirdProfile = ({ navigation, route }) => {
                   width: 180,
                 }}
               >
-                <Text style={styles.textAttribute}>Không</Text>
+                <Text style={styles.textAttribute}>{dataBird.ISO_microchip}</Text>
                 <Text style={styles.textNameAttribute}>Microchip</Text>
               </View>
  
@@ -228,8 +249,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 10,
     marginHorizontal: 300,
-    borderWidth: 5
-    , borderColor: "white"
+    borderWidth: 5,
+    borderColor: "white"
   },
   textNameAttribute: {
     fontFamily: FONTS.medium,

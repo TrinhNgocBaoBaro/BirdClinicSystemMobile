@@ -41,6 +41,7 @@ import DetailServiceFormScreen from './screens/DetailServiceFormScreen';
 import DetailBookingBoardingScreen from './screens/DetailBookingBoardingScreen';
 import DetailHistoryBoardingScreen from './screens/DetailHistoryBoardingScreen';
 import DetailHistoryBookingScreen from './screens/DetailHistoryBookingScreen';
+import CreateBirdProfileScreen from './screens/CreateBirdProfileScreen';
 // Staff Screen
 import QRCodeScreen from './staff_screens/QRCodeScreen';
 
@@ -187,6 +188,7 @@ export default function App() {
         <Stack.Screen name="DetailServiceForm" component={DetailServiceFormScreen} />
         <Stack.Screen name="DetailHistoryBoarding" component={DetailHistoryBoardingScreen} />
         <Stack.Screen name="DetailHistoryBooking" component={DetailHistoryBookingScreen} />
+        <Stack.Screen name="CreateBirdProfile" component={CreateBirdProfileScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

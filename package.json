@@ -26,6 +26,7 @@
     "moti": "^0.27.0",
     "react": "18.2.0",
     "react-native": "0.72.6",
+    "react-native-element-dropdown": "^2.10.0",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-indicators": "^0.17.0",
     "react-native-modal": "^13.0.1",

@@ -12,40 +12,6 @@ const API = createAxios();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
 
-// const dataHistory = [
-//   {
-//     id: "1",
-//     name: "Lê Hữu",
-//     arrival_date: "12/11/2023",
-//     service_type: "Khám tổng quát",
-//     vet_name: "Phạm Ngọc Long",
-//   },
-//   {
-//     id: "1sdas",
-//     name: "Lê Hữu",
-//     arrival_date: "12/11/2023",
-//     service_type: "Khám tổng quát",
-//     vet_name: "Phạm Ngọc Long",
-//   },
-// ];
-
-// const dataBoarding = [
-//   {
-//     id: "1",
-//     name: "Trịnh Ngọc Bảo",
-//     arrival_date: "12/11/2023",
-//     service_type: "Nội trú",
-//     vet_name: "Nguyễn Trí Công",
-//   },
-//   {
-//     id: "1sdas",
-//     name: "Lê Hữu",
-//     arrival_date: "12/11/2023",
-//     service_type: "Nội trú",
-//     vet_name: "Phạm Ngọc Long",
-//   },
-// ];
-
 export default function HistoryScreen({navigation}) {
 
   const [userData, setUserData] = React.useState();

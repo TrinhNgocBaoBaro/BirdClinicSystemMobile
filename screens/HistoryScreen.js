@@ -1,6 +1,6 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react-native'
 import MainHeader from '../components/MainHeader';
 import { useIsFocused } from '@react-navigation/native';
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
@@ -18,6 +18,7 @@ export default function HistoryScreen({navigation}) {
   const [dataHistory, setDataHistory] = React.useState();
   const [dataBoarding, setDataBoarding] = React.useState();
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const isFocused = useIsFocused();
 
   const getUserData = async () => {
     const UserLoggedInData = await AsyncStorage.getItem("UserLoggedInData");
@@ -40,7 +41,7 @@ export default function HistoryScreen({navigation}) {
             //   return e.status === "finish";
             // });
             const filterData = response.data;
-            console.log("Data history: ",filterData);
+            console.log("Đã fetch data history");
             setDataHistory(filterData);
           }
         } catch (error) {
@@ -77,7 +78,6 @@ export default function HistoryScreen({navigation}) {
     if(userData && isFocused ) fetchData();
   },[userData, selectedIndex, isFocused])
 
-const isFocused = useIsFocused();
 
   return (
     <>
@@ -97,7 +97,25 @@ const isFocused = useIsFocused();
           />
       </View>
       {selectedIndex === 0 &&
-            dataHistory &&
+            dataHistory && (
+            dataHistory.length ===0 ? (
+              <View style={styles.empty}>
+                <Image
+                  source={require("../assets/EmptyHistoryImage.jpg")}
+                  style={{ height: 190, width: 280 }}
+                />
+                <Text style={styles.textEmpty}>
+                  Chưa có lịch sử khám bệnh !
+                </Text>
+                <TouchableOpacity 
+                  activeOpacity={0.7}
+                  onPress={()=> navigation.navigate("Booking")}
+                  style={{alignItems: 'center',flexDirection: 'row', padding: 10, elevation: 2, backgroundColor: COLORS.white, borderRadius: 10, marginTop: 10}}>
+                  <Icon name="add" size={22} color={COLORS.green}/>
+                  <Text style={{fontFamily: FONTS.bold, color: COLORS.green}}>{" "}Đặt lịch ngay</Text>
+                </TouchableOpacity>
+              </View>
+            ):(
            <View style={{ flex: 1, backgroundColor: COLORS.white }}>
            <FlatList
              data={dataHistory}
@@ -191,10 +209,29 @@ const isFocused = useIsFocused();
              )}
              keyExtractor={(item) => item.booking_id}
            />
-         </View>
+         </View>)
+         )
         }
       {selectedIndex === 1 &&
-            dataBoarding &&
+            dataBoarding && (
+            dataBoarding.length === 0 ? (
+              <View style={styles.empty}>
+              <Image
+                source={require("../assets/EmptyHistoryImage.jpg")}
+                style={{ height: 190, width: 280 }}
+              />
+              <Text style={styles.textEmpty}>
+                Chưa có lịch sử nội trú !
+              </Text>
+              <TouchableOpacity 
+                activeOpacity={0.7}
+                onPress={()=> navigation.navigate("Booking")}
+                style={{alignItems: 'center',flexDirection: 'row', padding: 10, elevation: 2, backgroundColor: COLORS.white, borderRadius: 10, marginTop: 10}}>
+                <Icon name="add" size={22} color={COLORS.green}/>
+                <Text style={{fontFamily: FONTS.bold, color: COLORS.green}}>{" "}Đặt lịch ngay</Text>
+              </TouchableOpacity>
+            </View>
+            ) : (
            <View style={{ flex: 1, backgroundColor: COLORS.white }}>
            <FlatList
              data={dataBoarding}
@@ -288,7 +325,7 @@ const isFocused = useIsFocused();
              )}
              keyExtractor={(item) => item.booking_id}
            />
-         </View>
+         </View>))
         }
         <StatusBar style="auto" />
       </View>
@@ -300,6 +337,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  empty: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  textEmpty: {
+    color: COLORS.grey,
+    fontFamily: FONTS.bold,
+    fontSize: 17,
+    marginTop: 10,
   },
 });
 

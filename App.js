@@ -42,6 +42,8 @@ import DetailBookingBoardingScreen from './screens/DetailBookingBoardingScreen';
 import DetailHistoryBoardingScreen from './screens/DetailHistoryBoardingScreen';
 import DetailHistoryBookingScreen from './screens/DetailHistoryBookingScreen';
 import CreateBirdProfileScreen from './screens/CreateBirdProfileScreen';
+import ChatBoardingScreen from './screens/ChatBoardingScreen';
+import ServiceRequestBoardingScreen from './screens/ServiceRequestBoardingScreen';
 // Staff Screen
 import QRCodeScreen from './staff_screens/QRCodeScreen';
 
@@ -56,8 +58,7 @@ const CustomTabBarButton = ({ onPress }) => (
     top: -50,
     elevation: 1
   }}>
-    <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
-      <View style={{
+    <TouchableOpacity activeOpacity={0.7} onPress={onPress} style={{
         width: 70,
         height: 70,
         borderRadius: 35,
@@ -65,9 +66,7 @@ const CustomTabBarButton = ({ onPress }) => (
         justifyContent: 'center',
         alignItems: 'center',
         ...styles.shadow
-      }}>
-        <Icon name="add" color={COLORS.white} size={40} />
-      </View>
+      }}><Icon name="add-outline" color={COLORS.white} size={40} />
     </TouchableOpacity>
   </View>
 
@@ -189,7 +188,8 @@ export default function App() {
         <Stack.Screen name="DetailHistoryBoarding" component={DetailHistoryBoardingScreen} />
         <Stack.Screen name="DetailHistoryBooking" component={DetailHistoryBookingScreen} />
         <Stack.Screen name="CreateBirdProfile" component={CreateBirdProfileScreen} />
-
+        <Stack.Screen name="ChatBoarding" component={ChatBoardingScreen} />
+        <Stack.Screen name="ServiceRequestBoarding" component={ServiceRequestBoardingScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -185,15 +185,16 @@ const CreateBirdProfileScreen = ({ navigation }) => {
             marginBottom: 20,
           }}
         >
+          <View style={{borderRadius: 8, elevation: 3, padding: 5, backgroundColor: COLORS.white}}>
           <Image
             source={{
               uri: image
                 ? image.uri
                 : "https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg",
             }}
-            style={{ width: 300, height: 225, borderRadius: 10 }}
+            style={{ width: 300, height: 225, borderRadius: 5 }}
             resizeMode="cover"
-          />
+          /></View>
         </View>
         <View style={{ alignItems: "center" }}>
           <TouchableOpacity
@@ -227,6 +228,8 @@ const CreateBirdProfileScreen = ({ navigation }) => {
               borderWidth: 1,
               borderRadius: 10,
               borderColor: COLORS.darkGrey,
+              fontFamily: FONTS.semiBold,
+              fontSize: 13
             }}
             value={valueName}
             placeholder="VD: Chào mào xanh, Vẹt đỏ..."
@@ -245,6 +248,8 @@ const CreateBirdProfileScreen = ({ navigation }) => {
                 borderWidth: 1,
                 borderRadius: 10,
                 borderColor: COLORS.darkGrey,
+                fontFamily: FONTS.semiBold,
+                fontSize: 13
               }}
               value={valueColor}
               placeholder="VD: Hồng đen, xanh lá.."
@@ -290,6 +295,8 @@ const CreateBirdProfileScreen = ({ navigation }) => {
               borderWidth: 1,
               borderRadius: 10,
               borderColor: COLORS.darkGrey,
+              fontFamily: FONTS.semiBold,
+              fontSize: 13
             }}
             value={valueHatchingDate}
             placeholder={"♥ dd/MM/yyyy VD: 15/09/2023"}
@@ -353,7 +360,7 @@ const CreateBirdProfileScreen = ({ navigation }) => {
           ) {
             createBirdProfile();
           } else {
-            console.log("Chưa đủ thông tin !");
+            Alert.alert("Thông báo", "Vui lòng nhập đầy đủ thông tin!")
           }
         }}
       />
@@ -388,11 +395,13 @@ const styles = StyleSheet.create({
   placeholderStyle: {
     fontSize: 14,
     color: COLORS.lightGrey,
+    fontFamily: FONTS.semiBold,
+    fontSize: 13
   },
   selectedTextStyle: {
     fontSize: 14,
     color: COLORS.black,
-    fontFamily: FONTS.medium,
+    fontFamily: FONTS.semiBold,
   },
   iconStyle: {
     width: 20,

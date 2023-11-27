@@ -18,6 +18,7 @@ import createAxios from "../utils/axios";
 const API = createAxios();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import Icon from "react-native-vector-icons/Ionicons";
 
 // import { socket } from "../App";
 // import io from "socket.io-client";
@@ -27,7 +28,9 @@ export default function LoginScreen({ navigation }) {
   const [phone, setPhone] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [noti, setNoti] = React.useState();
-  const [focus, setFocus] = React.useState(false);
+  const [focusPhone, setFocusPhone] = React.useState(false);
+  const [focusPassword, setFocusPassword] = React.useState(false);
+  const [showHidePassword, setShowHidePassword] = React.useState(true);
 
   const handleLogin = async () => {
     if (phone === "" || password === "") {
@@ -44,7 +47,7 @@ export default function LoginScreen({ navigation }) {
         }
       );
       if (response.data) {
-        console.log(response.data.data)
+        // console.log(response.data.data)
         const userData = response.data.data;
         AsyncStorage.setItem(
           "UserLoggedInData",
@@ -113,32 +116,51 @@ export default function LoginScreen({ navigation }) {
             marginBottom: 0,
             borderWidth: 1,
             borderRadius: 10,
-            borderColor: focus === true ? COLORS.green : COLORS.darkGrey,
+            borderColor: focusPhone === true ? COLORS.green : COLORS.darkGrey,
+            fontFamily: FONTS.semiBold,
+            elevation: 3
           }}
           placeholder="Số điện thoại"
           inputMode="numeric"
           keyboardType="numeric"
           onChangeText={(newTextPhone) => setPhone(newTextPhone)}
+          onFocus={() => setFocusPhone(!focusPhone)}
+          onBlur={() => setFocusPhone(!focusPhone)}
         />
+        <View style={{
+          width: '80%',
+          marginHorizontal: 50,
+          marginVertical: 10,
+        }}>
         <TextInput
           style={{
             justifyContent: "center",
+            alignItems: 'center',
             padding: 20,
             height: 60,
-            width: '80%',
             backgroundColor: COLORS.white,
-            marginVertical: 10,
-            marginHorizontal: 50,
             borderWidth: 1,
             borderRadius: 10,
-            borderColor: focus === true ? COLORS.green : COLORS.darkGrey,
+            borderColor: focusPassword === true ? COLORS.green : COLORS.darkGrey,
+            fontFamily: FONTS.semiBold,
+            elevation: 3
           }}
           placeholder="Mật khẩu"
           onChangeText={(newTextPassword) => setPassword(newTextPassword)}
-          onFocus={() => setFocus(!focus)}
-          onPressOut={() => setFocus(!focus)}
-          secureTextEntry={true}
+          onFocus={() => setFocusPassword(!focusPassword)}
+          onBlur={() => setFocusPassword(!focusPassword)}
+          secureTextEntry={showHidePassword}
         />
+        {password &&
+          <TouchableOpacity onPress={()=>setShowHidePassword(!showHidePassword)} style={{position: 'absolute', right: 20, top: 15}}>
+          {showHidePassword === true ? 
+          <Icon name="eye" size={26} color={COLORS.grey}/> 
+          :
+          <Icon name="eye-off" size={26} color={COLORS.grey}/>
+          }         
+        </TouchableOpacity>
+        }  
+        </View>
         <Text
           style={{
             fontFamily: FONTS.medium,

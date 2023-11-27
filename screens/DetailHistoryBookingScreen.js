@@ -21,6 +21,8 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
   );
   const [dataHistoryBooking, setDataHistoryBooking] = React.useState();
   const [dataServiceForm, setDataServiceForm] = React.useState([]);
+  const [dataPrescription, setDataPrescription] = React.useState();
+
   const [load, setLoad] = React.useState(false);
 
   const fetchDataHistoryBooking = async () => {
@@ -52,15 +54,28 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
     }
   };
 
+  const fetchDataPrescription = async () => {
+    try {
+      const response = await API.get(`/prescription/?booking_id=${bookingId}`);
+      if (response.data) {
+        // console.log("Data Prescription: ", response.data);
+        const arrayDataPrescription = response.data;
+        setDataPrescription(arrayDataPrescription);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleShowPrescription = (index) => {
     if (showDetailPrescription.includes(index)) {
       // Item đã mở, nên đóng nó đi
-      setShowProgress(
+      setShowDetailPrescription(
         showDetailPrescription.filter((itemIndex) => itemIndex !== index)
       );
     } else {
       // Item đã đóng, nên mở nó lên
-      setShowProgress([...showDetailPrescription, index]);
+      setShowDetailPrescription([...showDetailPrescription, index]);
     }
   };
 
@@ -68,6 +83,7 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
     if (bookingId) {
       fetchDataHistoryBooking();
       fetchDataServiceForm();
+      fetchDataPrescription();
     }
   }, [bookingId, load]);
 
@@ -187,7 +203,7 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
             </View>
           </View>
         )}
-        {dataServiceForm.length !== 0 &&
+        {dataServiceForm.length !== 0 ? 
           dataServiceForm.map((item, index) => (
             <View
               style={{
@@ -278,8 +294,71 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
                 </View>
               ))}
             </View>
-          ))}
-
+          )) :         
+           <View
+              style={{
+                height: "auto",
+                padding: 20,
+                elevation: 2,
+                backgroundColor: COLORS.white,
+                marginHorizontal: 20,
+                borderRadius: 10,
+                marginBottom: 10,
+                marginTop: 20,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingBottom: 10,
+                  marginBottom: 10,
+                  borderBottomWidth: 2,
+                  borderBottomColor: COLORS.darkGrey,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Icon
+                    name="document-text-outline"
+                    size={24}
+                    color={COLORS.green}
+                  />
+                  <Text
+                    style={{
+                      fontFamily: FONTS.semiBold,
+                      fontSize: 16,
+                      marginLeft: 5,
+                    }}
+                  >
+                    CHỈ ĐỊNH
+                  </Text>
+                </View>            
+              </View>
+              <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                marginVertical: 20,
+              }}
+            >
+              <Icon
+                name="information-circle-outline"
+                size={23}
+                color={COLORS.green}
+              />
+              <Text
+                style={{
+                  fontFamily: FONTS.medium,
+                  fontSize: 15,
+                  marginLeft: 5,
+                }}
+              >
+                Không có chỉ định
+              </Text>
+              </View>
+            </View>
+          }
         <View
           style={{
             height: "auto",
@@ -288,7 +367,7 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
             backgroundColor: COLORS.white,
             marginHorizontal: 20,
             borderRadius: 10,
-            marginBottom: 10,
+            marginBottom: 100,
             marginTop: 20,
           }}
         >
@@ -313,115 +392,156 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
               ĐƠN THUỐC
             </Text>
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: FONTS.semiBold,
-                fontSize: 13,
-                margin: 10,
-                color: COLORS.grey,
-              }}
-            >
-              Tên thuốc
-            </Text>
-            <Text
-              style={{
-                fontFamily: FONTS.semiBold,
-                fontSize: 13,
-                margin: 10,
-                color: COLORS.grey,
-              }}
-            >
-              Liều lượng
-            </Text>
-          </View>
-          <View
-            style={{ borderBottomWidth: 1, borderBottomColor: COLORS.darkGrey }}
-          >
-            <View style={styles.viewAttribute}>
-              <Text
+          {dataPrescription ? (
+            <>
+              <View
                 style={{
-                  fontFamily: FONTS.semiBold,
-                  fontSize: 15,
-                  marginLeft: 5,
-                  color: COLORS.black,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                1. Thuốc đau bụng
-              </Text>
-              <Text style={styles.textInfo}>3 liều / 7 ngày</Text>
-            </View>
+                <Text
+                  style={{
+                    fontFamily: FONTS.semiBold,
+                    fontSize: 13,
+                    margin: 10,
+                    color: COLORS.grey,
+                  }}
+                >
+                  Tên thuốc
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: FONTS.semiBold,
+                    fontSize: 13,
+                    margin: 10,
+                    color: COLORS.grey,
+                  }}
+                >
+                  Liều lượng
+                </Text>
+              </View>
+              {dataPrescription.prescription_details.map((item, index) => (
+                <View
+                  style={{
+                    borderBottomWidth: 1,
+                    borderBottomColor: COLORS.darkGrey,
+                    marginBottom: 10
+                  }}
+                  key={item.prescription_detail_id}
+                >
+                  <View style={styles.viewAttribute}>
+                    <Text
+                      style={{
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 15,
+                        marginLeft: 5,
+                        color: COLORS.black,
+                      }}
+                    >
+                      {index+1}. {item.medicine.name}
+                    </Text>
+                    <Text style={[styles.textInfo,{fontSize: 14}]}>{item.dose} liều / {item.day} ngày</Text>
+                  </View>
 
-            <View style={styles.viewAttribute}>
-              <Text
-                style={{
-                  fontFamily: FONTS.semiBold,
-                  fontSize: 15,
-                  marginLeft: 5,
-                  color: COLORS.black,
-                }}
-              >
-                Đơn vị
-              </Text>
-              <Text style={styles.textInfo}>Ống</Text>
-            </View>
-            <View style={styles.viewAttribute}>
-              <Text
-                style={{
-                  fontFamily: FONTS.semiBold,
-                  fontSize: 15,
-                  marginLeft: 5,
-                  color: COLORS.black,
-                }}
-              >
-                Tổng số liều
-              </Text>
-              <Text style={styles.textInfo}>3</Text>
-            </View>
-            <View style={styles.viewAttribute}>
-              <Text
-                style={{
-                  fontFamily: FONTS.semiBold,
-                  fontSize: 15,
-                  marginLeft: 5,
-                  color: COLORS.black,
-                }}
-              >
-                Lời khuyên
-              </Text>
-              <Text style={styles.textInfo}>
-                Lời khuyên Lời khuyên Lời khuyên Lời khuyên Lời khuyên
-              </Text>
-            </View>
+                  <View style={styles.viewAttribute}>
+                    <Text
+                      style={{
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 15,
+                        marginLeft: 5,
+                        color: COLORS.black,
+                      }}
+                    >
+                      Đơn vị
+                    </Text>
+                    <Text style={[styles.textInfo,{fontSize: 14}]}>{item.medicine.unit}</Text>
+                  </View>
 
-            <TouchableOpacity
-              activeOpacity={0.5}
+                  {showDetailPrescription.includes(index) && 
+                  <>
+                  <View style={styles.viewAttribute}>
+                    <Text
+                      style={{
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 15,
+                        marginLeft: 5,
+                        color: COLORS.black,
+                      }}
+                    >
+                      Tổng số liều
+                    </Text>
+                    <Text style={styles.textInfo}>{item.total_dose}</Text>
+                  </View>
+                  <View style={styles.viewAttribute}>
+                    <Text
+                      style={{
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 15,
+                        marginLeft: 5,
+                        color: COLORS.black,
+                      }}
+                    >
+                      Lời khuyên
+                    </Text>
+                    <Text style={styles.textInfo}>
+                      {item.note}
+                    </Text>
+                  </View>
+                  </>
+                  }
+                  
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={()=>handleShowPrescription(index)}
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: FONTS.semiBold,
+                        color: COLORS.green,
+                        marginBottom: 10,
+                      }}
+                    >
+                    {showDetailPrescription.includes(index) ? "Thu gọn" : "Chi tiết"}
+                    </Text>
+                    <Icon
+                      name={showDetailPrescription.includes(index)?"chevron-up-outline" : "chevron-down-outline" }
+                      size={20}
+                      color={COLORS.green}
+                    />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </>
+          ) : (
+            <View
               style={{
                 flexDirection: "row",
+                alignItems: "center",
                 justifyContent: "center",
+                marginVertical: 20,
               }}
             >
-              <Text
-                style={{
-                  fontFamily: FONTS.bold,
-                  color: COLORS.green,
-                  marginBottom: 10,
-                }}
-              >
-                Chi tiết
-              </Text>
               <Icon
-                name="chevron-down-outline"
-                size={20}
+                name="information-circle-outline"
+                size={23}
                 color={COLORS.green}
               />
-            </TouchableOpacity>
-          </View>
+              <Text
+                style={{
+                  fontFamily: FONTS.medium,
+                  fontSize: 15,
+                  marginLeft: 5,
+                }}
+              >
+                Không có đơn thuốc
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </>

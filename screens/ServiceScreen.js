@@ -13,13 +13,13 @@ const item = [
     },
     {
         id: 'ST003',
-        name: 'Nội trú',
+        name: 'Nội trú, khách sạn',
         image: 'https://www.birds.cornell.edu/home/wp-content/uploads/2023/09/334289821-Baltimore_Oriole-Matthew_Plante.jpg',
         description: 'Nội trú phòng khám BirdClinic'
     },
     {
         id: 'ST002',
-        name: 'Spa chăm sóc',
+        name: 'Spa, làm đẹp',
         image: 'https://www.rspca.org.au/sites/default/files/blog-image/shutterstock_685368169.jpg',
         description: 'Spa chăm sóc phòng khám BirdClinic'
     },

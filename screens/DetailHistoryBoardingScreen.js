@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
-  Button,
   Dimensions,
   Pressable,
 } from "react-native";
@@ -14,8 +13,9 @@ import Header from "../components/Header";
 import COLORS from "../constants/color";
 import FONTS from "../constants/font";
 import Icon from "react-native-vector-icons/Ionicons";
-import { UIActivityIndicator, DotIndicator } from "react-native-indicators";
-
+import { UIActivityIndicator } from "react-native-indicators";
+import moment from "moment";
+import { TwoButtonFloatBottom } from "../components/Button";
 import createAxios from "../utils/axios";
 import { ScrollView } from "react-native-gesture-handler";
 const API = createAxios();
@@ -36,6 +36,7 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
 
   const [textChat, setTextChat] = React.useState("");
   const [dataBooking, setDataBooking] = React.useState();
+  const [dataBoarding, setDataBoarding] = React.useState();
   const [dataMessage, setDataMessage] = React.useState();
   const [load, setLoad] = React.useState(false);
   const [loadImage, setLoadImage] = React.useState(false);
@@ -60,9 +61,6 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
-    console.log(result.assets[0].uri);
     if (!result.canceled) {
       setImage(result.assets[0]);
     }
@@ -94,17 +92,30 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
     };
   }, []);
 
-  const fetchData = async () => {
+  const fetchDataHistoryBoarding = async () => {
     try {
       const response = await API.get(`/booking/${bookingId}`);
       if (response.data) {
-        // console.log(response.data);
+         console.log("dataHistoryBoarding: ",response.data);
         setDataBooking(response.data);
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  const fetchDataBoardingByBooking = async () => {
+    try {
+      const response = await API.get(`/boarding/?booking_id=${bookingId}`);
+      if (response.data) {
+        console.log("data Boarding: ",response.data);
+        setDataBoarding(response.data[0]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const fetchDataMessage = async () => {
     try {
       const response = await API.get(
@@ -229,7 +240,8 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
 
   React.useEffect(() => {
     if (bookingId) {
-      fetchData();
+      fetchDataHistoryBoarding();
+      fetchDataBoardingByBooking();
       console.log("Đã load");
     }
   }, [bookingId, load]);
@@ -248,6 +260,14 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }
   }, [dataMessage, dataBooking]);
+
+  function formatCurrency(amount) {
+    return parseFloat(amount).toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  }
+
   return (
     <>
       <Header
@@ -258,10 +278,209 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
       />
       {dataBooking ? (
         <ScrollView style={{ flex: 1, backgroundColor: COLORS.white }}>
-          {/* <Text> {dataBooking.booking_id}</Text>
-          <Text> {dataBooking.bird.name}</Text>
-          <Text> {dataBooking.veterinarian.name}</Text>
-          <Text> {dataBooking.arrival_date}</Text> */}
+           <View
+            style={{
+              height: "auto",
+              padding: 20,
+              elevation: 2,
+              backgroundColor: COLORS.white,
+              marginHorizontal: 20,
+              borderRadius: 10,
+              marginBottom: 10,
+              marginTop: 20,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingBottom: 10,
+                marginBottom: 10,
+                borderBottomWidth: 2,
+                borderBottomColor: COLORS.darkGrey,
+              }}
+            >
+              <Icon
+                name="information-circle-outline"
+                size={24}
+                color={COLORS.green}
+              />
+              <Text
+                style={{
+                  fontFamily: FONTS.semiBold,
+                  fontSize: 16,
+                  marginLeft: 5,
+                }}
+              >
+                THÔNG TIN CHUNG
+              </Text>
+            </View>
+
+            
+            <View style={{alignItems: 'center', marginVertical: 20}}>
+              <View style={{width: 115, height: 115, elevation: 3,  justifyContent: 'center', alignItems: 'center', borderRadius: 100,backgroundColor: COLORS.white, marginBottom: 15}}>
+              <Image source={{uri: dataBooking.bird.image || "https://png.pngtree.com/thumb_back/fw800/background/20230524/pngtree-two-brightly-colored-birds-sitting-on-a-branch-image_2670376.jpg"}}
+              style={{width: 100, height: 100, borderRadius: 100}}
+              />
+              </View>
+              <View style={{paddingVertical: 10, paddingHorizontal: 30, backgroundColor: COLORS.white, elevation: 3, borderRadius: 10}}> 
+                <Text style={{fontFamily: FONTS.semiBold, fontSize: 15}}>{dataBooking.bird.name}</Text>
+              </View>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Mã số</Text>
+              <Text style={styles.textInfo}>
+                {dataBooking.booking_id}
+              </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Chim</Text>
+              <Text style={styles.textInfo}>
+                {dataBooking.bird.name}
+              </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Bác sĩ phụ trách</Text>
+              <Text style={styles.textInfo}>
+                {dataBooking.veterinarian.name}
+              </Text>
+            </View>
+
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Giờ tiếp nhận</Text>
+              <Text style={styles.textInfo}>
+                {dataBooking.checkin_time}
+              </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Ngày tiếp nhận</Text>
+              <Text style={styles.textInfo}>
+              {moment(dataBooking.arrival_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
+              </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Số tiền đã trả</Text>
+              <Text style={styles.textInfo}>
+                {formatCurrency(dataBooking.money_has_paid)}{" "}
+              </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Số tiền phải trả</Text>
+              <Text style={styles.textInfo}>
+                {formatCurrency(dataBooking.money_has_paid)}{" "}
+              </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Tổng tiền</Text>
+              <Text style={styles.textInfo}>
+                {formatCurrency(dataBooking.money_has_paid)}{" "}
+              </Text>
+            </View>
+            
+          </View>
+          
+          <View
+            style={{
+              height: "auto",
+              padding: 20,
+              elevation: 2,
+              backgroundColor: COLORS.white,
+              marginHorizontal: 20,
+              borderRadius: 10,
+              marginBottom: 10,
+              marginTop: 20,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingBottom: 10,
+                marginBottom: 10,
+                borderBottomWidth: 2,
+                borderBottomColor: COLORS.darkGrey,
+              }}
+            >
+              <Icon
+                name="bed-outline"
+                size={24}
+                color={COLORS.green}
+              />
+              <Text
+                style={{
+                  fontFamily: FONTS.semiBold,
+                  fontSize: 16,
+                  marginLeft: 5,
+                }}
+              >
+                THÔNG TIN NỘI TRÚ
+              </Text>
+            </View>
+
+            {dataBoarding ? (
+              <>
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Lồng</Text>
+              <Text style={styles.textInfo}>
+                L.{dataBoarding.cage_id}
+              </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Ngày bắt đầu</Text>
+              <Text style={styles.textInfo}>
+              {moment(dataBoarding.act_arrival_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
+              </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Ngày kết thúc</Text>
+              <Text style={styles.textInfo}>
+                {moment(dataBoarding.departure_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
+              </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Loại dịch vụ</Text>
+              <Text style={styles.textInfo}>
+                {dataBoarding.room_type}
+              </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Kích thước lồng</Text>
+              <Text style={styles.textInfo}>
+                {dataBoarding.size}
+              </Text>
+            </View>
+
+            <View style={{}}>
+              <Text style={styles.textAttribute}>Hình ảnh tiếp nhận</Text>
+              <View style={{alignSelf: 'center', backgroundColor: COLORS.white, elevation: 3, borderRadius:12,marginVertical: 25, alignItems: 'center', justifyContent: 'center'}}>
+              <Image source={{uri: "https://png.pngtree.com/thumb_back/fw800/background/20230524/pngtree-two-brightly-colored-birds-sitting-on-a-branch-image_2670376.jpg"}}
+              style={{width: 200, height: 150, borderRadius: 10, margin: 10}}
+              />
+              </View>
+            </View></>
+            ):(
+            <View style={{margin: 20, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+              <Icon
+                name="information-circle-outline"
+                size={20}
+                color={COLORS.green}
+              />
+              <Text style={{fontFamily: FONTS.medium}}>{" "}Chưa có thông tin nội chú</Text></View>
+            )} 
+          </View>
+
           <View
             style={{
               // paddingHorizontal: 10,
@@ -335,17 +554,17 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
                             {item.message}
                           </Text>
                           {/* <Text
-                    style={{
-                      fontFamily: FONTS.semiBold,
-                      color:
-                        item.type === "sent"
+                            style={{
+                          fontFamily: FONTS.semiBold,
+                          color:
+                           item.type === "sent"
                           ? COLORS.darkGrey
                           : COLORS.grey,
-                      fontSize: 11,
-                    }}
-                  >
-                    01:24
-                  </Text> */}
+                          fontSize: 11,
+                         }}
+                           >
+                         01:24
+                           </Text> */}
                         </View>
                       )}
                     </View>
@@ -391,35 +610,6 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
               alignItems: "stretch",
             }}
           >
-            <View style={styles.searchSection}>
-              <TextInput
-                style={{
-                  justifyContent: "center",
-                  padding: 10,
-                  height: "auto",
-                  backgroundColor: COLORS.white,
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  borderColor: COLORS.green,
-                  flex: 1,
-                  marginRight: 5,
-                  elevation: 3
-                }}
-                placeholder="Nhập để chat"
-                cursorColor={COLORS.green}
-                multiline
-                maxLength={150}
-                value={textChat}
-                onChangeText={(newTextChat) => setTextChat(newTextChat)}
-              />
-              <TouchableOpacity onPress={()=>setTextChat("")} style={styles.removeIcon}>
-              <Icon
-                name="close-circle"
-                size={25}
-                color={COLORS.lightGrey}
-              />
-              </TouchableOpacity>
-            </View>
 
             <TouchableOpacity
               activeOpacity={0.7}
@@ -434,8 +624,43 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
                 elevation: 3
               }}
             >
-              <Icon name="image" size={30} color={COLORS.black} />
+              <Icon name="image" size={30} color={COLORS.green} />
             </TouchableOpacity>
+
+            <View style={styles.searchSection}>
+              <TextInput
+                style={{
+                  justifyContent: "center",
+                  padding: 10,
+                  height: "auto",
+                  backgroundColor: COLORS.white,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  borderColor: COLORS.green,
+                  flex: 1,
+                  marginRight: 5,
+                  elevation: 3,
+                  fontFamily: FONTS.semiBold
+                }}
+                placeholder="Nhập để chat"
+                cursorColor={COLORS.green}
+                multiline
+                maxLength={150}
+                value={textChat}
+                
+                onChangeText={(newTextChat) => setTextChat(newTextChat)}
+              />
+              {textChat && 
+              <TouchableOpacity onPress={()=>setTextChat("")} style={styles.removeIcon}>
+              <Icon
+                name="close-circle"
+                size={25}
+                color={COLORS.lightGrey}
+              />
+              </TouchableOpacity>
+              }             
+            </View>
+
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
@@ -466,6 +691,7 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
                 Gửi
               </Text>
             </TouchableOpacity>
+           
           </View>
         </ScrollView>
       ) : (
@@ -480,6 +706,12 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
           <UIActivityIndicator size={40} color={COLORS.green} />
         </View>
       )}
+      {dataBoarding &&
+      <TwoButtonFloatBottom buttonColorLeft={COLORS.white} titleLeft="Chat với bác sĩ" colorTextLeft={COLORS.green} onPressLeft={()=>navigation.navigate('ChatBoarding',{account_id: accountId})}
+      buttonColorRight={COLORS.green} titleRight="Yêu cầu dịch vụ" colorTextRight={COLORS.white} onPressRight={()=>navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id})}
+      />
+      }
+      
     </>
   );
 };
@@ -507,5 +739,24 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
     backgroundColor: "#fff",
     color: "#424242",
+  },
+  viewAttribute: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  textAttribute: {
+    fontFamily: FONTS.semiBold,
+    fontSize: 15,
+    marginLeft: 5,
+    color: COLORS.grey,
+  },
+  textInfo: {
+    width: "50%",
+    fontFamily: FONTS.semiBold,
+    fontSize: 15,
+    marginLeft: 5,
+    color: COLORS.black,
+    textAlign: "right",
   },
 });

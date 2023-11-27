@@ -103,17 +103,17 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
     on_going: {
       status: "Đang thực hiện",
       position: 4,
-      color: COLORS.grey,
+      color: COLORS.green,
     },
     wait_result: {
       status: "Chờ kết quả",
       position: 4,
-      color: COLORS.grey,
+      color: COLORS.green,
     },
     done: {
       status: "Đã có kết quả",
       position: 4,
-      color: COLORS.grey,
+      color: COLORS.blue,
     },
     cancelled: {
       status: "Đã hủy",
@@ -139,19 +139,19 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
       statusName: "on_going",
       status: "Đang thực hiện",
       position: 4,
-      color: COLORS.grey,
+      color: COLORS.green,
     },
     {
       statusName: "wait_result",
       status: "Chờ kết quả",
       position: 4,
-      color: COLORS.grey,
+      color: COLORS.green,
     },
     {
       statusName: "done",
       status: "Đã có kết quả",
       position: 4,
-      color: COLORS.grey,
+      color: COLORS.blue,
     },
     {
       statusName: "cancelled",
@@ -189,7 +189,7 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
   };
 
   const handleShowResultExam = async (stdid) => {
-
+    console.log("service form detail ID: ", stdid)
     try {
       const responseMedical = await API.get(`/medicalRecord/?service_form_detail_id=${stdid}`);
       const responseMedia = await API.get(`/media/?type=service_form_details&type_id=${stdid}`);
@@ -339,6 +339,7 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
                     fontFamily: FONTS.semiBold,
                     fontSize: 16,
                     marginLeft: 5,
+                    width: "60%"
                   }}
                 >
                   {index + 1 + "."} {item.note}
@@ -397,13 +398,13 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
                   fontFamily: FONTS.medium,
                   fontSize: 13,
                   marginLeft: 5,
-                  color: COLORS.green,
+                  color: statusServiceFormDetail[item.status].color,
                 }}
               >
                 <Icon
                   name="ellipse-outline"
                   size={10}
-                  color={COLORS.green}
+                  color={statusServiceFormDetail[item.status].color}
                   style={{ marginLeft: 10 }}
                 />{" "}
                 {statusServiceFormDetail[item.status].status}
@@ -419,14 +420,14 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
                         fontSize: 13,
                         marginLeft: 5,
                         marginBottom: 5,
-                        color: itemProgress.statusName === item.status ? COLORS.green : COLORS.grey,
+                        color: itemProgress.statusName === item.status ? itemProgress.color : COLORS.grey,
                       }}
                     >
                       {itemProgress.statusName === item.status &&
                       <Icon
                         name="chevron-forward-outline"
                         size={14}
-                        color={itemProgress.statusName === item.status ? COLORS.green : COLORS.grey}
+                        color={itemProgress.statusName === item.status ? itemProgress.color : COLORS.grey}
                         style={{ marginLeft: 10 }}
                       />}{" "} 
                      {itemProgress.status} 
@@ -437,18 +438,18 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
               )}
               <TouchableOpacity
                 onPress={() => handleShowProgress(index)}
-                style={{ justifyContent: "center", alignItems: "center" }}
+                style={{ justifyContent: "center", flexDirection: 'row' }}
               >
                 <Text style={{fontFamily: FONTS.semiBold, fontSize: 13, color: COLORS.blue}}>{showProgress.includes(index) ? "Ẩn bớt" : "Mở rộng"}</Text>
-                {/* <Icon
+                <Icon
                   name={
                     showProgress.includes(index)
                       ? "chevron-up-outline"
                       : "chevron-down-outline"
                   }
-                  size={35}
-                  color={COLORS.grey}
-                /> */}
+                  size={20}
+                  color={COLORS.blue}
+                />
               </TouchableOpacity>
             </View>
           ))}

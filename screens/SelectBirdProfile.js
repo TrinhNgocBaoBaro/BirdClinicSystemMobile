@@ -79,6 +79,7 @@ const SelectBirdProfile = ({ navigation, route }) => {
         title="Chọn hồ sơ chim"
         onPress={() => navigation.goBack()}
         rightIcon="create-outline"
+        onPressRight={()=>navigation.navigate("CreateBirdProfile")}
       />
       <View style={{ backgroundColor: COLORS.white, flex: 1 }}>
         <View
@@ -154,7 +155,7 @@ const SelectBirdProfile = ({ navigation, route }) => {
                         color: COLORS.grey,
                       }}
                     >
-                      Size: {item.size}
+                      Giới tính: {item.gender}
                     </Text>
                     <Text
                       style={{
@@ -163,7 +164,7 @@ const SelectBirdProfile = ({ navigation, route }) => {
                         color: COLORS.grey,
                       }}
                     >
-                      Giới tính: {item.gender}
+                      Giống: {item.bird_breed.breed}
                     </Text>
                   </View>
                 </TouchableOpacity>

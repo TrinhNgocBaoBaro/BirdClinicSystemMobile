@@ -19,7 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getToday } from "react-native-modern-datepicker";
 import moment from "moment";
 import { useIsFocused } from "@react-navigation/native";
-import { UIActivityIndicator } from 'react-native-indicators';
+import { UIActivityIndicator, DotIndicator } from 'react-native-indicators';
 
 
 const dataReExam = [
@@ -226,6 +226,9 @@ export default function HomeScreen({ navigation }) {
                           justifyContent: "center",
                         }}
                       >
+                        {item.status === "on_going" || item.status === "test_requested" || item.status === "checked_in_after_test"?
+                        <DotIndicator size={5} color={COLORS.white} count={3} /> 
+                        :
                         <Text
                           style={{
                             fontFamily: FONTS.bold,
@@ -235,6 +238,8 @@ export default function HomeScreen({ navigation }) {
                         >
                           {item.estimate_time}
                         </Text>
+                      }
+                        
                       </View>
                       <View
                         style={{

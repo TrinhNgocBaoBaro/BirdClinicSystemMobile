@@ -520,9 +520,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
     <>
       <Header
         title={
-          dataBooking
-            ? progressBooking[dataBooking.status].status
-            : "Đang tải..."
+          "Theo dõi tiến trình"
         }
         onPress={() => navigation.goBack()}
         rightIcon="ellipsis-vertical"
@@ -715,6 +713,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
+                    marginTop: 10
                   }}
                 >
                   <Text
@@ -730,7 +729,12 @@ const DetailBookingScreen = ({ navigation, route }) => {
                     </Text>
                   </Text>
                   <TouchableOpacity
-                    activeOpacity={0.5}
+                    activeOpacity={0.7}
+                    style={{
+                      elevation: 2,
+                      backgroundColor: COLORS.green,
+                      borderRadius: 10
+                    }}
                     onPress={() =>
                       navigation.navigate("DetailServiceForm", {
                         service_form_id: item.service_form_id,
@@ -743,29 +747,30 @@ const DetailBookingScreen = ({ navigation, route }) => {
                         fontFamily: FONTS.semiBold,
                         fontSize: 13,
                         margin: 10,
-                        color: COLORS.green,
-                        textDecorationLine: "underline",
+                        color: COLORS.white,
                       }}
                     >
                       Xem chi tiết
                     </Text>
                   </TouchableOpacity>
                 </View>
-                {item.status === 'done' && <Text
+                
+            {item.status === 'done' && 
+            (dataBooking.status === 'test_requested' &&   
+            <>
+              <Text
                 style={{
                   fontFamily: FONTS.medium,
                   fontSize: 13,
                   marginLeft: 5,
+                  marginTop: 20,
                   color: COLORS.orange
                 }}
               >
-                Vui lòng tới quầy để checkin sau khi đã có các kết quả chỉ định.
+                Vui lòng xác nhận để thực hiện checkin sau khi đã có các kết quả chỉ định.
               </Text>
-                 
-              }
-            {item.status === 'done' && 
-            (dataBooking.status === 'test_requested' &&   
-            <View
+            <TouchableOpacity
+            activeOpacity={0.7}
             style={{
               padding: 10,
               elevation: 2,
@@ -775,14 +780,17 @@ const DetailBookingScreen = ({ navigation, route }) => {
               margin: 20,
               marginBottom: 10,
               borderRadius: 10,
+              borderWidth: 1,
+              borderColor: COLORS.green
             }}
           >
             <Text
               style={{ fontFamily: FONTS.semiBold, fontSize: 15, margin: 10 }}
             >
-              Sử dụng mã QR bên dưới để checkin nè cha nội ơi
+              Xác nhận
             </Text>  
-          </View>
+          </TouchableOpacity>
+          </>
           )      
           }
         </View>

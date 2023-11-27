@@ -81,7 +81,7 @@ const ConfirmBirdProfileScreen = ({ navigation, route }) => {
             </View>
             <View style={styles.rowInfo}>
               <Text style={styles.textAttribute}>Giống</Text>
-              <Text style={styles.textInfo}>{dataBirdInfo.breed}</Text>
+              <Text style={styles.textInfo}>{dataBirdInfo.bird_breed.breed}</Text>
             </View>
             <View style={styles.rowInfo}>
               <Text style={styles.textAttribute}>Microchip</Text>
@@ -89,7 +89,7 @@ const ConfirmBirdProfileScreen = ({ navigation, route }) => {
             </View>
             <View style={styles.rowInfo}>
               <Text style={styles.textAttribute}>Kích thước</Text>
-              <Text style={styles.textInfo}>{dataBirdInfo.size}</Text>
+              <Text style={styles.textInfo}>{dataBirdInfo.bird_breed.bird_size.size}</Text>
             </View>
             <Image
               source={{ uri: dataBirdInfo.image }}
@@ -98,7 +98,7 @@ const ConfirmBirdProfileScreen = ({ navigation, route }) => {
                 top: 10,
                 right: 10,
                 height: 100,
-                width: 100,
+                width: 120,
                 borderRadius: 5,
               }}
             />

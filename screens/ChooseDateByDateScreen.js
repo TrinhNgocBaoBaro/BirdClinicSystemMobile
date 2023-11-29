@@ -22,6 +22,10 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
     const [dataTime, setDataTime] = React.useState([]);
     const [showModalPickDate, setShowModalPickDate] = React.useState(false);
     const [selectedDate, setSelectedDate] = React.useState("");
+    const [showModalPickDepartureDate, setShowModalPickDepartureDate] = React.useState(false);
+    const [selectedDepartureDate, setSelectedDepartureDate] = React.useState("");
+    const [minimunDepartureDate, setMinimunDepartureDate] = React.useState("");
+
     const [selectedTime, setSelectedTime] = React.useState();
     const [hasDataTime, setHasDataTime] = React.useState(false);
     const today = getToday();
@@ -60,9 +64,29 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
       }, [selectedDate]);
 
     const handleSelectDate = (date) => {
+
         setSelectedDate(moment(date, "YYYY/MM/DD").format("YYYY-MM-DD"));
         setSelectedTime();
+
+        let dateString = moment(date, "YYYY/MM/DD").format("YYYY-MM-DD");
+        let startDate = new Date(dateString);
+        startDate.setDate(startDate.getDate() + 3)
+        let endDate = startDate.toISOString().slice(0, 10);
+        setMinimunDepartureDate(endDate);
+       
+ 
     };
+
+    React.useEffect(()=>{
+      if(selectedDepartureDate) {
+        if(minimunDepartureDate > selectedDepartureDate) setSelectedDepartureDate();
+      }
+    },[minimunDepartureDate])
+
+    const handleSelectDepartureDate = (date) => {
+        setSelectedDepartureDate(moment(date, "YYYY/MM/DD").format("YYYY-MM-DD"));
+        setSelectedTime();
+  };
 
     const handleSelectTime = (item) => {
         setSelectedTime(item);
@@ -79,28 +103,90 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
       />
       <View style={{flex: 1, backgroundColor: COLORS.white}}>
 
-      <TouchableOpacity
+        {booking.service_type_id === "ST003" ?
+        <>
+        <View>
+        <View style={{position: 'absolute', top: 20, left:50, backgroundColor: COLORS.white, zIndex: 1, paddingHorizontal: 5, borderRadius: 10}}>
+          <Text style={{ fontFamily: FONTS.semiBold, fontSize: 15, color: COLORS.green }}>Ngày bắt đầu</Text>
+          </View>
+        <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => setShowModalPickDate(!showModalPickDate)}
+        style={{
+          height: 80,
+          backgroundColor: COLORS.white,
+          marginHorizontal: 30,
+          marginTop: 30,
+          borderRadius: 10,
+          elevation: 3,
+          borderWidth: 2,
+          borderColor: COLORS.green,
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 15,
+        }}
+      >
+        <Text style={{ fontFamily: FONTS.semiBold, fontSize: 18 }}>
+          {selectedDate ? selectedDate : "Chọn ngày bắt đầu"}
+        </Text>
+        </TouchableOpacity>
+        </View>
+        <View>
+        <View style={{position: 'absolute', top:10, left:50, backgroundColor: COLORS.white, zIndex: 1, paddingHorizontal: 5, borderRadius: 10}}>
+          <Text style={{ fontFamily: FONTS.semiBold, fontSize: 15, color: selectedDate ? COLORS.green : COLORS.grey }}>Ngày kết thúc</Text>
+          </View>
+        <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => setShowModalPickDate(!showModalPickDate)}
+          onPress={() => selectedDate ? setShowModalPickDepartureDate(!showModalPickDepartureDate): {}}
           style={{
-            height: 120,
-            backgroundColor: COLORS.white,
+            height: 80,
+            backgroundColor: selectedDate ? COLORS.white : COLORS.greyPastel,
             marginHorizontal: 30,
             marginBottom: 10,
             marginTop: 20,
             borderRadius: 10,
             elevation: 3,
             borderWidth: 2,
-            borderColor: COLORS.green,
+            borderColor: selectedDate ? COLORS.green : COLORS.grey,
             alignItems: "center",
             justifyContent: "center",
             marginBottom: 15,
+            
           }}
         >
-          <Text style={{ fontFamily: FONTS.semiBold, fontSize: 18 }}>
-            {selectedDate ? selectedDate : "Chọn ngày khám"}
+          <Text style={{ fontFamily: FONTS.semiBold, fontSize: 18, color: selectedDate ? COLORS.black : COLORS.grey }}>
+            {selectedDepartureDate ? selectedDepartureDate : "Chọn ngày kết thúc"}
           </Text>
         </TouchableOpacity>
+        <Text style={{fontFamily: FONTS.bold, fontStyle: "italic", fontSize: 16, marginLeft: 20}} >*Ít nhất 3 ngày</Text>
+        </View>
+        </>
+        :
+        <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => setShowModalPickDate(!showModalPickDate)}
+        style={{
+          height: 120,
+          backgroundColor: COLORS.white,
+          marginHorizontal: 30,
+          marginBottom: 10,
+          marginTop: 20,
+          borderRadius: 10,
+          elevation: 3,
+          borderWidth: 2,
+          borderColor: COLORS.green,
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 15,
+        }}
+      >
+        <Text style={{ fontFamily: FONTS.semiBold, fontSize: 18 }}>
+          {selectedDate ? selectedDate : "Chọn ngày khám"}
+        </Text>
+        </TouchableOpacity>
+        }
+        
+
         {selectedDate ? (
           hasDataTime ? (
             <FlatGrid
@@ -222,12 +308,61 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
               mode="calendar"
               minimumDate={today}
               selected={selectedDate}
-              onSelectedChange={(date) => handleSelectDate(date)}
+              // onSelectedChange={(date) => handleSelectDate(date)}
+              onDateChange={(date) => handleSelectDate(date)}
             />
 
             <ButtonFlex
               title="Hoàn tất"
               onPress={() => setShowModalPickDate(!showModalPickDate)}
+              stylesButton={{
+                paddingVertical: 20,
+                marginLeft: 10,
+                marginRight: 10,
+              }}
+              stylesText={{ fontSize: 16 }}
+            />
+          </View>
+        </Modal>
+        <Modal
+          isVisible={showModalPickDepartureDate}
+          hasBackdrop={true}
+          animationInTiming={1500}
+          animationOutTiming={1000}
+          animationIn="slideInUp"
+          animationOut="zoomOutDown"
+        //   onBackdropPress={() => setShowModalPickDate(!showModalPickDate)}
+          style={{}}
+        >
+          <View
+            style={{
+              height: "auto",
+              backgroundColor: COLORS.white,
+              paddingBottom: 10,
+              borderRadius: 10,
+            }}
+          >
+            <DatePicker
+              format={"YYYY-MM-DD"}
+              options={{
+                mainColor: COLORS.green,
+                defaultFont: FONTS.semiBold,
+                headerFont: FONTS.bold,
+              }}
+              style={{
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+                padding: 10,
+              }}
+              mode="calendar"
+              minimumDate={minimunDepartureDate ? minimunDepartureDate : today} 
+              selected={selectedDepartureDate}
+              onSelectedChange={(date) => handleSelectDepartureDate(date)}
+            />
+
+            <ButtonFlex
+              title="Hoàn tất"
+              onPress={() => setShowModalPickDepartureDate(!showModalPickDepartureDate)}
               stylesButton={{
                 paddingVertical: 20,
                 marginLeft: 10,
@@ -250,7 +385,8 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
                   time_id: selectedTime.time_slot_clinic_id,
                   arrival_date: selectedDate,
                   status: 'pending',
-                  money_has_paid: '0'
+                  money_has_paid: '0',
+                  departure_date: selectedDepartureDate ? selectedDepartureDate : ""
                 },
               })
             : "";

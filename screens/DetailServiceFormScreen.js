@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View, Image, Dimensions } from "react-native";
-import React from "react";
+import React, { useRef, useCallback, useMemo } from "react";
 import Header from "../components/Header";
 import COLORS from "../constants/color";
 import FONTS from "../constants/font";
@@ -9,6 +9,7 @@ const API = createAxios();
 import StepIndicator from "react-native-step-indicator";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Modal from "react-native-modal";
+import BottomSheet, {BottomSheetBackdrop, BottomSheetScrollView  } from '@gorhom/bottom-sheet';
 
 import io from "socket.io-client";
 const socket = io("https://clinicsystem.io.vn");
@@ -53,6 +54,31 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
   const [showProgress, setShowProgress] = React.useState([]);
   const [showModal, setShowModal] = React.useState(false);
   const [load, setLoad] = React.useState(false);
+
+  const bottomSheetRef = useRef();
+  const snapPoints = useMemo(() => ['35%', '80%'], []);
+  const handleClosePress = () => bottomSheetRef.current?.close();
+  const handleOpenPress = () => bottomSheetRef.current?.expand();
+
+  const handleSheetChanges = useCallback((index) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    console.log('đã refesh');
+
+  }, []);
+
+  const renderBackdrop = useCallback(
+    props => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+      />
+    ),
+    []
+  );
 
   React.useEffect(()=>{
     console.log("socket id khi mới vào bên service form detail: ", socket.id)
@@ -196,7 +222,8 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
       if (responseMedical.data && responseMedia.data) {
         setDataMedical(responseMedical.data[0])
         setDataResultExam(responseMedia.data);
-        setShowModal(true)
+        // setShowModal(true)
+        handleOpenPress();
       }
     } catch (error) {
       console.log(error);
@@ -454,7 +481,7 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
             </View>
           ))}
         </View>
-        <Modal
+        {/* <Modal
           isVisible={showModal}
           hasBackdrop={true}
           // onBackdropPress={()=>{setShowModal(false)}}
@@ -531,8 +558,59 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
            
             </ScrollView>
           </View>
-        </Modal>
+        </Modal> */}
       </ScrollView>
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        enablePanDownToClose={true}
+        backdropComponent={renderBackdrop}
+        handleIndicatorStyle={{}}
+        >
+        <BottomSheetScrollView 
+          contentContainerStyle={{flex: 1,backgroundColor: COLORS.white}}
+          onRefresh={handleRefresh}
+          refreshing={false}
+        >
+            <View style={{paddingVertical: 30, alignItems: 'center', justifyContent: 'center'}}>
+              <Text  
+              style={{
+                  fontSize: 17,
+                  fontFamily: FONTS.bold,
+                  color: COLORS.black,
+                }}>Kết quả xét nghiệm
+              </Text>
+            </View>
+
+            {dataMedical && 
+                <>
+                <View style={{padding: 10}}>
+                <View style={styles.viewAttribute}>
+                  <Text style={styles.textAttribute}>Triệu chứng</Text>
+                  <Text style={styles.textInfo}>{dataMedical.symptom}</Text>
+                </View>
+                <View style={styles.viewAttribute}>
+                  <Text style={styles.textAttribute}>Chẩn đoán</Text>
+                  <Text style={styles.textInfo}>{dataMedical.diagnose}</Text>
+                </View>
+                <View style={styles.viewAttribute}>
+                  <Text style={styles.textAttribute}>Khuyến nghị</Text>
+                  <Text style={styles.textInfo}>{dataMedical.recommendations}</Text>
+                </View>
+              </View>
+                </>
+              }
+              
+              {dataResultExam.length !== 0 && dataResultExam.map((item, index)=>(
+              <Image source={{uri: item.link}} 
+              style={{width: "auto", height: deviceHeight * 0.8 * 0.35, marginHorizontal: 20, marginBottom: 10}} key={index}/> 
+              )
+              )}
+        
+        </BottomSheetScrollView>
+      </BottomSheet>
     </>
   );
 };

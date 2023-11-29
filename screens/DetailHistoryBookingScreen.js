@@ -216,6 +216,7 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
                 marginBottom: 10,
                 marginTop: 20,
               }}
+              key={index}
             >
               <View
                 style={{
@@ -267,8 +268,8 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
                   Tên dịch vụ
                 </Text>
               </View>
-              {item.service_form_details.map((item, index) => (
-                <View style={styles.viewAttribute}>
+              {item.service_form_details.map((item, indexD) => (
+                <View style={styles.viewAttribute} key={indexD}>
                   <Text
                     style={{
                       fontFamily: FONTS.semiBold,
@@ -428,7 +429,7 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
                     borderBottomColor: COLORS.darkGrey,
                     marginBottom: 10
                   }}
-                  key={item.prescription_detail_id}
+                  key={index}
                 >
                   <View style={styles.viewAttribute}>
                     <Text

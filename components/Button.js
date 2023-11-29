@@ -40,7 +40,7 @@ const TwoButtonFloatBottom = ({ titleLeft, onPressLeft, buttonColorLeft, colorTe
     elevation: 10,
     borderTopWidth: 1,
     borderTopColor: COLORS.darkGrey}}>
-        <TouchableOpacity activeOpacity={0.7} style={[styles.twoBoxButtonFloatBottom,  {backgroundColor: buttonColorLeft} ]} onPress={onPressLeft}>
+        <TouchableOpacity activeOpacity={0.7} style={[styles.twoBoxButtonFloatBottom,  {marginLeft: 10, backgroundColor: buttonColorLeft} ]} onPress={onPressLeft}>
           <Icon name="chatbubble-ellipses-outline" size={20} color={colorTextLeft}/>
           <Text style={[styles.buttonFloatBottomText,{color: colorTextLeft}]}>{" "}{titleLeft}</Text>
         </TouchableOpacity>
@@ -105,10 +105,12 @@ const styles = StyleSheet.create({
   twoBoxButtonFloatBottom: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginHorizontal: 10, 
     borderRadius: 10,
     elevation: 2,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    flex: 1,
+    marginRight: 10,
+    justifyContent: 'center'
   },
 });
 

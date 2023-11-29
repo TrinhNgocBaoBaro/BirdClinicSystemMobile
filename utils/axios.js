@@ -53,6 +53,15 @@ const createAxios = () => {
       });
   };
 
+  const put = (endpoint, data) => {
+    return api
+      .put(endpoint, data)
+      .then((response) => response.data)
+      .catch((error) => {
+        throw new Error(`PUT request to ${endpoint} failed: ${error.message}`);
+      });
+  };
+
   const postWithHeaders = (endpoint, data, customHeaders) => {
     return api
       .post(endpoint, data, {
@@ -70,7 +79,8 @@ const createAxios = () => {
     get,
     getWithData,
     post,
-    postWithHeaders
+    postWithHeaders,
+    put
   };
 };
 

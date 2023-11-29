@@ -4,11 +4,10 @@ import {
   View,
   TouchableOpacity,
   Image,
-  TextInput,
-  Dimensions,
-  Pressable,
 } from "react-native";
-import React, { useRef } from "react";
+import React, { useRef, useCallback, useMemo } from "react";
+import BottomSheet, {BottomSheetBackdrop, BottomSheetScrollView  } from '@gorhom/bottom-sheet';
+
 import Header from "../components/Header";
 import COLORS from "../constants/color";
 import FONTS from "../constants/font";
@@ -20,83 +19,50 @@ import createAxios from "../utils/axios";
 import { ScrollView } from "react-native-gesture-handler";
 const API = createAxios();
 
-import * as ImagePicker from "expo-image-picker";
-
-// import { socket } from "./LoginScreen";
-import io from "socket.io-client";
-const socket = io("https://clinicsystem.io.vn");
-
-const deviceHeight = Dimensions.get("window").height;
-
 const DetailHistoryBoardingScreen = ({ navigation, route }) => {
   const [bookingId, setBookingId] = React.useState(route.params.booking_id);
   const [accountId, setAccountId] = React.useState(route.params.account_id);
 
-  const [image, setImage] = React.useState(null);
 
-  const [textChat, setTextChat] = React.useState("");
   const [dataBooking, setDataBooking] = React.useState();
   const [dataBoarding, setDataBoarding] = React.useState();
-  const [dataMessage, setDataMessage] = React.useState();
+  const [dataServiceForm, setDataServiceForm] = React.useState([]);
+
   const [load, setLoad] = React.useState(false);
-  const [loadImage, setLoadImage] = React.useState(false);
 
-  const scrollViewRef = useRef();
 
-  React.useEffect(() => {
-    (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("Permission denied!");
-      }
-    })();
+  const bottomSheetRef = useRef();
+  const snapPoints = useMemo(() => ['35%', '80%'], []);
+  const handleClosePress = () => bottomSheetRef.current?.close();
+  const handleOpenPress = () => bottomSheetRef.current?.expand();
+
+  const handleSheetChanges = useCallback((index) => {
+    console.log('handleSheetChanges', index);
   }, []);
 
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      setImage(result.assets[0]);
-    }
-  };
+  const handleRefresh = useCallback(() => {
+    fetchDataServiceForm();
 
-  React.useEffect(() => {
-    console.log("socket id khi mới vào: ", socket.id);
-
-    socket.emit("login", { account_id: "customer1" });
-    console.log("Login sucess");
-
-    socket.on("server-send-data_seft", (message) => {
-      // setDataMessage((prevMessages) => [...prevMessages, message]);
-      console.log("send data seft ♥: ", message);
-      fetchDataMessage();
-    });
-    socket.on("server-send-data", (message) => {
-      // message.type = 'receive'
-      // setDataMessage((prevMessages) => [...prevMessages, message]);
-      console.log("send data♥: ", message);
-      fetchDataMessage();
-    });
-
-    return () => {
-      if (socket) {
-        // socket.disconnect();
-        console.log("Disconnect thành công ♥ !");
-      }
-    };
   }, []);
+
+  const renderBackdrop = useCallback(
+    props => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+      />
+    ),
+    []
+  );
+
+
 
   const fetchDataHistoryBoarding = async () => {
     try {
       const response = await API.get(`/booking/${bookingId}`);
       if (response.data) {
-         console.log("dataHistoryBoarding: ",response.data);
+        //  console.log("dataHistoryBoarding: ",response.data);
         setDataBooking(response.data);
       }
     } catch (error) {
@@ -108,7 +74,7 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
     try {
       const response = await API.get(`/boarding/?booking_id=${bookingId}`);
       if (response.data) {
-        console.log("data Boarding: ",response.data);
+        // console.log("data Boarding: ",response.data);
         setDataBoarding(response.data[0]);
       }
     } catch (error) {
@@ -116,156 +82,39 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
     }
   };
 
-  const fetchDataMessage = async () => {
+  const fetchDataServiceForm = async () => {
     try {
-      const response = await API.get(
-        `/content_chat/?chat_id=75e72f990d5b6fe886b2d0430c1f7a&user1=${accountId}&user2=clinic`
-      );
+      const response = await API.get(`/service_Form/?booking_id=${bookingId}`);
       if (response.data) {
-        // console.log(response.data);
-        setDataMessage(response.data);
+        const arrayDataServiceForm = response.data
+        console.log("data Service Form: ",arrayDataServiceForm);
+        setDataServiceForm(arrayDataServiceForm);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const sendMessage = async (textChat) => {
-    //gửi message type sent and receive
-    try {
-      const [responseSent, responseReceive] = await Promise.all([
-        API.post(`/content_chat`, {
-          user1: accountId,
-          user2: "clinic",
-          message: textChat,
-          type: "sent",
-          chat_id: "75e72f990d5b6fe886b2d0430c1f7a",
-        }),
-        API.post(`/content_chat`, {
-          user1: "clinic",
-          user2: accountId,
-          message: textChat,
-          type: "receive",
-          chat_id: "75e72f990d5b6fe886b2d0430c1f7a",
-        }),
-      ]);
-
-      if (responseSent && responseReceive) {
-        console.log("Cả hai message đã được gửi thành công");
-        console.log("socket id khi gửi: ", socket.id);
-        socket.emit("client-sent-message", {
-          user1: accountId,
-          user2: "clinic",
-          message: textChat,
-          type: "sent",
-          chat_id: "75e72f990d5b6fe886b2d0430c1f7a",
-        });
-      } else {
-        console.log("Có lỗi khi gửi một hoặc cả hai message");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const sendMessageWithImage = async (textChat) => {
-    //gửi message type sent and receive
-    try {
-      const formDataSent = new FormData();
-      const localUri = image.uri;
-      const filename = localUri.split("/").pop();
-      const fileExtension = filename.split(".").pop();
-
-      console.log("Local Uri: ", localUri);
-      console.log("File Name: ", filename);
-      console.log("File Extension: ", fileExtension);
-      formDataSent.append("image", {
-        uri: localUri,
-        name: filename,
-        type: `image/${fileExtension}`,
-      });
-      formDataSent.append("user1", accountId);
-      formDataSent.append("user2", "clinic");
-      formDataSent.append("type", "sent");
-      formDataSent.append("message", textChat);
-      formDataSent.append("chat_id", "75e72f990d5b6fe886b2d0430c1f7a");
-
-      const formDataReceive = new FormData();
-      formDataReceive.append("image", {
-        uri: localUri,
-        name: filename,
-        type: `image/${fileExtension}`,
-      });
-      formDataReceive.append("user1", "clinic");
-      formDataReceive.append("user2", accountId);
-      formDataReceive.append("type", "receive");
-      formDataReceive.append("message", textChat);
-      formDataReceive.append("chat_id", "75e72f990d5b6fe886b2d0430c1f7a");
-
-      const [responseSent, responseReceive] = await Promise.all([
-        API.postWithHeaders(`/content_chat/img`, formDataSent, {
-          "Content-Type": "multipart/form-data",
-        }),
-        API.postWithHeaders(`/content_chat/img`, formDataReceive, {
-          "Content-Type": "multipart/form-data",
-        }),
-      ]);
-
-      if (responseSent && responseReceive) {
-        console.log("responseSent: ", responseSent);
-        console.log("responseReceive: ", responseReceive);
-
-        console.log("Cả hai message kèm ảnh đã được gửi thành công");
-        console.log("socket id khi gửi: ", socket.id);
-        socket.emit("client-sent-message", {
-          user1: accountId,
-          user2: "clinic",
-          message: textChat,
-          type: "sent",
-          chat_id: "75e72f990d5b6fe886b2d0430c1f7a",
-        });
-      } else {
-        console.log("Có lỗi khi gửi một hoặc cả hai message");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  React.useEffect(() => {
-    return () => {
-      console.log("socket id khi thoát: ", socket.id);
-    };
-  }, [socket]);
 
   React.useEffect(() => {
     if (bookingId) {
       fetchDataHistoryBoarding();
       fetchDataBoardingByBooking();
+      fetchDataServiceForm();
       console.log("Đã load");
     }
   }, [bookingId, load]);
-
-  // React.useEffect(() => {
-  //   fetchDataMessage();
-
-  // }, [load, renderTrigger]);
-
-  React.useEffect(() => {
-    fetchDataMessage();
-  }, []);
-
-  React.useEffect(() => {
-    if ((dataMessage, dataBooking)) {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    }
-  }, [dataMessage, dataBooking]);
 
   function formatCurrency(amount) {
     return parseFloat(amount).toLocaleString("vi-VN", {
       style: "currency",
       currency: "VND",
     });
+  }
+
+  function formatTimeCreate(timeCreate) {
+    let p = new Date(timeCreate);
+    return p.getHours() + ":" + p.getMinutes() +", "+ p.getDate() + '/' + (p.getMonth()+1) + '/' + p.getFullYear();
   }
 
   return (
@@ -276,8 +125,10 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
         rightIcon="ellipsis-vertical"
         onPressRight={() => setLoad(!load)}
       />
+              {/* <Button title="Show bottom sheet" onPress={handleOpenPress}/>
+              <Button title="Hide bottom sheet" onPress={handleClosePress}/> */}
       {dataBooking ? (
-        <ScrollView style={{ flex: 1, backgroundColor: COLORS.white }}>
+        <ScrollView style={{ flex: 1, backgroundColor: COLORS.white, marginBottom: 80 }}>
            <View
             style={{
               height: "auto",
@@ -286,7 +137,7 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
               backgroundColor: COLORS.white,
               marginHorizontal: 20,
               borderRadius: 10,
-              marginBottom: 10,
+              marginBottom: 20,
               marginTop: 20,
             }}
           >
@@ -386,6 +237,40 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
             </View>
             
           </View>
+
+          <View 
+          
+          style={{ 
+          paddingVertical: 20,
+          paddingHorizontal: 20,
+          marginHorizontal: 20,
+          borderRadius: 10,
+          elevation: 2,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: COLORS.white,
+          borderWidth: 1,
+          borderColor: COLORS.green
+          }} 
+         
+          >
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Icon name="layers" size={28} color={COLORS.green}/>
+            <Text style={{ color: COLORS.black,
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 18}}>{" "}Dịch vụ khi nội trú
+            </Text>
+          </View>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={handleOpenPress}
+            style={{paddingHorizontal: 20, paddingVertical: 10, backgroundColor: COLORS.green, elevation: 3, borderRadius: 8}}>
+            <Text style={{ color: COLORS.white,
+                        fontFamily: FONTS.semiBold,
+                        fontSize: 15}}>Xem</Text>
+          </TouchableOpacity>
+          </View>
           
           <View
             style={{
@@ -481,218 +366,7 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
             )} 
           </View>
 
-          <View
-            style={{
-              // paddingHorizontal: 10,
-              marginHorizontal: 20,
-              marginVertical: 20,
-              height: (deviceHeight * 70) / 100,
-              backgroundColor: COLORS.darkGrey,
-              borderRadius: 10,
-            }}
-          >
-            <ScrollView style={{ flex: 1 }} ref={scrollViewRef}>
-              {dataMessage ? (
-                dataMessage.map((item, index) => (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent:
-                        item.type === "sent" ? "flex-end" : "flex-start",
-                    }}
-                    key={index}
-                  >
-                    <View style={{ flexDirection: "column", maxWidth: "70%" }}>
-                      {item.img_link && (
-                        <View
-                          style={{
-                            alignSelf:
-                              item.type === "sent" ? "flex-end" : "flex-start",
-                            margin: 10,
-                            backgroundColor: COLORS.white,
-                            borderRadius: 10
-                          }}
-                        >
-                          <Image
-                            source={{ uri: item.img_link }}
-                            style={{
-                              width: 200,
-                              height: 150,
-                              borderRadius: 5,
-                            }}
-                            resizeMode="cover"
-                          />
-                        </View>
-                      )}
-                      {item.message && (
-                        <View
-                          style={{
-                            width: "auto",
 
-                            backgroundColor:
-                              item.type === "sent"
-                                ? COLORS.green
-                                : COLORS.white,
-                            borderRadius: 10,
-                            marginBottom: 10,
-                            marginTop: index === 0 ? 10 : 0,
-                            padding: 10,
-                            marginHorizontal: 10,
-                            alignSelf:
-                              item.type === "sent" ? "flex-end" : "flex-start",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontFamily: FONTS.semiBold,
-                              color:
-                                item.type === "sent"
-                                  ? COLORS.white
-                                  : COLORS.black,
-                            }}
-                          >
-                            {item.message}
-                          </Text>
-                          {/* <Text
-                            style={{
-                          fontFamily: FONTS.semiBold,
-                          color:
-                           item.type === "sent"
-                          ? COLORS.darkGrey
-                          : COLORS.grey,
-                          fontSize: 11,
-                         }}
-                           >
-                         01:24
-                           </Text> */}
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                ))
-              ) : (
-                <View
-                  style={{
-                    height: (deviceHeight * 70) / 100,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: COLORS.darkGrey,
-                    borderRadius: 10,
-                  }}
-                >
-                  <UIActivityIndicator size={40} color={COLORS.green} />
-                </View>
-              )}
-            </ScrollView>
-            {image && (
-              <View style={{padding: 10, backgroundColor: COLORS.white, width: 220, borderRadius: 10, marginTop: 20, marginHorizontal: 10, marginBottom: 10}}>
-                <Pressable style={{position: 'absolute', right: -15, top: -15}} onPress={()=>setImage()}>
-                <Icon
-                
-                name="close-circle"
-                size={25}
-                color={COLORS.green}
-              />
-                </Pressable>  
-                <Image
-              source={{ uri: image.uri }}
-              style={{ width: 200, height: 150, borderRadius: 5 }}
-            />
-              </View>  
-          )}
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginHorizontal: 20,
-              marginBottom: 10,
-              alignItems: "stretch",
-            }}
-          >
-
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={pickImage}
-              style={{
-                backgroundColor: COLORS.white,
-                paddingHorizontal: 15,
-                borderRadius: 10,
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: 5,
-                elevation: 3
-              }}
-            >
-              <Icon name="image" size={30} color={COLORS.green} />
-            </TouchableOpacity>
-
-            <View style={styles.searchSection}>
-              <TextInput
-                style={{
-                  justifyContent: "center",
-                  padding: 10,
-                  height: "auto",
-                  backgroundColor: COLORS.white,
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  borderColor: COLORS.green,
-                  flex: 1,
-                  marginRight: 5,
-                  elevation: 3,
-                  fontFamily: FONTS.semiBold
-                }}
-                placeholder="Nhập để chat"
-                cursorColor={COLORS.green}
-                multiline
-                maxLength={150}
-                value={textChat}
-                
-                onChangeText={(newTextChat) => setTextChat(newTextChat)}
-              />
-              {textChat && 
-              <TouchableOpacity onPress={()=>setTextChat("")} style={styles.removeIcon}>
-              <Icon
-                name="close-circle"
-                size={25}
-                color={COLORS.lightGrey}
-              />
-              </TouchableOpacity>
-              }             
-            </View>
-
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => {
-                if (!image) {
-                  sendMessage(textChat);
-                } else {
-                  sendMessageWithImage(textChat);
-                }
-                setTextChat("");
-                setImage();
-              }}
-              style={{
-                backgroundColor: COLORS.green,
-                paddingHorizontal: 20,
-                borderRadius: 10,
-                alignItems: "center",
-                justifyContent: "center",
-                elevation: 3
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: FONTS.semiBold,
-                  color: COLORS.white,
-                  fontSize: 15,
-                }}
-              >
-                Gửi
-              </Text>
-            </TouchableOpacity>
-           
-          </View>
         </ScrollView>
       ) : (
         <View
@@ -707,9 +381,59 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
         </View>
       )}
       {dataBoarding &&
-      <TwoButtonFloatBottom buttonColorLeft={COLORS.white} titleLeft="Chat với bác sĩ" colorTextLeft={COLORS.green} onPressLeft={()=>navigation.navigate('ChatBoarding',{account_id: accountId})}
+      <>
+        <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        enablePanDownToClose={true}
+        backdropComponent={renderBackdrop}
+        handleIndicatorStyle={{}}
+        >
+        <BottomSheetScrollView 
+          contentContainerStyle={{flex: 1,backgroundColor: COLORS.white}}
+          onRefresh={handleRefresh}
+          refreshing={false}
+
+
+        >
+          {dataServiceForm.length !==0  && dataServiceForm.map((item, index)=>(
+            <View
+                 style={{
+                  backgroundColor: COLORS.white, 
+                  elevation: 3, 
+                  borderRadius: 10, 
+                  padding: 20, 
+                  margin: 20
+                }}        
+            key={index}>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={{fontFamily: FONTS.bold, color: COLORS.green}}>{item.service_form_id}</Text>
+              <Text style={{fontFamily: FONTS.medium}}>{formatTimeCreate(item.time_create)}</Text>
+              </View>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 10}}>
+              <Text style={{fontFamily: FONTS.semiBold, color: COLORS.grey}}>Các dịch vụ</Text>
+              <Text style={{fontFamily: FONTS.semiBold, color: COLORS.grey, fontSize: 12}}>Trạng thái</Text>
+              </View>
+              {item.service_form_details.map((itemService,indexD)=>(
+                <View style={{marginVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}} key={indexD}>
+                <Text style={{fontFamily: FONTS.medium}}>{indexD+1}. {itemService.note}</Text>
+                {itemService.status === 'done' ?
+                  <Icon name="checkmark-circle" size={25} color={COLORS.green}/>
+                  :
+                  <Icon name="radio-button-off" size={25} color={COLORS.green}/>
+                }
+                </View>
+              ))}
+            </View>
+          ))}
+        </BottomSheetScrollView>
+      </BottomSheet>
+      <TwoButtonFloatBottom buttonColorLeft={COLORS.white} titleLeft="Chat với bác sĩ" colorTextLeft={COLORS.green} onPressLeft={()=>navigation.navigate('ChatBoarding',{account_id: accountId, chat_id: dataBoarding.chat_id})}
       buttonColorRight={COLORS.green} titleRight="Yêu cầu dịch vụ" colorTextRight={COLORS.white} onPressRight={()=>navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id})}
       />
+      </>
       }
       
     </>
@@ -758,5 +482,10 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     color: COLORS.black,
     textAlign: "right",
+  },
+  itemContainer: {
+    padding: 6,
+    margin: 6,
+    backgroundColor: "#eee",
   },
 });

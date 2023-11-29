@@ -100,28 +100,28 @@ const ServiceRequestBoardingScreen = ({navigation, route}) => {
         }
       };
 
-    // const handleSetServiceRequest = (item) => {
-    //     if (serviceRequest.includes(item)) {
-    //         // Item đã có, remove nó đi
-    //         setServiceRequest(serviceRequest.filter((itemService) => itemService !== item));
-    //       } else {
-    //         // Item chưa có, add nó vào
-    //         setServiceRequest([...serviceRequest, item]);
-    //       }   
-    // }
-
     const handleSetServiceRequest = (item) => {
-        const updatedServiceRequest = serviceRequest.filter(service => service.service_package_id !== item.service_package_id);
-        if (updatedServiceRequest.length === serviceRequest.length) {
-          // Không tìm thấy phần tử, thêm vào mảng
-          setServiceRequest([...serviceRequest, item]);
-        } else {
-          // Phần tử đã có trong mảng, cập nhật mảng mới sau khi loại bỏ
-          setServiceRequest(updatedServiceRequest);
-        }
-        console.log("updatedServiceRequest: ", updatedServiceRequest)
+        if (serviceRequest.includes(item)) {
+            // Item đã có, remove nó đi
+            setServiceRequest(serviceRequest.filter((itemService) => itemService !== item));
+          } else {
+            // Item chưa có, add nó vào
+            setServiceRequest([...serviceRequest, item]);
+          }   
+    }
 
-      }
+    // const handleSetServiceRequest = (item) => {
+    //     const updatedServiceRequest = serviceRequest.filter(service => service.service_package_id !== item.service_package_id);
+    //     if (updatedServiceRequest.length === serviceRequest.length) {
+    //       // Không tìm thấy phần tử, thêm vào mảng
+    //       setServiceRequest([...serviceRequest, item]);
+    //     } else {
+    //       // Phần tử đã có trong mảng, cập nhật mảng mới sau khi loại bỏ
+    //       setServiceRequest(updatedServiceRequest);
+    //     }
+    //     console.log("updatedServiceRequest: ", updatedServiceRequest)
+
+    //   }
 
     React.useEffect(()=>{
         console.log("Mảng service: ", serviceRequest)
@@ -207,7 +207,7 @@ const ServiceRequestBoardingScreen = ({navigation, route}) => {
             </View>
 
             {dataServicePackage.map((item, index)=>(
-                <>
+                
                 <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={()=>
@@ -224,10 +224,10 @@ const ServiceRequestBoardingScreen = ({navigation, route}) => {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     elevation: 3,
-                    backgroundColor: COLORS.white
-                }} 
-                key={item.service_package_id}>
-                    <Text style={{fontFamily: FONTS.semiBold, color: COLORS.black, fontSize: 15}}>{item.package_name}</Text>
+                    backgroundColor: COLORS.white,
+                    alignItems: 'center'
+                }}  key={item.service_package_id}>
+                    <Text style={{fontFamily: FONTS.semiBold, color: COLORS.black, fontSize: 15, width: "65%"}} >{item.package_name}</Text>
                     <View style={{flexDirection: 'row'}}>
                         <Text style={{fontFamily: FONTS.medium, color: COLORS.black}}>{formatCurrency(item.price)}{"   "}</Text>
                     {serviceRequest.some(service => service.service_package_id === item.service_package_id) &&
@@ -240,7 +240,7 @@ const ServiceRequestBoardingScreen = ({navigation, route}) => {
                     </View>
 
                 </TouchableOpacity>
-                </>
+              
             ))}
 
         </View>

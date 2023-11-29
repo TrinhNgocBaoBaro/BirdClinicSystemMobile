@@ -156,7 +156,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
       color: COLORS.blue,
     },
     done: {
-      status: "Đã có kết quả",
+      status: "Hoàn tất",
       position: 4,
       color: COLORS.green,
     },
@@ -188,6 +188,19 @@ const DetailBookingScreen = ({ navigation, route }) => {
         const arrayAfterSort = arrayDataServiceForm.sort((a,b)=> a.time_create.localeCompare(b.time_create))
         console.log("aray: ",arrayAfterSort);
         setDataServiceForm(arrayAfterSort);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const changeStatusBooking = async () => {
+    try {
+      const response = await API.put(`/booking/${bookingId}`, {status: "checked_in_after_test"});
+      if (response.data) {
+        console.log("change status: ",response.data);
+        fetchData();
+        fetchDataServiceForm();
       }
     } catch (error) {
       console.log(error);
@@ -756,7 +769,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
                 </View>
                 
             {item.status === 'done' && 
-            (dataBooking.status === 'test_requested' &&   
+            (dataBooking.status === 'test_requested' && index === dataServiceForm.length - 1 &&  
             <>
               <Text
                 style={{
@@ -771,6 +784,7 @@ const DetailBookingScreen = ({ navigation, route }) => {
               </Text>
             <TouchableOpacity
             activeOpacity={0.7}
+            onPress={()=>changeStatusBooking()}
             style={{
               padding: 10,
               elevation: 2,

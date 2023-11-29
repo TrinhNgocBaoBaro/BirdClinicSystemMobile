@@ -31,11 +31,12 @@ const deviceHeight = Dimensions.get("window").height;
 
 const ChatBoardingScreen = ({ navigation, route }) => {
   const accountId = route.params.account_id;
-
+  const chatId = route.params.chat_id
   const [image, setImage] = React.useState(null);
   const [textChat, setTextChat] = React.useState("");
   const [dataMessage, setDataMessage] = React.useState();
   const [load, setLoad] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const scrollViewRef = useRef();
 
@@ -91,7 +92,7 @@ const ChatBoardingScreen = ({ navigation, route }) => {
   const fetchDataMessage = async () => {
     try {
       const response = await API.get(
-        `/content_chat/?chat_id=75e72f990d5b6fe886b2d0430c1f7a&user1=${accountId}&user2=clinic`
+        `/content_chat/?chat_id=${chatId}&user1=${accountId}&user2=clinic`
       );
       if (response.data) {
         // console.log(response.data);
@@ -111,14 +112,14 @@ const ChatBoardingScreen = ({ navigation, route }) => {
           user2: "clinic",
           message: textChat,
           type: "sent",
-          chat_id: "75e72f990d5b6fe886b2d0430c1f7a",
+          chat_id: chatId,
         }),
         API.post(`/content_chat`, {
           user1: "clinic",
           user2: accountId,
           message: textChat,
           type: "receive",
-          chat_id: "75e72f990d5b6fe886b2d0430c1f7a",
+          chat_id: chatId,
         }),
       ]);
 
@@ -130,7 +131,7 @@ const ChatBoardingScreen = ({ navigation, route }) => {
           user2: "clinic",
           message: textChat,
           type: "sent",
-          chat_id: "75e72f990d5b6fe886b2d0430c1f7a",
+          chat_id: chatId,
         });
       } else {
         console.log("Có lỗi khi gửi một hoặc cả hai message");
@@ -160,7 +161,7 @@ const ChatBoardingScreen = ({ navigation, route }) => {
       formDataSent.append("user2", "clinic");
       formDataSent.append("type", "sent");
       formDataSent.append("message", textChat);
-      formDataSent.append("chat_id", "75e72f990d5b6fe886b2d0430c1f7a");
+      formDataSent.append("chat_id", chatId);
 
       const formDataReceive = new FormData();
       formDataReceive.append("image", {
@@ -172,7 +173,7 @@ const ChatBoardingScreen = ({ navigation, route }) => {
       formDataReceive.append("user2", accountId);
       formDataReceive.append("type", "receive");
       formDataReceive.append("message", textChat);
-      formDataReceive.append("chat_id", "75e72f990d5b6fe886b2d0430c1f7a");
+      formDataReceive.append("chat_id", chatId);
 
       const [responseSent, responseReceive] = await Promise.all([
         API.postWithHeaders(`/content_chat/img`, formDataSent, {
@@ -194,7 +195,7 @@ const ChatBoardingScreen = ({ navigation, route }) => {
           user2: "clinic",
           message: textChat,
           type: "sent",
-          chat_id: "75e72f990d5b6fe886b2d0430c1f7a",
+          chat_id: chatId,
         });
       } else {
         console.log("Có lỗi khi gửi một hoặc cả hai message");
@@ -252,18 +253,15 @@ const ChatBoardingScreen = ({ navigation, route }) => {
 
             <SvgBirdBackground width={100} height={100} />
 
-<View style={{ marginVertical: 10 }}>
-<Text style={styles.typeText1}>
-Bird
-<Text style={styles.typeText2}>Clinic</Text>
-</Text>
-</View>
-<Text style={{fontFamily: FONTS.medium, textAlign: 'center', marginHorizontal: 50, color: COLORS.grey}}>Phòng khám chim cảnh, cung cấp các dịch vụ khám bệnh, nội trú, spa chăm sóc cho chú chim của bạn,...</Text>
-
-
+            <View style={{ marginVertical: 10 }}>
+              <Text style={styles.typeText1}>
+              Bird
+              <Text style={styles.typeText2}>Clinic</Text>
+              </Text>
+            </View>
+              <Text style={{fontFamily: FONTS.medium, textAlign: 'center', marginHorizontal: 50, color: COLORS.grey}}>Phòng khám chim cảnh, cung cấp các dịch vụ khám bệnh, nội trú, spa chăm sóc cho chú chim của bạn,...</Text>
             </View>
                     
-            
               {dataMessage.map((item, index) => (
                 <View
                   style={{
@@ -286,14 +284,14 @@ Bird
                         }}
                       >
                         <Image
-                          source={{ uri: item.img_link }}
-                          style={{
-                            width: 200,
-                            height: 150,
-                            borderRadius: 5,
-                          }}
-                          resizeMode="cover"
-                        />
+                        source={{ uri: item.img_link }}
+                        style={{
+                          width: 200,
+                          height: 150,
+                          borderRadius: 5,
+                        }}
+                        resizeMode="cover"
+                      />                 
                       </View>
                     )}
                     {item.message && (

@@ -19,7 +19,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
   );
   const [dataBirdInfo, setDataBirdInfo] = React.useState();
 
-  console.log("Booking: ", booking);
+  // console.log("Booking: ", booking);
 
   const [symptom, setSymptom] = React.useState("");
   const [showModal, setShowModal] = React.useState(false);
@@ -411,9 +411,9 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
           // // backdropTransitionInTiming={15000}
           // backdropTransitionOutTiming={5000}
           animationInTiming={300}
-          animationOutTiming={1000}
+          animationOutTiming={500}
           animationIn="zoomIn"
-          animationOut="slideOutDown"
+          animationOut="zoomOut"
           onModalHide={() => {
             if (modalClosedByButton === true) {
               navigation.navigate("BookingFinished", {

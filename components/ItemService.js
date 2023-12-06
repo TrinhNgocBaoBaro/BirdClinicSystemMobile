@@ -7,7 +7,7 @@ import FONTS from "../constants/font";
 const ItemService = ({ item, navigation }) => {
     return (
         <View style={style.itemCard}>
-            <Image source={{ uri: item.image }} style={{ height: 100, width: 110, borderRadius: 5 }}  resizeMode="contain"/>
+            <Image source={{ uri: item.image }} style={{ height: 80, width: 80, borderRadius: 5 }}  resizeMode="contain"/>
             <View style={{
                 height: 100,
                 marginLeft: 15,

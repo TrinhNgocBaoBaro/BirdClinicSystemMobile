@@ -146,6 +146,11 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
       position: "",
       color: COLORS.red,
     },
+    "0": {
+      status: "Hoàn tiền",
+      position: "",
+      color: COLORS.red,
+    },
   };
 
   const progressServiceFormDetail = [
@@ -199,7 +204,7 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
 
   const fetchDataServiceForm = async () => {
     try {
-      const response = await API.get(`/service_Form/${service_form_id}`);
+      const response = await API.get(`/service-form/${service_form_id}`);
       if (response.data) {
         // console.log("Data Service Form: ", response.data);
         setDataServiceForm(response.data[0]);
@@ -217,7 +222,7 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
   const handleShowResultExam = async (stdid) => {
     console.log("service form detail ID: ", stdid)
     try {
-      const responseMedical = await API.get(`/medicalRecord/?service_form_detail_id=${stdid}`);
+      const responseMedical = await API.get(`/medical-record/?service_form_detail_id=${stdid}`);
       const responseMedia = await API.get(`/media/?type=service_form_details&type_id=${stdid}`);
       if (responseMedical.data && responseMedia.data) {
         setDataMedical(responseMedical.data[0])

@@ -221,13 +221,13 @@ export default function HomeScreen({ navigation }) {
                           height: 80,
                           width: 80,
                           borderRadius: 8,
-                          backgroundColor: COLORS.green,
+                          backgroundColor: item.status === "on_going" || item.status === "test_requested" || item.status === "checked_in_after_test" ? COLORS.white : COLORS.green,
                           alignItems: "center",
                           justifyContent: "center",
                         }}
                       >
                         {item.status === "on_going" || item.status === "test_requested" || item.status === "checked_in_after_test"?
-                        <DotIndicator size={5} color={COLORS.white} count={3} /> 
+                        <DotIndicator size={5} color={COLORS.green} count={3} /> 
                         :
                         <Text
                           style={{

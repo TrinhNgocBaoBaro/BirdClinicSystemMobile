@@ -181,13 +181,14 @@ const DetailBookingScreen = ({ navigation, route }) => {
 
   const fetchDataServiceForm = async () => {
     try {
-      const response = await API.get(`/service_Form/?booking_id=${bookingId}`);
+      const response = await API.get(`/service-form/?booking_id=${bookingId}`);
       if (response.data) {
         // console.log("Data Service Form: ",response.data);
         const arrayDataServiceForm = response.data
-        const arrayAfterSort = arrayDataServiceForm.sort((a,b)=> a.time_create.localeCompare(b.time_create))
-        console.log("aray: ",arrayAfterSort);
-        setDataServiceForm(arrayAfterSort);
+        const arrayAfterSort = arrayDataServiceForm.sort((a,b)=> a.time_create.localeCompare(b.time_create));
+        const arrayAfterMap = arrayAfterSort.filter((item,index)=> index !== 0)
+        console.log("aray: ",arrayAfterMap);
+        setDataServiceForm(arrayAfterMap);
       }
     } catch (error) {
       console.log(error);
@@ -641,6 +642,11 @@ const DetailBookingScreen = ({ navigation, route }) => {
                    {dataServiceForm.length === 1 ? "" : <Icon1 name={`numeric-${index+1}-circle-outline`} size={25}/>  }  
                   
                 </View>
+                
+                <View style={styles.viewAttribute}>
+                    <Text style={styles.textAttribute}>Mã số</Text>
+                    <Text style={styles.textInfo}>{item.service_form_id}</Text>
+                </View>
                 <View
                   style={{
                     flexDirection: "row",
@@ -846,6 +852,11 @@ const DetailBookingScreen = ({ navigation, route }) => {
               >
                 Thông tin khám
               </Text>
+            </View>
+
+            <View style={styles.viewAttribute}>
+              <Text style={styles.textAttribute}>Mã số</Text>
+              <Text style={styles.textInfo}>{dataBooking.booking_id}</Text>
             </View>
 
             <View style={styles.viewAttribute}>

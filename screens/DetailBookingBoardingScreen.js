@@ -498,8 +498,6 @@ const DetailBookingBoardingScreen = ({ navigation, route }) => {
           <UIActivityIndicator size={40} color={COLORS.green} />
         </View>
       )}
-
-      <Text>DetailBookingBoardingScreen</Text>
     </>
   );
 };

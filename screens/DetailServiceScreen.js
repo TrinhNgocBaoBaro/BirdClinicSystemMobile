@@ -64,10 +64,11 @@ const styles = StyleSheet.create({
   },
 });
 
-import {SvgHealthCheck, SvgBloodTest, SvgSurgery,  SvgInfectiousDiseaseTest, SvgDNASexing, SvgXray,SvgFaecalTest,SvgEndoscopy} from "../components/Svg";
+import {SvgHealthCheck, SvgBloodTest, SvgSurgery,  SvgInfectiousDiseaseTest, SvgDNASexing, SvgXray,SvgFaecalTest,SvgEndoscopy,SvgServiceDefault} from "../components/Svg";
 import { FlatGrid } from "react-native-super-grid";
 import FONTS from "../constants/font";
 import Icon from "react-native-vector-icons/Ionicons";
+import * as SvgComponents from "../components/Svg";
 
 
 const HealthCheck = ({service_type_id}) => {
@@ -76,7 +77,7 @@ const HealthCheck = ({service_type_id}) => {
   const fetchData = async () => {
     try {
       const response = await API.get(
-        `/serviceType/${service_type_id}`
+        `/service-type/${service_type_id}`
       );
       if (response.data) {
         //  console.log("Data Service Type",response.data[0]);
@@ -86,13 +87,24 @@ const HealthCheck = ({service_type_id}) => {
       console.log(error);
     }
   }
+  
+  const componentSvg = (nameSvg) =>{
+    const SelectedSvg = SvgComponents[`Svg${nameSvg}`];
+
+      if (SelectedSvg) {
+        return  <SelectedSvg width={100} height={100} />
+      }else {
+        return  <SvgServiceDefault width={100} height={100} />
+      }
+  }
+
   React.useEffect(()=>{
     fetchData();
   },[])
   return (
     <>
-    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent:'center', marginVertical: 10}}><Icon name="information-circle-outline"  size={23} color={COLORS.green} />
-    <Text style={{fontFamily: FONTS.medium, fontSize: 12, marginLeft: 5}}>Các dịch vụ dưới đây có thể được bác sĩ chỉ định khi khám!</Text>
+    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent:'center', marginVertical: 10, marginHorizontal:50}}><Icon name="information-circle-outline"  size={23} color={COLORS.green} />
+    <Text style={{fontFamily: FONTS.medium, fontSize: 13, marginLeft: 5}}>Các dịch vụ dưới đây có thể được bác sĩ chỉ định khi khám!</Text>
     </View>
     {dataHealthCheck.length !== 0 ? 
      <FlatGrid
@@ -105,7 +117,7 @@ const HealthCheck = ({service_type_id}) => {
        transition={{delay: index * 200}}
         style={{alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.white,elevation:5, borderWidth: 2, borderColor: COLORS.green ,borderRadius: 10, padding: 10, height: 150, marginTop: index === 0 || index === 1 ? 10 : 0      }} >
                
-       {item.image === 'HealthCheck' && (
+       {/* {item.image === 'HealthCheck' && (
          <SvgHealthCheck width={100} height={100} />
        )}
        {item.image === 'Xray' && (
@@ -128,7 +140,8 @@ const HealthCheck = ({service_type_id}) => {
        )} 
        {item.image === 'InfectiousDiseaseTest' && (
          <SvgInfectiousDiseaseTest width={100} height={100} />
-       )}       
+       )}        */}
+        {componentSvg(item.image)}
          <Text style={{fontFamily: FONTS.bold, fontSize: 12, marginTop: 5, textAlign: 'center'}} >{item.name}</Text>
        </MotiView>
      )}
@@ -172,7 +185,7 @@ const Boarding = ({service_type_id}) => {
   const fetchDataBirdSize = async () => {
     try {
       const response = await API.get(
-        `/bird_size/`
+        `/bird-size/`
       );
       if (response.data) {
         const arrayDataBirdSize = response.data
@@ -187,7 +200,7 @@ const Boarding = ({service_type_id}) => {
   const fetchDataServicePackage = async () => {
     try {
       const response = await API.get(
-        `/servicePackage/?service_type_id=${service_type_id}`
+        `/service-package/?service_type_id=${service_type_id}`
       );
       if (response.data) {
         const arrayDataServicePackage = response.data
@@ -229,7 +242,7 @@ const Boarding = ({service_type_id}) => {
           <View style={{justifyContent: 'center'}}>
             <View style={{paddingHorizontal: 20, paddingTop: 15, flexDirection: "row", justifyContent: "space-between"}}>  
                 <Text style={{fontFamily: FONTS.semiBold, color: COLORS.black, fontSize: 13, color: COLORS.grey}}>Loại dịch vụ</Text>
-                <Text style={{fontFamily: FONTS.semiBold, color: COLORS.black, fontSize: 13, color: COLORS.grey}}>Giá</Text>
+                <Text style={{fontFamily: FONTS.semiBold, color: COLORS.black, fontSize: 13, color: COLORS.grey}}>Giá / ngày</Text>
             </View>
           {dataServicePackage && dataServicePackage.map((itemPackage,indexPackage)=>{
             if(itemPackage.bird_size_id === item.bird_size_id){ 
@@ -265,8 +278,11 @@ const Boarding = ({service_type_id}) => {
 
 const Grooming = () => {
   return (
-    <View>
-      <Text>Spa chăm sóc</Text>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: "center"}}>
+      <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Cắt tỉa móng</Text>
+      <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Cắt tỉa mỏ</Text>
+      <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Tỉa lông cánh</Text>
+
       {/* ... */}
     </View>
   );

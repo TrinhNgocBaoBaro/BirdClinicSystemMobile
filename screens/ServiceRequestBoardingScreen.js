@@ -50,7 +50,7 @@ const ServiceRequestBoardingScreen = ({navigation, route}) => {
 
     const fetchDataServicePackage = async () => {
         try {
-          const response = await API.get(`/servicePackage/?size_id=${dataBird.bird_breed.bird_size.bird_size_id}&service_type_id=ST002`);
+          const response = await API.get(`/service-package/?size_id=${dataBird.bird_breed.bird_size.bird_size_id}&service_type_id=ST002`);
           if (response.data) {
             // console.log("service package bird: ", response.data);
             setDataServicePackage(response.data);
@@ -67,7 +67,7 @@ const ServiceRequestBoardingScreen = ({navigation, route}) => {
             return total + parseFloat(service.price);
         }, 0);
         try {
-          const response = await API.post(`/service_Form`, 
+          const response = await API.post(`/service-form`, 
             {
                 bird_id: birdId,
                 booking_id: bookingId,

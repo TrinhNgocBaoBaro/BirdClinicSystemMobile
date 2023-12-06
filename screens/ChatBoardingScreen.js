@@ -92,7 +92,7 @@ const ChatBoardingScreen = ({ navigation, route }) => {
   const fetchDataMessage = async () => {
     try {
       const response = await API.get(
-        `/content_chat/?chat_id=${chatId}&user1=${accountId}&user2=clinic`
+        `/content-chat/?chat_id=${chatId}&user1=${accountId}&user2=clinic`
       );
       if (response.data) {
         // console.log(response.data);
@@ -107,14 +107,14 @@ const ChatBoardingScreen = ({ navigation, route }) => {
     //gửi message type sent and receive
     try {
       const [responseSent, responseReceive] = await Promise.all([
-        API.post(`/content_chat`, {
+        API.post(`/content-chat`, {
           user1: accountId,
           user2: "clinic",
           message: textChat,
           type: "sent",
           chat_id: chatId,
         }),
-        API.post(`/content_chat`, {
+        API.post(`/content-chat`, {
           user1: "clinic",
           user2: accountId,
           message: textChat,
@@ -176,10 +176,10 @@ const ChatBoardingScreen = ({ navigation, route }) => {
       formDataReceive.append("chat_id", chatId);
 
       const [responseSent, responseReceive] = await Promise.all([
-        API.postWithHeaders(`/content_chat/img`, formDataSent, {
+        API.postWithHeaders(`/content-chat/img`, formDataSent, {
           "Content-Type": "multipart/form-data",
         }),
-        API.postWithHeaders(`/content_chat/img`, formDataReceive, {
+        API.postWithHeaders(`/content-chat/img`, formDataReceive, {
           "Content-Type": "multipart/form-data",
         }),
       ]);

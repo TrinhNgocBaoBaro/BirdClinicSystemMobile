@@ -85,7 +85,7 @@ const CreateBirdProfileScreen = ({ navigation }) => {
 
   const fetchDataBirdBreed = async () => {
     try {
-      const response = await API.get(`/bird_breed/`);
+      const response = await API.get(`/bird-breed/`);
       if (response.data) {
         console.log("Đã fetch data bird breed");
         setDataBreed(response.data);

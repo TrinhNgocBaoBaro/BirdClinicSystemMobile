@@ -84,7 +84,7 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
 
   const fetchDataServiceForm = async () => {
     try {
-      const response = await API.get(`/service_Form/?booking_id=${bookingId}`);
+      const response = await API.get(`/service-form/?booking_id=${bookingId}`);
       if (response.data) {
         const arrayDataServiceForm = response.data
         console.log("data Service Form: ",arrayDataServiceForm);
@@ -392,10 +392,10 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
         handleIndicatorStyle={{}}
         >
         <BottomSheetScrollView 
-          contentContainerStyle={{flex: 1,backgroundColor: COLORS.white}}
+          contentContainerStyle={{backgroundColor: COLORS.white, paddingBottom: 80}}
           onRefresh={handleRefresh}
           refreshing={false}
-
+          showsVerticalScrollIndicator={false}
 
         >
           {dataServiceForm.length !==0  && dataServiceForm.map((item, index)=>(

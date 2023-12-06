@@ -33,7 +33,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
     const fetchDataTimeSlotClinic = async () => {
         try {
           const response = await API.get(
-            `/time_slot_clinic/?date=${selectedDate}&service_type_id=${booking.service_type_id}`
+            `/time-slot-clinic/?date=${selectedDate}&service_type_id=${booking.service_type_id}`
           );
           if (response.data) {
             console.log(response.data);

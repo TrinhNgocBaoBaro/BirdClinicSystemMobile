@@ -212,7 +212,7 @@ export default function LoginScreen({ navigation }) {
         </TouchableOpacity>
         <View style={{ flexDirection: "row" }}>
           <Text style={{ fontFamily: FONTS.medium }}>Chưa có tài khoản? </Text>
-          <TouchableOpacity activeOpacity={0.5}>
+          <TouchableOpacity activeOpacity={0.5} onPress={()=> navigation.navigate("InputOTP")}>
             <Text style={{ color: COLORS.green, fontFamily: FONTS.bold }}>
               Đăng ký
             </Text>

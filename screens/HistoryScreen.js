@@ -20,6 +20,15 @@ export default function HistoryScreen({navigation}) {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const isFocused = useIsFocused();
 
+  const statusColors = {
+    pending: { color: COLORS.orange, text: "Chờ xác nhận" },
+    booked: { color: COLORS.pink, text: "Đã xác nhận" },
+    checked_in: { color: COLORS.blue, text: "Đã check-in" },
+    on_going: { color: COLORS.green, text: "Đang trong quá trình thực hiện" },
+    finish: { color: COLORS.green, text: "Hoàn thành khám bệnh" },
+    cancelled: { color: COLORS.red, text: "Đã hủy lịch khám" },
+  };
+
   const getUserData = async () => {
     const UserLoggedInData = await AsyncStorage.getItem("UserLoggedInData");
     if (UserLoggedInData) {
@@ -34,13 +43,14 @@ export default function HistoryScreen({navigation}) {
       case 0:
         try {
           const response = await API.get(
-            `/booking/?status=finish&account_id=${userData.account_id}`
+            `/booking/?account_id=${userData.account_id}`
           );
           if (response.data) {
             // const filterData = response.data.filter((e) => {
             //   return e.status === "finish";
             // });
-            const filterData = response.data;
+            const filterData = response.data.sort((a,b)=>  b.arrival_date.localeCompare(a.arrival_date));
+
             console.log("Đã fetch data history");
             setDataHistory(filterData);
           }
@@ -61,7 +71,8 @@ export default function HistoryScreen({navigation}) {
                 e.service_type_id === "ST003"
               );
             });
-            setDataBoarding(filterData);
+            const sortData = filterData.sort((a,b)=>  b.arrival_date.localeCompare(a.arrival_date));
+            setDataBoarding(sortData);
           }
         } catch (error) {
           console.log(error);
@@ -86,7 +97,7 @@ export default function HistoryScreen({navigation}) {
       <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
       <SegmentedControl
             values={[
-              'Lịch sử khám',
+              'Lịch sử',
               'Theo dõi nội trú',
             ]}
             selectedIndex={selectedIndex}
@@ -121,7 +132,7 @@ export default function HistoryScreen({navigation}) {
              data={dataHistory}
              renderItem={({ item, index }) => (
                <TouchableOpacity
-                 onPress={() => {navigation.navigate("DetailHistoryBooking", {booking_id: item.booking_id})}}
+                 onPress={() => { item.status === 'finish' ? item.service_type_id === "ST003" ? navigation.navigate("DetailHistoryBoarding", {booking_id: item.booking_id, account_id: userData.account_id, isTracking: false}) : navigation.navigate("DetailHistoryBooking", {booking_id: item.booking_id}) : {}}}
                  activeOpacity={0.8}
                  style={{
                    backgroundColor: COLORS.white,
@@ -187,7 +198,28 @@ export default function HistoryScreen({navigation}) {
                      />{" "}
                      {moment(item.arrival_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
                    </Text>
+                   <Text
+                     style={{
+                       fontFamily: FONTS.medium,
+                       fontSize: 12,
+                       color: statusColors[item.status]
+                              ? statusColors[item.status].color
+                              : statusColors["on_going"].color,
+                       marginTop: 5
+                     }}
+                   >
+                     <Icon
+                       name="ellipse"
+                       size={10}
+                       color={statusColors[item.status]
+                        ? statusColors[item.status].color
+                        : statusColors["on_going"].color}
+                       style={{ marginLeft: 10 }}
+                     />{" "}
+                     {statusColors[item.status] ? statusColors[item.status].text : statusColors["on_going"].text }
+                   </Text>
                  </View>
+                 {item.status === 'finish' &&
                  <View
                    style={{ flexDirection: "row", alignItems: "center" }}
                  >
@@ -205,6 +237,7 @@ export default function HistoryScreen({navigation}) {
                      color={COLORS.green}
                    />
                  </View>
+                }
                </TouchableOpacity>
              )}
              keyExtractor={(item) => item.booking_id}
@@ -237,7 +270,7 @@ export default function HistoryScreen({navigation}) {
              data={dataBoarding}
              renderItem={({ item, index }) => (
                <TouchableOpacity
-                 onPress={() => navigation.navigate("DetailHistoryBoarding", {booking_id: item.booking_id, account_id: userData.account_id})}
+                 onPress={() => navigation.navigate("DetailHistoryBoarding", {booking_id: item.booking_id, account_id: userData.account_id, isTracking: true})}
                  activeOpacity={0.8}
                  style={{
                    backgroundColor: COLORS.white,

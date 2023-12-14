@@ -49,6 +49,7 @@ export default function HomeScreen({ navigation }) {
 
   const [dataToday, setDataToday] = React.useState();
   const [dataComing, setDataComing] = React.useState();
+  const [dataReExam, setDataReExam] = React.useState([]);
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const isFocused = useIsFocused();
@@ -108,7 +109,8 @@ export default function HomeScreen({ navigation }) {
               return (
                 // e.status !== "cancelled" &&
                 // e.status !== "finish" &&
-                e.arrival_date > today
+                e.arrival_date > today &&
+                e.status !== "re_exam"
               );
             });
             setDataComing(filterData);
@@ -118,6 +120,17 @@ export default function HomeScreen({ navigation }) {
         }
         break;
       case 2:
+        try {
+          const response = await API.get(
+            `/booking/?account_id=${userData.account_id}&status=re_exam`
+          );
+          if (response.data) {
+            const data = response.data;
+            setDataReExam(data);
+          }
+        } catch (error) {
+          console.log(error);
+        }
         break;
     }
   };
@@ -476,7 +489,7 @@ export default function HomeScreen({ navigation }) {
             </View>
           ))}
         {selectedIndex === 2 &&
-          (dataReExam.length === 0 ? (
+          (dataReExam && dataReExam.length === 0 ? (
             <View style={styles.empty}>
               <Image
                 source={require("../assets/EmptyHomeImage.jpg")}
@@ -504,6 +517,7 @@ export default function HomeScreen({ navigation }) {
                       borderWidth: 1,
                       borderColor: "transparent",
                     }}
+                    key={index}
                   >
                     <View
                       style={{
@@ -515,7 +529,7 @@ export default function HomeScreen({ navigation }) {
                       <Text
                         style={{ fontFamily: FONTS.semiBold, fontSize: 16 }}
                       >
-                        {item.name}
+                        {item.bird.name}
                       </Text>
                       <Text
                         style={{
@@ -539,7 +553,7 @@ export default function HomeScreen({ navigation }) {
                           color={COLORS.green}
                           style={{ marginLeft: 10 }}
                         />{" "}
-                        Bs. {item.vet_name}
+                        Bs. {item.veterinarian.name}
                       </Text>
                       <Text
                         style={{

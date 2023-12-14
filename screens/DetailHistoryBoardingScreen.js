@@ -4,6 +4,7 @@ import {
   View,
   TouchableOpacity,
   Image,
+  Alert
 } from "react-native";
 import React, { useRef, useCallback, useMemo } from "react";
 import BottomSheet, {BottomSheetBackdrop, BottomSheetScrollView  } from '@gorhom/bottom-sheet';
@@ -17,24 +18,36 @@ import moment from "moment";
 import { TwoButtonFloatBottom } from "../components/Button";
 import createAxios from "../utils/axios";
 import { ScrollView } from "react-native-gesture-handler";
+import { useIsFocused } from "@react-navigation/native";
+
 const API = createAxios();
 
 const DetailHistoryBoardingScreen = ({ navigation, route }) => {
   const [bookingId, setBookingId] = React.useState(route.params.booking_id);
   const [accountId, setAccountId] = React.useState(route.params.account_id);
+  const isTracking = route.params.isTracking
 
 
   const [dataBooking, setDataBooking] = React.useState();
   const [dataBoarding, setDataBoarding] = React.useState();
+  const [dataMediaBoarding, setDataMediaBoarding] = React.useState();
   const [dataServiceForm, setDataServiceForm] = React.useState([]);
+  const [requestingServiceForm, setRequestingServiceForm] = React.useState([]);
+  const [dataBill, setDataBill] = React.useState([]);
 
   const [load, setLoad] = React.useState(false);
+  const isFocused = useIsFocused();
 
 
   const bottomSheetRef = useRef();
   const snapPoints = useMemo(() => ['35%', '80%'], []);
   const handleClosePress = () => bottomSheetRef.current?.close();
   const handleOpenPress = () => bottomSheetRef.current?.expand();
+
+  const bottomBillSheetRef = useRef();
+  const snapPointsBill = useMemo(() => ['35%', '80%'], []);
+  const handleClosePressBill = () => bottomBillSheetRef.current?.close();
+  const handleOpenPressBill = () => bottomBillSheetRef.current?.expand();
 
   const handleSheetChanges = useCallback((index) => {
     console.log('handleSheetChanges', index);
@@ -44,6 +57,11 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
     fetchDataServiceForm();
 
   }, []);
+
+  const handleSheetChangesBill = useCallback((index) => {
+    console.log('handleSheetChangesBill', index);
+  }, []);
+
 
   const renderBackdrop = useCallback(
     props => (
@@ -74,11 +92,45 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
     try {
       const response = await API.get(`/boarding/?booking_id=${bookingId}`);
       if (response.data) {
-        // console.log("data Boarding: ",response.data);
+        console.log("data Boarding: ",response.data);
         setDataBoarding(response.data[0]);
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const fetchDataMediaBoarding = async () => {
+    try {
+      const response = await API.get(`/media/?type=boarding&type_id=${bookingId}`);
+      if (response.data) {
+        setDataMediaBoarding(response.data[0]);
+        console.log("data Media Boarding: ",response.data[0]);
+
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleShowBill = async (bookingId) => {
+    try {
+      const response = await API.get(`/service-form/?booking_id=${bookingId}`);
+      if (response.data) {
+        const arrayDataServiceForm = response.data
+        const arrayAfterSort = arrayDataServiceForm.sort((a, b) =>
+          a.time_create.localeCompare(b.time_create)
+        );
+        // const arrayAfterSort = arrayDataServiceForm.sort((a,b)=> a.time_create.localeCompare(b.time_create))
+        const arrayDataServiceFormDetail = arrayAfterSort.map((item)=> item.service_form_details)
+        setDataBill(arrayDataServiceFormDetail);
+        handleOpenPressBill();
+      }
+    } catch (error) {
+      console.log(error);
+    }finally{
+      console.log("data bill: ", dataBill)
+
     }
   };
 
@@ -89,6 +141,8 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
         const arrayDataServiceForm = response.data
         console.log("data Service Form: ",arrayDataServiceForm);
         setDataServiceForm(arrayDataServiceForm);
+        console.log("data Service Form tại vị trí đầu tiên: ",arrayDataServiceForm[0].status);
+        setRequestingServiceForm(arrayDataServiceForm[0]);
       }
     } catch (error) {
       console.log(error);
@@ -97,13 +151,14 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
 
 
   React.useEffect(() => {
-    if (bookingId) {
+    if (bookingId && isFocused === true) {
       fetchDataHistoryBoarding();
       fetchDataBoardingByBooking();
       fetchDataServiceForm();
+      fetchDataMediaBoarding();
       console.log("Đã load");
     }
-  }, [bookingId, load]);
+  }, [bookingId, load, isFocused]);
 
   function formatCurrency(amount) {
     return parseFloat(amount).toLocaleString("vi-VN", {
@@ -117,10 +172,12 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
     return p.getHours() + ":" + p.getMinutes() +", "+ p.getDate() + '/' + (p.getMonth()+1) + '/' + p.getFullYear();
   }
 
+  let count = 0;
+
   return (
     <>
       <Header
-        title={"Theo dõi nội trú"}
+        title={isTracking ? "Theo dõi nội trú" : "Lịch sử nội trú"}
         onPress={() => navigation.goBack()}
         rightIcon="ellipsis-vertical"
         onPressRight={() => setLoad(!load)}
@@ -216,13 +273,6 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
             </View>
 
             <View style={styles.viewAttribute}>
-              <Text style={styles.textAttribute}>Số tiền đã trả</Text>
-              <Text style={styles.textInfo}>
-                {formatCurrency(dataBooking.money_has_paid)}{" "}
-              </Text>
-            </View>
-
-            <View style={styles.viewAttribute}>
               <Text style={styles.textAttribute}>Số tiền phải trả</Text>
               <Text style={styles.textInfo}>
                 {formatCurrency(dataBooking.money_has_paid)}{" "}
@@ -235,7 +285,101 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
                 {formatCurrency(dataBooking.money_has_paid)}{" "}
               </Text>
             </View>
-            
+            {dataBooking.status === "finish" &&
+            <>
+            <View style={styles.viewAttribute}>
+            <Text style={styles.textAttribute}>Hóa đơn</Text>
+            <TouchableOpacity
+                  activeOpacity={0.7}
+                  style={{
+                    elevation: 2,
+                    backgroundColor: COLORS.green,
+                    borderRadius: 10
+                  }}
+                  onPress={() => {handleShowBill(dataBooking.booking_id)}}
+                >
+                  <Text
+                    style={{
+                      fontFamily: FONTS.semiBold,
+                      fontSize: 13,
+                      margin: 10,
+                      color: COLORS.white,
+                    }}
+                  >
+                    Xem hóa đơn
+                  </Text>
+                </TouchableOpacity>
+            </View>
+            <BottomSheet
+        ref={bottomBillSheetRef}
+        index={-1}
+        snapPoints={snapPointsBill}
+        onChange={handleSheetChangesBill}
+        enablePanDownToClose={true}
+        backdropComponent={renderBackdrop}
+        handleIndicatorStyle={{}}
+        >
+        <BottomSheetScrollView 
+          contentContainerStyle={{backgroundColor: COLORS.white, paddingBottom: 80}}
+          // onRefresh={handleRefresh}
+          refreshing={false}
+          showsVerticalScrollIndicator={false}
+        >
+            <View style={{paddingVertical: 30, alignItems: 'center', justifyContent: 'center'}}>
+              <Text  
+              style={{
+                  fontSize: 20,
+                  fontFamily: FONTS.bold,
+                  color: COLORS.black,
+                }}>HÓA ĐƠN
+              </Text>
+            </View>
+            {dataBill.length !==0 && 
+            <View style={{paddingHorizontal: 20}}>
+            <Text style={{fontFamily: FONTS.bold, fontSize: 15, marginBottom: 5}}>Thông tin khách hàng:</Text>            
+            <View style={{marginBottom: 10, flexDirection: 'row'}}>
+              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Tên khách hàng:</Text>
+              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataBooking.customer_name}</Text>
+            </View>
+            <View style={{marginBottom: 10, flexDirection: 'row'}}>
+              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Số điện thoại:</Text>
+              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataBooking.bird.customer.phone}</Text>
+            </View>
+            <Text style={{fontFamily: FONTS.bold, fontSize: 15, marginBottom: 5}}>Thông tin chim:</Text>            
+            <View style={{marginBottom: 10, flexDirection: 'row'}}>
+              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Tên chim:</Text>
+              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataBooking.bird.name}</Text>
+            </View>
+            <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Chi tiết hóa đơn:</Text>            
+            <View style={{marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginTop: 10}}>
+              <Text style={{fontFamily: FONTS.semiBold, fontSize: 14, color: COLORS.grey}}>Tên dịch vụ</Text>
+              <Text style={{fontFamily: FONTS.semiBold, fontSize: 14, color: COLORS.grey}}>Giá</Text>
+            </View>
+            {dataBill.map((item,index)=>{
+              return item.map((itemBill,indexBill)=> {
+                count = count + 1
+                return <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}} key={indexBill}>
+                  <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{count}. {itemBill.note}</Text>
+                  <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{formatCurrency(itemBill.price)}</Text>
+                </View>
+
+            })
+            })
+            }
+            <View style={{marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={{fontFamily: FONTS.bold, fontSize: 14}}>Tổng tiền:</Text>
+              <Text style={{fontFamily: FONTS.semiBold, fontSize: 14}}>{formatCurrency(dataBooking.money_has_paid)}</Text>
+            </View>
+            {/* <View style={{marginBottom: 10, flexDirection: 'row'}}>
+              <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Phương thức thanh toán:</Text>
+              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}Chuyển khoản</Text>
+            </View> */}
+            </View>
+            }
+        </BottomSheetScrollView>
+            </BottomSheet>
+            </>
+            }
           </View>
 
           <View 
@@ -350,7 +494,7 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
             <View style={{}}>
               <Text style={styles.textAttribute}>Hình ảnh tiếp nhận</Text>
               <View style={{alignSelf: 'center', backgroundColor: COLORS.white, elevation: 3, borderRadius:12,marginVertical: 25, alignItems: 'center', justifyContent: 'center'}}>
-              <Image source={{uri: "https://png.pngtree.com/thumb_back/fw800/background/20230524/pngtree-two-brightly-colored-birds-sitting-on-a-branch-image_2670376.jpg"}}
+              <Image source={{uri: dataMediaBoarding ? dataMediaBoarding.link : "https://vapa.vn/wp-content/uploads/2022/12/anh-nen-mau-trang-001.jpg"}}
               style={{width: 200, height: 150, borderRadius: 10, margin: 10}}
               />
               </View>
@@ -431,7 +575,42 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
         </BottomSheetScrollView>
       </BottomSheet>
       <TwoButtonFloatBottom buttonColorLeft={COLORS.white} titleLeft="Chat với bác sĩ" colorTextLeft={COLORS.green} onPressLeft={()=>navigation.navigate('ChatBoarding',{account_id: accountId, chat_id: dataBoarding.chat_id})}
-      buttonColorRight={COLORS.green} titleRight="Yêu cầu dịch vụ" colorTextRight={COLORS.white} onPressRight={()=>navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id})}
+        buttonColorRight={dataServiceForm.length > 1 && requestingServiceForm && requestingServiceForm.status === "done_not_paid" ? COLORS.green : COLORS.grey} 
+        titleRight="Yêu cầu dịch vụ" 
+        colorTextRight={COLORS.white} 
+        onPressRight={()=>
+          {
+            if(dataServiceForm.length > 1){
+              if(requestingServiceForm && requestingServiceForm.status === "done_not_paid"){
+                (navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id}
+                ))
+              }else {
+                Alert.alert(
+                  "Thông báo",
+                  `Dịch vụ bạn yêu cầu trước đó phải được hoàn thành trước!`
+                  )
+              }
+            }else if (dataServiceForm.length = 1) {
+              navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id}
+              )
+            } else {
+              Alert.alert(
+                "Thông báo",
+                `Dịch vụ bạn yêu cầu trước đó phải được hoàn thành trước!`
+                )
+            }
+          //   dataServiceForm.length > 1 && requestingServiceForm && requestingServiceForm.status === "done_not_paid" ?
+          // (navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id}
+          // ))
+          //   : 
+          // (
+          // Alert.alert(
+          // "Thông báo",
+          // `Dịch vụ bạn yêu cầu trước đó phải được hoàn thành trước!`
+          // )
+          // )
+        }
+        }
       />
       </>
       }

@@ -206,7 +206,7 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
     try {
       const response = await API.get(`/service-form/${service_form_id}`);
       if (response.data) {
-        // console.log("Data Service Form: ", response.data);
+        // console.log("Data Service Form: ", response.data[0]);
         setDataServiceForm(response.data[0]);
         // console.log(
         //   "Data Service Form Detail: ",
@@ -251,6 +251,11 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
     }
   }, [dataServiceForm]);
 
+  function formatTimeCreate(timeCreate) {
+    let p = new Date(timeCreate);
+    return p.getHours() + ":" + p.getMinutes() +", "+ p.getDate() + '/' + (p.getMonth()+1) + '/' + p.getFullYear();
+  }
+
   return (
     <>
       <Header
@@ -260,7 +265,8 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
         onPressRight={()=> setLoad(!load)}
       />
       <ScrollView style={{ flex: 1, backgroundColor: COLORS.white }}>
-        <View style={{ marginVertical: 20, marginLeft: 20 }}>
+        <View style={{ marginVertical: 20, marginHorizontal: 20 }}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text
             style={{
               fontFamily: FONTS.bold,
@@ -271,6 +277,17 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
           >
             Trạng thái
           </Text>
+          <Text
+            style={{
+              fontFamily: FONTS.semiBold,
+              fontSize: 14,
+              color: COLORS.grey,
+              marginLeft: 5,
+            }}
+          >
+            {dataServiceForm && formatTimeCreate(dataServiceForm.time_create)}
+          </Text>
+          </View>
           <Text
             style={{
               fontFamily: FONTS.semiBold,
@@ -325,14 +342,19 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
             marginTop: 50,
           }}
         >
+          <View style={{
+            flexDirection: 'row', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingBottom: 10,
+            marginBottom: 10,
+            borderBottomWidth: 2,
+            borderBottomColor: COLORS.darkGrey,
+            }}>
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
-              paddingBottom: 10,
-              marginBottom: 10,
-              borderBottomWidth: 2,
-              borderBottomColor: COLORS.darkGrey,
             }}
           >
             <Icon name="layers-outline" size={24} color={COLORS.green} />
@@ -345,6 +367,15 @@ const DetailServiceFormScreen = ({ navigation, route }) => {
             >
               Dịch vụ
             </Text>
+          </View>
+          <View>
+            <Text  
+            style={{
+                fontFamily: FONTS.semiBold,
+                fontSize: 14,
+                marginLeft: 5,
+              }}>{dataServiceForm && dataServiceForm.service_form_id}</Text>
+          </View>
           </View>
           {dataServiceFormDetail.map((item, index) => (
             <View

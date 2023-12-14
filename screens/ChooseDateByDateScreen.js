@@ -25,6 +25,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
     const [showModalPickDepartureDate, setShowModalPickDepartureDate] = React.useState(false);
     const [selectedDepartureDate, setSelectedDepartureDate] = React.useState("");
     const [minimunDepartureDate, setMinimunDepartureDate] = React.useState("");
+    const [configMinimumDate, setConfigMinimumDate] = React.useState();
 
     const [selectedTime, setSelectedTime] = React.useState();
     const [hasDataTime, setHasDataTime] = React.useState(false);
@@ -39,8 +40,22 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
             console.log(response.data);
             const dataTime = response.data;
             console.log("-----------------");
-            console.log(dataTime);
-            setDataTime(dataTime);
+            const sortArray = response.data.sort((a,b)=>  a.time.localeCompare(b.time))
+            console.log("sortArray: ", sortArray);
+            setDataTime(sortArray);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+    const fetchDataConfig = async () => {
+        try {
+          const response = await API.get(`/config/`);
+          if (response.data) {
+            const dataConfig = response.data.at_least_day_boarding;
+            console.log("-----------------: ",dataConfig);
+            setConfigMinimumDate(dataConfig);
           }
         } catch (error) {
           console.log(error);
@@ -63,6 +78,10 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
         console.log(selectedDate);
       }, [selectedDate]);
 
+    React.useEffect(() => {
+        fetchDataConfig();
+    }, []);
+
     const handleSelectDate = (date) => {
 
         setSelectedDate(moment(date, "YYYY/MM/DD").format("YYYY-MM-DD"));
@@ -70,7 +89,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
 
         let dateString = moment(date, "YYYY/MM/DD").format("YYYY-MM-DD");
         let startDate = new Date(dateString);
-        startDate.setDate(startDate.getDate() + 3)
+        startDate.setDate(startDate.getDate() + configMinimumDate)
         let endDate = startDate.toISOString().slice(0, 10);
         setMinimunDepartureDate(endDate);
        
@@ -106,9 +125,11 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
         {booking.service_type_id === "ST003" ?
         <>
         <View>
+        {selectedDate &&
         <View style={{position: 'absolute', top: 20, left:50, backgroundColor: COLORS.white, zIndex: 1, paddingHorizontal: 5, borderRadius: 10}}>
           <Text style={{ fontFamily: FONTS.semiBold, fontSize: 15, color: COLORS.green }}>Ngày bắt đầu</Text>
-          </View>
+        </View>
+        }
         <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => setShowModalPickDate(!showModalPickDate)}
@@ -132,9 +153,11 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
         </TouchableOpacity>
         </View>
         <View>
+        {selectedDepartureDate &&
         <View style={{position: 'absolute', top:10, left:50, backgroundColor: COLORS.white, zIndex: 1, paddingHorizontal: 5, borderRadius: 10}}>
           <Text style={{ fontFamily: FONTS.semiBold, fontSize: 15, color: selectedDate ? COLORS.green : COLORS.grey }}>Ngày kết thúc</Text>
-          </View>
+        </View>
+        } 
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => selectedDate ? setShowModalPickDepartureDate(!showModalPickDepartureDate): {}}
@@ -158,7 +181,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
             {selectedDepartureDate ? selectedDepartureDate : "Chọn ngày kết thúc"}
           </Text>
         </TouchableOpacity>
-        <Text style={{fontFamily: FONTS.bold, fontStyle: "italic", fontSize: 16, marginLeft: 20}} >*Ít nhất 3 ngày</Text>
+        <Text style={{fontFamily: FONTS.bold, fontStyle: "italic", fontSize: 15, marginLeft: 20}} >* Phòng khám quy định ít nhất {configMinimumDate && configMinimumDate} ngày</Text>
         </View>
         </>
         :
@@ -373,6 +396,26 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
           </View>
         </Modal>
       </View>
+      {booking.service_type_id === "ST003" ?
+      <ButtonFloatBottom
+        title="Tiếp tục"
+        buttonColor={selectedTime && selectedDepartureDate ? COLORS.green : COLORS.grey}
+        onPress={() => {
+          selectedTime
+            ? navigation.navigate("ConfirmBookingAndSymptom", {
+                booking: {
+                  ...booking,
+                  estimate_time: selectedTime.time,
+                  time_id: selectedTime.time_slot_clinic_id,
+                  arrival_date: selectedDate,
+                  status: 'pending',
+                  money_has_paid: '0',
+                  departure_date: selectedDepartureDate ? selectedDepartureDate : ""
+                },
+              })
+            : "";
+        }}
+      /> :
       <ButtonFloatBottom
         title="Tiếp tục"
         buttonColor={selectedTime ? COLORS.green : COLORS.grey}
@@ -392,6 +435,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
             : "";
         }}
       />
+    }
     </>
   );
 };

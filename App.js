@@ -44,8 +44,11 @@ import DetailHistoryBookingScreen from './screens/DetailHistoryBookingScreen';
 import CreateBirdProfileScreen from './screens/CreateBirdProfileScreen';
 import ChatBoardingScreen from './screens/ChatBoardingScreen';
 import ServiceRequestBoardingScreen from './screens/ServiceRequestBoardingScreen';
+import RegisterScreen from './screens/RegisterScreen';
 // Staff Screen
 import QRCodeScreen from './staff_screens/QRCodeScreen';
+import InputOTPScreen from './screens/InputOTPScreen';
+import InputOTPScreenOld from './screens/InputOTPScreenOld';
 
 const CustomTabBarButton = ({ onPress }) => (
   <View style={{
@@ -135,7 +138,7 @@ const TabRoute = () => {
         }} />
       <Tab.Screen
         name="Khác"
-        component={BirdScreen}
+        component={Detail}
         options={{
           tabBarIcon: ({ focused, color }) => {
             return <Icon name={focused ? `albums`:`albums-outline` } color={color} size={25} />;
@@ -190,6 +193,9 @@ export default function App() {
         <Stack.Screen name="CreateBirdProfile" component={CreateBirdProfileScreen} />
         <Stack.Screen name="ChatBoarding" component={ChatBoardingScreen} />
         <Stack.Screen name="ServiceRequestBoarding" component={ServiceRequestBoardingScreen} />
+        <Stack.Screen name="InputOTPOld" component={InputOTPScreenOld} />
+        <Stack.Screen name="InputOTP" component={InputOTPScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

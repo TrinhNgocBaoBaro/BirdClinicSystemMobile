@@ -150,9 +150,7 @@
 //   );
 // };
 
-// export default QRCodeScreen;
 
-// const styles = StyleSheet.create({});
 
 
 import { View, Text, Button } from 'react-native'
@@ -167,9 +165,10 @@ const QRCodeScreen = ({navigation}) => {
   return (
     <View>
       <Text>QRCodeScreen</Text>
-      {/* <Button title='Đăng xuất' onPress={handleLogOut}/> */}
+      <Button title='Đăng xuất' onPress={handleLogOut}/>
     </View>
   )
 }
 
 export default QRCodeScreen
+// const styles = StyleSheet.create({});

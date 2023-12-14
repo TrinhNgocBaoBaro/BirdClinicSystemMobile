@@ -75,7 +75,7 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
     try {
       const response = await API.get(`/service-form/?booking_id=${bookingId}`);
       if (response.data) {
-        // console.log("Data Service Form: ",response.data);
+        console.log("Data Service Form: ",response.data);
         const arrayDataServiceForm = response.data;
         const arrayAfterSort = arrayDataServiceForm.sort((a, b) =>
           a.time_create.localeCompare(b.time_create)
@@ -124,8 +124,11 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
       const response = await API.get(`/service-form/?booking_id=${bookingId}`);
       if (response.data) {
         const arrayDataServiceForm = response.data
+        const arrayAfterSort = arrayDataServiceForm.sort((a, b) =>
+          a.time_create.localeCompare(b.time_create)
+        );
         // const arrayAfterSort = arrayDataServiceForm.sort((a,b)=> a.time_create.localeCompare(b.time_create))
-        const arrayDataServiceFormDetail = arrayDataServiceForm.map((item)=> item.service_form_details)
+        const arrayDataServiceFormDetail = arrayAfterSort.map((item)=> item.service_form_details)
         setDataBill(arrayDataServiceFormDetail);
         handleOpenPress();
       }
@@ -374,8 +377,9 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
                       color: COLORS.black,
                     }}
                   >
-                    {index + 1}. {item.note}
+                    {indexD + 1}. {item.note}
                   </Text>
+                  {item.service_package_id !== "SP1" &&
                   <TouchableOpacity activeOpacity={0.5} onPress={() => {handleShowResultExam(item.service_form_detail_id)}}>
                     <Text
                       style={{
@@ -388,6 +392,7 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
                       Xem kết quả
                     </Text>
                   </TouchableOpacity>
+                  }
                 </View>
               ))}
             </View>
@@ -692,7 +697,7 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
 
             {dataBill.length !==0 && 
             <View style={{paddingHorizontal: 20}}>
-            <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Thông tin khách hàng:</Text>            
+            <Text style={{fontFamily: FONTS.bold, fontSize: 15, marginBottom: 5}}>Thông tin khách hàng:</Text>            
             <View style={{marginBottom: 10, flexDirection: 'row'}}>
               <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Tên khách hàng:</Text>
               <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataHistoryBooking.customer_name}</Text>
@@ -701,15 +706,15 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
               <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Số điện thoại:</Text>
               <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataHistoryBooking.bird.customer.phone}</Text>
             </View>
-            <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Thông tin chim:</Text>            
+            <Text style={{fontFamily: FONTS.bold, fontSize: 15, marginBottom: 5}}>Thông tin chim:</Text>            
             <View style={{marginBottom: 10, flexDirection: 'row'}}>
               <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Tên chim:</Text>
               <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataHistoryBooking.bird.name}</Text>
             </View>
-            <View style={{marginBottom: 10, flexDirection: 'row'}}>
+            {/* <View style={{marginBottom: 10, flexDirection: 'row'}}>
               <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Giống:</Text>
               <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataHistoryBooking.bird.customer.phone}</Text>
-            </View>
+            </View> */}
             <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Chi tiết hóa đơn:</Text>            
             <View style={{marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginTop: 10}}>
               <Text style={{fontFamily: FONTS.semiBold, fontSize: 14, color: COLORS.grey}}>Tên dịch vụ</Text>
@@ -718,9 +723,9 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
             {dataBill.map((item,index)=>{
               return item.map((itemBill,indexBill)=> {
                 count = count + 1
-                return <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
+                return <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}} key={indexBill}>
                   <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{count}. {itemBill.note}</Text>
-                  <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{formatCurrency(itemBill.service_package.price)}</Text>
+                  <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{formatCurrency(itemBill.price)}</Text>
                 </View>
 
             })
@@ -730,10 +735,10 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
               <Text style={{fontFamily: FONTS.bold, fontSize: 14}}>Tổng tiền:</Text>
               <Text style={{fontFamily: FONTS.semiBold, fontSize: 14}}>{formatCurrency(dataHistoryBooking.money_has_paid)}</Text>
             </View>
-            <View style={{marginBottom: 10, flexDirection: 'row'}}>
+            {/* <View style={{marginBottom: 10, flexDirection: 'row'}}>
               <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Phương thức thanh toán:</Text>
               <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}Chuyển khoản</Text>
-            </View>
+            </View> */}
             </View>
             }
         </BottomSheetScrollView>

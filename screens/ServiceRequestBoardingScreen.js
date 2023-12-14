@@ -89,7 +89,8 @@ const ServiceRequestBoardingScreen = ({navigation, route}) => {
             Alert.alert(
                 "Thông báo",
                 `Yêu cầu dịch vụ thành công!`
-              );
+            );
+            navigation.goBack();
           }
         } catch (error) {
           console.log(error);

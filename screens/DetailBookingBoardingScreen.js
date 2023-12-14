@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import COLORS from "../constants/color";
 import FONTS from "../constants/font";
 import Icon from "react-native-vector-icons/Ionicons";
+import moment from "moment";
 
 import createAxios from "../utils/axios";
 const API = createAxios();
@@ -458,12 +459,16 @@ const DetailBookingBoardingScreen = ({ navigation, route }) => {
 
             <View style={styles.viewAttribute}>
               <Text style={styles.textAttribute}>Ngày đặt</Text>
-              <Text style={styles.textInfo}>{dataBooking.booking_date}</Text>
+              <Text style={styles.textInfo}>
+              {moment(dataBooking.booking_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
+              </Text>
             </View>
 
             <View style={styles.viewAttribute}>
               <Text style={styles.textAttribute}>Ngày đến</Text>
-              <Text style={styles.textInfo}>{dataBooking.arrival_date}</Text>
+              <Text style={styles.textInfo}>
+                {moment(dataBooking.arrival_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
+                </Text>
             </View>
 
             <View style={styles.viewAttribute}>
@@ -482,7 +487,7 @@ const DetailBookingBoardingScreen = ({ navigation, route }) => {
 
             <View style={styles.viewAttribute}>
               <Text style={styles.textAttribute}>Bác sĩ phụ trách</Text>
-              <Text style={styles.textInfo}>Phạm Ngọc Long</Text>
+              <Text style={styles.textInfo}>{dataBooking.veterinarian.name}</Text>
             </View>
           </View>
         </ScrollView>

@@ -40,13 +40,8 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
       );
       if (response.data) {
         console.log(response.data);
-        // const dataTime = response.data.map(
-        //   (item) => item.time_slot_clinic.slot_clinic
-        // );
-        const dataTime = response.data;
-        console.log("-----------------");
-        console.log(dataTime);
-        setDataTime(dataTime);
+        const sortArray = response.data.sort((a,b)=>  a.time_slot_clinic.slot_clinic.time.localeCompare(b.time_slot_clinic.slot_clinic.time))
+        setDataTime(sortArray);
       }
     } catch (error) {
       console.log(error);

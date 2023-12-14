@@ -145,7 +145,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
                 fontSize: 13,
               }}
             >
-              Dịch vụ khám
+              Dịch vụ {booking.service_type_id === "ST001" ? "khám" : ""}
             </Text>
           </View>
           <Text
@@ -235,7 +235,7 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
                 fontSize: 13,
               }}
             >
-              Ngày khám
+              Ngày {booking.service_type_id === "ST001" ? "khám" : "tiếp nhận"}
             </Text>
           </View>
           <Text
@@ -248,6 +248,53 @@ const ConfirmBookingAndSymptomScreen = ({ navigation, route }) => {
             {moment(booking.arrival_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
           </Text>
         </View>
+        {booking.service_type_id === "ST003" &&
+        <View
+          style={{
+            height: "auto",
+            backgroundColor: COLORS.white,
+            marginHorizontal: 30,
+            borderRadius: 10,
+            elevation: 3,
+            marginBottom: 10,
+            padding: 10,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 5,
+            }}
+          >
+            <Icon
+              name="calendar-outline"
+              width={25}
+              height={25}
+              size={20}
+              color={COLORS.grey}
+            />
+            <Text
+              style={{
+                fontFamily: FONTS.semiBold,
+                color: COLORS.grey,
+                fontSize: 13,
+              }}
+            >
+              Ngày kết thúc
+            </Text>
+          </View>
+          <Text
+            style={{
+              fontFamily: FONTS.bold,
+              color: COLORS.black,
+              fontSize: 16,
+            }}
+          >
+            {moment(booking.departure_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
+          </Text>
+        </View>
+        }
         <View
           style={{
             height: "auto",

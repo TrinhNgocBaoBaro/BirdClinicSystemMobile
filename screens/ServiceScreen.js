@@ -7,7 +7,7 @@ const item = [
 
     {
         id: 'ST001',
-        name: 'Khám tổng quát',
+        name: 'Khám sức khoẻ',
         image: 'https://img.freepik.com/free-vector/veterinarian-specialist-works-scene-woman-doctor-stethoscope-examines-parrot-vet-clinic-animal-care-pet-medical-treatment_575670-515.jpg?w=1380&t=st=1701192237~exp=1701192837~hmac=62af0e07fa297af90199eaa954dbbee2fd1bd196a96dcc5ca8c5ef8ca27708e6',
         description: 'Khám sức khỏe phòng khám BirdClinic'
     },

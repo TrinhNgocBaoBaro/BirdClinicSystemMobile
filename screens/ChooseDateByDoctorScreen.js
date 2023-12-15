@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Button } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import Header from "../components/Header";
 import { ButtonFlex, ButtonFloatBottom } from "../components/Button";
@@ -6,12 +6,13 @@ import COLORS from "../constants/color";
 import Icon from "react-native-vector-icons/Ionicons";
 import FONTS from "../constants/font";
 import { FlatGrid } from "react-native-super-grid";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import Modal from "react-native-modal";
 import DatePicker, {
   getFormatedDate,
   getToday,
 } from "react-native-modern-datepicker";
+import { Calendar } from "react-native-calendars";
+
 import moment from "moment";
 import createAxios from "../utils/axios";
 const API = createAxios();
@@ -24,14 +25,14 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
   const veterinarian_id = booking.veterinarian_id;
 
   const [dataTime, setDataTime] = React.useState([]);
-  const [dataDoctorTime, setDataDoctorTime] = React.useState([]);
+  const [dataDateDoctor, setDataDateDoctor] = React.useState([]);
 
   const [selectedTime, setSelectedTime] = React.useState();
   const [selectedDate, setSelectedDate] = React.useState("");
   const [showModalPickDate, setShowModalPickDate] = React.useState(false);
   const [hasDataTime, setHasDataTime] = React.useState(false);
 
-  const today = getToday();
+  const today = moment(getToday(), "YYYY/MM/DD").format("YYYY-MM-DD");
 
   const fetchDataTimeSlotDoctor = async () => {
     try {
@@ -39,8 +40,12 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
         `/veterinarian-slot-detail/?veterinarian_id=${veterinarian_id}&date=${selectedDate}&status=available`
       );
       if (response.data) {
-        console.log(response.data);
-        const sortArray = response.data.sort((a,b)=>  a.time_slot_clinic.slot_clinic.time.localeCompare(b.time_slot_clinic.slot_clinic.time))
+        // console.log(response.data);
+        const sortArray = response.data.sort((a, b) =>
+          a.time_slot_clinic.slot_clinic.time.localeCompare(
+            b.time_slot_clinic.slot_clinic.time
+          )
+        );
         setDataTime(sortArray);
       }
     } catch (error) {
@@ -48,9 +53,39 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
     }
   };
 
+  const fetchDataDateDoctor = async () => {
+    try {
+      const response = await API.get(
+        `/vet/${veterinarian_id}`
+      );
+      if (response.data) {
+        // console.log("Data date: ",response.data.veterinarian_slot_details);
+        const filterData = response.data.veterinarian_slot_details.filter((item,index)=>
+        {
+          if(item.date >= today){
+            return ({date: item.date})
+          }
+        }
+        )
+        setDataDateDoctor(filterData);
+        console.log("FilterData: ", filterData)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   React.useEffect(() => {
-    if (selectedDate) fetchDataTimeSlotDoctor();
-  }, [selectedDate]);
+    if(today && veterinarian_id) fetchDataDateDoctor();
+  }, []);
+
+  // React.useEffect(() => {
+  //   console.log("DataDateDoctor: ", dataDateDoctor)
+  // }, [dataDateDoctor]);
+
+    // React.useEffect(() => {
+  //   if (selectedDate) fetchDataTimeSlotDoctor();
+  // }, [selectedDate]);
 
   React.useEffect(() => {
     setHasDataTime(dataTime.length > 0);
@@ -68,6 +103,14 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
     setSelectedDate(moment(date, "YYYY/MM/DD").format("YYYY-MM-DD"));
     setSelectedTime();
   };
+
+  const markedDates = dataDateDoctor.reduce((accumulator, currentValue) => {
+    const { date } = currentValue;
+    accumulator[date] = { selected: true }; //selectedColor: blue
+    return accumulator;
+  }, {});
+  
+
   return (
     <>
       <Header
@@ -100,6 +143,12 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
             Bs. {veterinarian.name}
           </Text>
         </View>
+        <View>
+        {selectedDate &&
+        <View style={{position: 'absolute', top: 0, left:50, backgroundColor: COLORS.white, zIndex: 1, paddingHorizontal: 5, borderRadius: 10}}>
+          <Text style={{ fontFamily: FONTS.semiBold, fontSize: 15, color: COLORS.green }}>Ngày khám</Text>
+        </View>
+        }
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => setShowModalPickDate(!showModalPickDate)}
@@ -118,9 +167,10 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
           }}
         >
           <Text style={{ fontFamily: FONTS.semiBold, fontSize: 18 }}>
-            {selectedDate ? selectedDate : "Chọn ngày khám"}
+            {selectedDate ? moment(selectedDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "Chọn ngày khám"}
           </Text>
         </TouchableOpacity>
+        </View>
         {selectedDate ? (
           hasDataTime ? (
             <FlatGrid
@@ -215,11 +265,12 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
           isVisible={showModalPickDate}
           hasBackdrop={true}
           animationInTiming={1000}
-          animationOutTiming={300}
-          animationIn="fadeIn"
+          animationOutTiming={1000}
+          animationIn="slideInUp"
           animationOut="slideOutDown"
           // onBackdropPress={() => setShowModalPickDate(!showModalPickDate)}
           style={{}}
+          onModalHide={()=>fetchDataTimeSlotDoctor()}
         >
           <View
             style={{
@@ -227,9 +278,11 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
               backgroundColor: COLORS.white,
               paddingBottom: 10,
               borderRadius: 10,
+              overflow: 'hidden',
+              elevation: 10
             }}
           >
-            <DatePicker
+            {/* <DatePicker
               format={"YYYY-MM-DD"}
               options={{
                 mainColor: COLORS.green,
@@ -245,10 +298,39 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
               minimumDate={today}
               selected={selectedDate}
               onSelectedChange={(date) => handleSelectDate(date)}
+            /> */}
+
+            <Calendar
+              style={{
+                margin: 10
+              }}
+              theme={{
+                backgroundColor: '#ffffff',
+                calendarBackground: '#ffffff',
+                textSectionTitleColor: '#b6c1cd',
+                selectedDayBackgroundColor: COLORS.green,
+                selectedDayTextColor: '#ffffff',
+                todayTextColor: COLORS.green,
+                dayTextColor: '#d9d9d9',
+                textDisabledColor: '#d9d9d9',
+                textDayHeaderFontFamily: FONTS.bold,
+                textDayFontFamily: FONTS.semiBold,
+                textMonthFontFamily: FONTS.semiBold,
+                indicatorColor: "red",
+                arrowColor: COLORS.green,
+              }}
+              onDayPress={(day) => {
+                setShowModalPickDate(!showModalPickDate);
+                console.log("selected day", day);
+                setSelectedDate(day.dateString);
+                setDataTime([{veterinarian_slot_detail_id: 1, time_slot_clinic: {slot_clinic: {time: "Đang tải..."}}}])
+              }}
+              minDate={today}
+              markedDates={markedDates}
             />
 
             <ButtonFlex
-              title="Hoàn tất"
+              title="Đóng"
               onPress={() => setShowModalPickDate(!showModalPickDate)}
               stylesButton={{
                 paddingVertical: 20,
@@ -271,8 +353,8 @@ const ChooseDateByDoctorScreen = ({ navigation, route }) => {
                   estimate_time: selectedTime.time_slot_clinic.slot_clinic.time,
                   time_id: selectedTime.time_slot_clinic_id,
                   arrival_date: selectedDate,
-                  status: 'pending',
-                  money_has_paid: '0'
+                  status: "pending",
+                  money_has_paid: "0",
                 },
                 veterinarian: {
                   name: veterinarian.name,

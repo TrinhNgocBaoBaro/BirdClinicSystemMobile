@@ -172,7 +172,35 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
     return p.getHours() + ":" + p.getMinutes() +", "+ p.getDate() + '/' + (p.getMonth()+1) + '/' + p.getFullYear();
   }
 
+
   let count = 0;
+
+  // const checkColorRequest = () =>  {
+  //   if(dataBooking && dataBooking.status !== "finish"){
+  //   if(dataServiceForm.length > 1){
+  //     if(requestingServiceForm && requestingServiceForm.status === "done_not_paid"){
+  //       setColorRequest(true)
+  //       console.log("Đi zô 186")
+  //     }else {
+  //       setColorRequest(false)
+  //       console.log("Đi zô 188")
+
+  //     }
+  //   }else if (dataServiceForm.length = 1) {
+  //     setColorRequest(true)
+  //     console.log("Đi zô 191")
+
+  //   } else {
+  //     setColorRequest(false)
+  //     console.log("Đi zô 193")
+  //   }
+  // }else {
+  //   setColorRequest(false)
+  //   console.log("Đi zô 197")
+
+  // }
+  // }
+
 
   return (
     <>
@@ -575,30 +603,39 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
         </BottomSheetScrollView>
       </BottomSheet>
       <TwoButtonFloatBottom buttonColorLeft={COLORS.white} titleLeft="Chat với bác sĩ" colorTextLeft={COLORS.green} onPressLeft={()=>navigation.navigate('ChatBoarding',{account_id: accountId, chat_id: dataBoarding.chat_id})}
-        buttonColorRight={dataServiceForm.length > 1 && requestingServiceForm && requestingServiceForm.status === "done_not_paid" ? COLORS.green : COLORS.grey} 
+        // buttonColorRight={dataServiceForm.length > 1 && requestingServiceForm && requestingServiceForm.status === "done_not_paid" ? COLORS.green : COLORS.grey}
+         buttonColorRight={COLORS.green}
         titleRight="Yêu cầu dịch vụ" 
         colorTextRight={COLORS.white} 
         onPressRight={()=>
           {
-            if(dataServiceForm.length > 1){
-              if(requestingServiceForm && requestingServiceForm.status === "done_not_paid"){
-                (navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id}
-                ))
-              }else {
+            if(dataBooking && dataBooking.status !== 'finish'){
+              if(dataServiceForm.length > 1){
+                if(requestingServiceForm && requestingServiceForm.status === "done_not_paid"){
+                  (navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id}
+                  ))
+                }else {
+                  Alert.alert(
+                    "Thông báo",
+                    `Dịch vụ bạn yêu cầu trước đó phải được hoàn thành trước!`
+                    )
+                }
+              }else if (dataServiceForm.length = 1) {
+                navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id}
+                )
+              } else {
                 Alert.alert(
                   "Thông báo",
                   `Dịch vụ bạn yêu cầu trước đó phải được hoàn thành trước!`
                   )
               }
-            }else if (dataServiceForm.length = 1) {
-              navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id}
-              )
-            } else {
+            }else {
               Alert.alert(
                 "Thông báo",
-                `Dịch vụ bạn yêu cầu trước đó phải được hoàn thành trước!`
+                `Dịch vụ nội trú đã hoàn thành, bạn không thể yêu cầu thêm dịch vụ!`
                 )
             }
+            
           //   dataServiceForm.length > 1 && requestingServiceForm && requestingServiceForm.status === "done_not_paid" ?
           // (navigation.navigate('ServiceRequestBoarding', {bird_id: dataBooking.bird_id, booking_id: dataBooking.booking_id}
           // ))

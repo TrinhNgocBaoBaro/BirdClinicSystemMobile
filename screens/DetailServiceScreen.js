@@ -1,6 +1,6 @@
 import React from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Button, ScrollView, TouchableOpacity, Image } from "react-native";
 import Header from "../components/Header";
 import { ButtonFloatBottom } from "../components/Button";
 import COLORS from "../constants/color";
@@ -22,7 +22,7 @@ export default function DetailServiceScreen({ navigation, route }) {
       componentToRender = <Boarding service_type_id={service_type_id} />;
       break;
     case "ST002":
-      componentToRender = <Grooming />;
+      componentToRender = <Grooming service_type_id={service_type_id} />;
       break;
     case "4":
       componentToRender = <Emergency />;
@@ -276,14 +276,38 @@ const Boarding = ({service_type_id}) => {
   );
 }
 
-const Grooming = () => {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: "center"}}>
-      <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Cắt tỉa móng</Text>
-      <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Cắt tỉa mỏ</Text>
-      <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Tỉa lông cánh</Text>
+const Grooming = ({service_type_id}) => {
+  const [dataGrooming, setDataGrooming] = React.useState([]);
 
-      {/* ... */}
+  const fetchData = async () => {
+    try {
+      const response = await API.get(
+        `/service-type/${service_type_id}`
+      );
+      if (response.data) {
+        console.log("Data Service Type",response.data[0]);
+        setDataGrooming(response.data[0].services)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  React.useEffect(() => {
+    fetchData();
+  },[])
+  return (
+    <View style={{flex: 1, marginBottom: 80, marginTop: 10}}>
+      {dataGrooming.length > 0 && dataGrooming.map((item,index)=>(
+        <View style={{backgroundColor: COLORS.white, elevation: 3, padding:20, marginHorizontal: 20, marginVertical: 10, borderRadius: 10, flexDirection: "row"}} key={index}>
+                <View>
+                <Image source={{uri: item.image}} style={{width: 80, height: 80}}/>
+                </View>
+                <View style={{flex: 1, marginLeft: 20}}>
+                <Text style={{fontFamily: FONTS.bold, fontSize: 16, color: COLORS.green}}>{item.name}</Text>
+                <Text style={{fontFamily: FONTS.medium, fontSize: 14}}>{item.description}</Text>
+                </View>
+        </View>
+      ))}
     </View>
   );
 }

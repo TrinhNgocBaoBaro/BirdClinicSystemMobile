@@ -12,6 +12,8 @@ import DatePicker, {
   getFormatedDate,
   getToday,
 } from "react-native-modern-datepicker";
+import { Calendar } from "react-native-calendars";
+
 import moment from "moment";
 import createAxios from "../utils/axios";
 const API = createAxios();
@@ -26,10 +28,12 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
     const [selectedDepartureDate, setSelectedDepartureDate] = React.useState("");
     const [minimunDepartureDate, setMinimunDepartureDate] = React.useState("");
     const [configMinimumDate, setConfigMinimumDate] = React.useState();
+    const [dataDateClinic, setDataDateClinic] = React.useState([]);
 
     const [selectedTime, setSelectedTime] = React.useState();
     const [hasDataTime, setHasDataTime] = React.useState(false);
-    const today = getToday();
+    // const today = getToday();
+    const today = moment(getToday(), "YYYY/MM/DD").format("YYYY-MM-DD");
 
     const fetchDataTimeSlotClinic = async () => {
         try {
@@ -62,13 +66,35 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
         }
       };
 
+      const fetchDataDateClinic = async () => {
+        try {
+          const response = await API.get(
+            `/time-slot-clinic/?service_type_id=${booking.service_type_id}`
+          );
+          if (response.data) {
+            // console.log("Data date: ",response.data.veterinarian_slot_details);
+            const filterData = response.data.filter((item,index)=>
+            {
+              if(item.date >= today){
+                return ({date: item.date})
+              }
+            }
+            )
+            setDataDateClinic(filterData);
+            console.log("FilterData: ", filterData)
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
     React.useEffect(()=>{
-        if(booking) console.log(booking)
+        if(booking && today) {console.log(booking); fetchDataDateClinic();}
     },[booking])
 
-    React.useEffect(() => {
-        if (selectedDate) fetchDataTimeSlotClinic();
-      }, [selectedDate]);
+    // React.useEffect(() => {
+    //     if (selectedDate) fetchDataTimeSlotClinic();
+    //   }, [selectedDate]);
     
     React.useEffect(() => {
         setHasDataTime(dataTime.length > 0);
@@ -84,10 +110,12 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
 
     const handleSelectDate = (date) => {
 
-        setSelectedDate(moment(date, "YYYY/MM/DD").format("YYYY-MM-DD"));
+        // setSelectedDate(moment(date, "YYYY/MM/DD").format("YYYY-MM-DD"));
+        // setSelectedTime();
+        setSelectedDate(date.dateString);
         setSelectedTime();
 
-        let dateString = moment(date, "YYYY/MM/DD").format("YYYY-MM-DD");
+        let dateString = date.dateString;
         let startDate = new Date(dateString);
         startDate.setDate(startDate.getDate() + configMinimumDate)
         let endDate = startDate.toISOString().slice(0, 10);
@@ -104,6 +132,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
 
     const handleSelectDepartureDate = (date) => {
         setSelectedDepartureDate(moment(date, "YYYY/MM/DD").format("YYYY-MM-DD"));
+        // setSelectedDepartureDate(date.dateString);
         setSelectedTime();
   };
 
@@ -111,6 +140,12 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
         setSelectedTime(item);
         console.log(item);
       };
+
+      const markedDates = dataDateClinic.reduce((accumulator, currentValue) => {
+        const { date } = currentValue;
+        accumulator[date] = { selected: true }; //selectedColor: blue
+        return accumulator;
+      }, {});
 
   return (
     <>
@@ -127,7 +162,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
         <View>
         {selectedDate &&
         <View style={{position: 'absolute', top: 20, left:50, backgroundColor: COLORS.white, zIndex: 1, paddingHorizontal: 5, borderRadius: 10}}>
-          <Text style={{ fontFamily: FONTS.semiBold, fontSize: 15, color: COLORS.green }}>Ngày bắt đầu</Text>
+          <Text style={{ fontFamily: FONTS.semiBold, fontSize: 15, color: COLORS.green }}>Ngày tiếp nhận</Text>
         </View>
         }
         <TouchableOpacity
@@ -148,7 +183,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
         }}
       >
         <Text style={{ fontFamily: FONTS.semiBold, fontSize: 18 }}>
-          {selectedDate ? selectedDate : "Chọn ngày bắt đầu"}
+          {selectedDate ? selectedDate : "Chọn ngày tiếp nhận"}
         </Text>
         </TouchableOpacity>
         </View>
@@ -185,6 +220,12 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
         </View>
         </>
         :
+        <View>
+        {selectedDate &&
+          <View style={{position: 'absolute', top: 10, left:50, backgroundColor: COLORS.white, zIndex: 1, paddingHorizontal: 5, borderRadius: 10}}>
+            <Text style={{ fontFamily: FONTS.semiBold, fontSize: 15, color: COLORS.green }}>{booking.service_type_id === "ST001" ?  "Ngày khám" : "Ngày tiếp nhận"}</Text>
+          </View>
+          }
         <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => setShowModalPickDate(!showModalPickDate)}
@@ -204,9 +245,10 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
         }}
       >
         <Text style={{ fontFamily: FONTS.semiBold, fontSize: 18 }}>
-          {selectedDate ? selectedDate : "Chọn ngày khám"}
+          {selectedDate ? moment(selectedDate, "YYYY-MM-DD").format("DD/MM/YYYY") :  booking.service_type_id === "ST001" ?  "Chọn ngày khám" : "Chọn ngày tiếp nhận"}
         </Text>
         </TouchableOpacity>
+        </View>
         }
         
 
@@ -304,9 +346,11 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
           animationInTiming={1500}
           animationOutTiming={1000}
           animationIn="slideInUp"
-          animationOut="zoomOutDown"
+          animationOut="slideOutDown"
         //   onBackdropPress={() => setShowModalPickDate(!showModalPickDate)}
           style={{}}
+          onModalHide={()=>fetchDataTimeSlotClinic()}
+
         >
           <View
             style={{
@@ -316,7 +360,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
               borderRadius: 10,
             }}
           >
-            <DatePicker
+            {/* <DatePicker
               format={"YYYY-MM-DD"}
               options={{
                 mainColor: COLORS.green,
@@ -333,10 +377,40 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
               selected={selectedDate}
               // onSelectedChange={(date) => handleSelectDate(date)}
               onDateChange={(date) => handleSelectDate(date)}
+            /> */}
+
+            <Calendar
+              style={{
+                margin: 10
+              }}
+              theme={{
+                backgroundColor: '#ffffff',
+                calendarBackground: '#ffffff',
+                textSectionTitleColor: '#b6c1cd',
+                selectedDayBackgroundColor: COLORS.green,
+                selectedDayTextColor: '#ffffff',
+                todayTextColor: COLORS.green,
+                dayTextColor: '#d9d9d9',
+                textDisabledColor: '#d9d9d9',
+                textDayHeaderFontFamily: FONTS.bold,
+                textDayFontFamily: FONTS.semiBold,
+                textMonthFontFamily: FONTS.semiBold,
+                indicatorColor: "red",
+                arrowColor: COLORS.green,
+              }}
+              onDayPress={(day) => {
+                setShowModalPickDate(!showModalPickDate);
+                // console.log("selected day", day);
+                // setSelectedDate(day.dateString);
+                handleSelectDate(day)
+                setDataTime([{time: "Đang tải..."}])
+              }}
+              minDate={today}
+              markedDates={markedDates}
             />
 
             <ButtonFlex
-              title="Hoàn tất"
+              title="Đóng"
               onPress={() => setShowModalPickDate(!showModalPickDate)}
               stylesButton={{
                 paddingVertical: 20,
@@ -353,7 +427,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
           animationInTiming={1500}
           animationOutTiming={1000}
           animationIn="slideInUp"
-          animationOut="zoomOutDown"
+          animationOut="slideOutDown"
         //   onBackdropPress={() => setShowModalPickDate(!showModalPickDate)}
           style={{}}
         >
@@ -401,7 +475,7 @@ const ChooseDateByDateScreen = ({navigation, route}) => {
         title="Tiếp tục"
         buttonColor={selectedTime && selectedDepartureDate ? COLORS.green : COLORS.grey}
         onPress={() => {
-          selectedTime
+          selectedTime && selectedDepartureDate
             ? navigation.navigate("ConfirmBookingAndSymptom", {
                 booking: {
                   ...booking,

@@ -590,7 +590,7 @@ export default function HomeScreen({ navigation }) {
                     </View>
                   </TouchableOpacity>
                 )}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.booking_id}
               />
             </View>
           ))}

@@ -35,7 +35,7 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
   const [load, setLoad] = React.useState(false);
 
   const bottomSheetRef = useRef();
-  const snapPoints = useMemo(() => ['35%', '80%'], []);
+  const snapPoints = useMemo(() => ['80%'], []);
   const handleClosePress = () => bottomSheetRef.current?.close();
   const handleOpenPress = () => bottomSheetRef.current?.expand();
 
@@ -54,6 +54,7 @@ const DetailHistoryBookingScreen = ({ navigation, route }) => {
         {...props}
         disappearsOnIndex={-1}
         appearsOnIndex={0}
+        onPress={handleClosePress}
       />
     ),
     []

@@ -41,12 +41,12 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
 
 
   const bottomSheetRef = useRef();
-  const snapPoints = useMemo(() => ['35%', '80%'], []);
+  const snapPoints = useMemo(() => ['80%'], []);
   const handleClosePress = () => bottomSheetRef.current?.close();
   const handleOpenPress = () => bottomSheetRef.current?.expand();
 
   const bottomBillSheetRef = useRef();
-  const snapPointsBill = useMemo(() => ['35%', '80%'], []);
+  const snapPointsBill = useMemo(() => ['70%'], []);
   const handleClosePressBill = () => bottomBillSheetRef.current?.close();
   const handleOpenPressBill = () => bottomBillSheetRef.current?.expand();
 
@@ -70,6 +70,19 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
         {...props}
         disappearsOnIndex={-1}
         appearsOnIndex={0}
+        onPress={handleClosePress}
+      />
+    ),
+    []
+  );
+
+  const renderBackdropBill = useCallback(
+    props => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        onPress={handleClosePressBill}
       />
     ),
     []
@@ -492,7 +505,6 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
         onChange={handleSheetChanges}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
-        handleIndicatorStyle={{}}
         >
         <BottomSheetScrollView 
           contentContainerStyle={{backgroundColor: COLORS.white, paddingBottom: 80}}
@@ -588,14 +600,13 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
                   index={-1}
                   snapPoints={snapPointsBill}
                   onChange={handleSheetChangesBill}
-                  enablePanDownToClose={true}
-                  backdropComponent={renderBackdrop}
-                  handleIndicatorStyle={{}}
+                  enablePanDownToClose={false}
+                  backdropComponent={renderBackdropBill}
                   >
                   <BottomSheetScrollView 
                     contentContainerStyle={{backgroundColor: COLORS.white, paddingBottom: 80}}
                     // onRefresh={handleRefresh}
-                    refreshing={false}
+                    // refreshing={false}
                     showsVerticalScrollIndicator={false}
                   >
                       <View style={{paddingVertical: 30, alignItems: 'center', justifyContent: 'center'}}>

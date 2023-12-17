@@ -314,7 +314,6 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
               </Text>
             </View>
             {dataBooking.status === "finish" &&
-            <>
             <View style={styles.viewAttribute}>
             <Text style={styles.textAttribute}>Hóa đơn</Text>
             <TouchableOpacity
@@ -338,75 +337,6 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
                   </Text>
                 </TouchableOpacity>
             </View>
-            <BottomSheet
-        ref={bottomBillSheetRef}
-        index={-1}
-        snapPoints={snapPointsBill}
-        onChange={handleSheetChangesBill}
-        enablePanDownToClose={true}
-        backdropComponent={renderBackdrop}
-        handleIndicatorStyle={{}}
-        >
-        <BottomSheetScrollView 
-          contentContainerStyle={{backgroundColor: COLORS.white, paddingBottom: 80}}
-          // onRefresh={handleRefresh}
-          refreshing={false}
-          showsVerticalScrollIndicator={false}
-        >
-            <View style={{paddingVertical: 30, alignItems: 'center', justifyContent: 'center'}}>
-              <Text  
-              style={{
-                  fontSize: 20,
-                  fontFamily: FONTS.bold,
-                  color: COLORS.black,
-                }}>HÓA ĐƠN
-              </Text>
-            </View>
-            {dataBill.length !==0 && 
-            <View style={{paddingHorizontal: 20}}>
-            <Text style={{fontFamily: FONTS.bold, fontSize: 15, marginBottom: 5}}>Thông tin khách hàng:</Text>            
-            <View style={{marginBottom: 10, flexDirection: 'row'}}>
-              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Tên khách hàng:</Text>
-              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataBooking.customer_name}</Text>
-            </View>
-            <View style={{marginBottom: 10, flexDirection: 'row'}}>
-              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Số điện thoại:</Text>
-              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataBooking.bird.customer.phone}</Text>
-            </View>
-            <Text style={{fontFamily: FONTS.bold, fontSize: 15, marginBottom: 5}}>Thông tin chim:</Text>            
-            <View style={{marginBottom: 10, flexDirection: 'row'}}>
-              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Tên chim:</Text>
-              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataBooking.bird.name}</Text>
-            </View>
-            <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Chi tiết hóa đơn:</Text>            
-            <View style={{marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginTop: 10}}>
-              <Text style={{fontFamily: FONTS.semiBold, fontSize: 14, color: COLORS.grey}}>Tên dịch vụ</Text>
-              <Text style={{fontFamily: FONTS.semiBold, fontSize: 14, color: COLORS.grey}}>Giá</Text>
-            </View>
-            {dataBill.map((item,index)=>{
-              return item.map((itemBill,indexBill)=> {
-                count = count + 1
-                return <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}} key={indexBill}>
-                  <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{count}. {itemBill.note}</Text>
-                  <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{formatCurrency(itemBill.price)}</Text>
-                </View>
-
-            })
-            })
-            }
-            <View style={{marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={{fontFamily: FONTS.bold, fontSize: 14}}>Tổng tiền:</Text>
-              <Text style={{fontFamily: FONTS.semiBold, fontSize: 14}}>{formatCurrency(dataBooking.money_has_paid)}</Text>
-            </View>
-            {/* <View style={{marginBottom: 10, flexDirection: 'row'}}>
-              <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Phương thức thanh toán:</Text>
-              <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}Chuyển khoản</Text>
-            </View> */}
-            </View>
-            }
-        </BottomSheetScrollView>
-            </BottomSheet>
-            </>
             }
           </View>
 
@@ -651,6 +581,75 @@ const DetailHistoryBoardingScreen = ({ navigation, route }) => {
       />
       </>
       }
+       
+                  <BottomSheet
+                  ref={bottomBillSheetRef}
+                  index={-1}
+                  snapPoints={snapPointsBill}
+                  onChange={handleSheetChangesBill}
+                  enablePanDownToClose={true}
+                  backdropComponent={renderBackdrop}
+                  handleIndicatorStyle={{}}
+                  >
+                  <BottomSheetScrollView 
+                    contentContainerStyle={{backgroundColor: COLORS.white, paddingBottom: 80}}
+                    // onRefresh={handleRefresh}
+                    refreshing={false}
+                    showsVerticalScrollIndicator={false}
+                  >
+                      <View style={{paddingVertical: 30, alignItems: 'center', justifyContent: 'center'}}>
+                        <Text  
+                        style={{
+                            fontSize: 20,
+                            fontFamily: FONTS.bold,
+                            color: COLORS.black,
+                          }}>HÓA ĐƠN
+                        </Text>
+                      </View>
+                      {dataBill.length !==0 && 
+                      <View style={{paddingHorizontal: 20}}>
+                      <Text style={{fontFamily: FONTS.bold, fontSize: 15, marginBottom: 5}}>Thông tin khách hàng:</Text>            
+                      <View style={{marginBottom: 10, flexDirection: 'row'}}>
+                        <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Tên khách hàng:</Text>
+                        <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataBooking.customer_name}</Text>
+                      </View>
+                      <View style={{marginBottom: 10, flexDirection: 'row'}}>
+                        <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Số điện thoại:</Text>
+                        <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataBooking.bird.customer.phone}</Text>
+                      </View>
+                      <Text style={{fontFamily: FONTS.bold, fontSize: 15, marginBottom: 5}}>Thông tin chim:</Text>            
+                      <View style={{marginBottom: 10, flexDirection: 'row'}}>
+                        <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>Tên chim:</Text>
+                        <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}{dataBooking.bird.name}</Text>
+                      </View>
+                      <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Chi tiết hóa đơn:</Text>            
+                      <View style={{marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginTop: 10}}>
+                        <Text style={{fontFamily: FONTS.semiBold, fontSize: 14, color: COLORS.grey}}>Tên dịch vụ</Text>
+                        <Text style={{fontFamily: FONTS.semiBold, fontSize: 14, color: COLORS.grey}}>Giá</Text>
+                      </View>
+                      {dataBill.map((item,index)=>{
+                        return item.map((itemBill,indexBill)=> {
+                          count = count + 1
+                          return <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}} key={indexBill}>
+                            <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{count}. {itemBill.note}</Text>
+                            <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{formatCurrency(itemBill.price)}</Text>
+                          </View>
+          
+                      })
+                      })
+                      }
+                      <View style={{marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <Text style={{fontFamily: FONTS.bold, fontSize: 14}}>Tổng tiền:</Text>
+                        <Text style={{fontFamily: FONTS.semiBold, fontSize: 14}}>{formatCurrency(dataBooking.money_has_paid)}</Text>
+                      </View>
+                      {/* <View style={{marginBottom: 10, flexDirection: 'row'}}>
+                        <Text style={{fontFamily: FONTS.bold, fontSize: 15}}>Phương thức thanh toán:</Text>
+                        <Text style={{fontFamily: FONTS.medium, fontSize: 15}}>{"  "}Chuyển khoản</Text>
+                      </View> */}
+                      </View>
+                      }
+                  </BottomSheetScrollView>
+                      </BottomSheet>
       
     </>
   );

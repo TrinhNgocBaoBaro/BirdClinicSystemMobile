@@ -2,13 +2,14 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
   Image,
   Alert
 } from "react-native";
 import React, { useRef, useCallback, useMemo } from "react";
 import BottomSheet, {BottomSheetBackdrop, BottomSheetScrollView  } from '@gorhom/bottom-sheet';
-
+import {
+  TouchableOpacity,
+} from '@gorhom/bottom-sheet';
 import Header from "../components/Header";
 import COLORS from "../constants/color";
 import FONTS from "../constants/font";

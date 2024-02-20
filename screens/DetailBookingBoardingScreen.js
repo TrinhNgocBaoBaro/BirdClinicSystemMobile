@@ -203,7 +203,7 @@ const DetailBookingBoardingScreen = ({ navigation, route }) => {
                 marginBottom: 15,
               }}
             >
-              Thời gian check-in: 12:33
+              Thời gian check-in: {dataBooking.checkin_time}
             </Text>
             <Image
               source={{
@@ -479,8 +479,8 @@ const DetailBookingBoardingScreen = ({ navigation, route }) => {
             <View style={styles.viewAttribute}>
               <Text style={styles.textAttribute}>Giờ check-in</Text>
               <Text style={styles.textInfo}>
-                {dataBooking.check_in === null
-                  ? dataBooking.check_in
+              {dataBooking.checkin_time
+                  ? dataBooking.checkin_time
                   : "Chưa check-in"}
               </Text>
             </View>

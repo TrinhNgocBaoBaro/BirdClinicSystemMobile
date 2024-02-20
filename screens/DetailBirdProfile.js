@@ -13,15 +13,15 @@ const API = createAxios();
 const dataMedicalRecord = [
   {
     id: "1",
-    dateMedical: "25/03/2022",
+    dateMedical: "18/11/2023",
   },
   {
     id: "2",
-    dateMedical: "24/07/2022",
+    dateMedical: "03/12/2023",
   },
   {
     id: "3",
-    dateMedical: "30/09/2022",
+    dateMedical: "24/12/2023",
   },
   // {
   //   id: "4",

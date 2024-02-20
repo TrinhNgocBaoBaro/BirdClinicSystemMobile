@@ -213,7 +213,11 @@ const ChatBoardingScreen = ({ navigation, route }) => {
 
   React.useEffect(() => {
     if (accountId) fetchDataMessage();
-  }, []);
+  }, [load]);
+
+  React.useEffect(() => {
+   console.log("đã load")
+  }, [load]);
 
   React.useEffect(() => {
     if (dataMessage) {
@@ -235,7 +239,7 @@ const ChatBoardingScreen = ({ navigation, route }) => {
                         <Icon name="shield-checkmark" size={30} color={COLORS.green}/>
 
                 </View>
-                <Pressable onPress={()=>{}}>
+                <Pressable onPress={()=>setLoad(!load)}>
                 <View 
                     style={{ 
                         marginRight: 20, 
